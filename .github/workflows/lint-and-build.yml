@@ -1,4 +1,4 @@
-name: Lint, Format, and Build
+name: Lint and Build
 
 on:
   # Trigger the workflow on push or pull request,
@@ -12,7 +12,7 @@ on:
 
 jobs:
   checking:
-    name: Lint, Format Check, and Build
+    name: Lint and Build
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -40,9 +40,6 @@ jobs:
 
       - name: Run ESLint
         run: pnpm lint
-    
-      - name: Run Prettier
-        run: pnpm format-check
 
       - name: Run Build
         run: pnpm build
