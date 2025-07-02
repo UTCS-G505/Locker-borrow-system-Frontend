@@ -39,7 +39,7 @@ jobs:
         run: pnpm install
 
       - name: Run ESLint
-        run: pnpm lint
+        run: pnpm lint-check
 
       - name: Run Build
         run: pnpm build
