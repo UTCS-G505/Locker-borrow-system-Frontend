@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      prettier:
-        specifier: ^3.6.2
-        version: 3.6.2
       vue:
         specifier: ^3.5.17
         version: 3.5.17
@@ -36,6 +33,9 @@ importers:
       globals:
         specifier: ^16.2.0
         version: 16.2.0
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
       vite:
         specifier: ^7.0.0
         version: 7.0.0
