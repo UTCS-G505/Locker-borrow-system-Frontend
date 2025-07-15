@@ -1,6 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
-import AboutView from '@/views/AboutView.vue'
+import ApplyView from '@/views/ApplyView.vue'
+import RecordView from '@/views/RecordView.vue'
+import ReviewView from '@/views/ReviewView.vue'
+import SettingView from '@/views/SettingView.vue'
+import NotFoundView from '@/views/http-errors/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,16 +13,63 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      meta: {
+        title: 'Home'
+      }
     },
     {
-      path: '/about',
-      name: 'about',
+      path: '/apply',
+      name: 'apply',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: AboutView,
+      component: ApplyView,
+      meta: {
+        title: '申請借用'
+      }
+    },
+    {
+      path: '/record',
+      name: 'record',
+      component: RecordView,
+      meta: {
+        title: '申請紀錄'
+      }
+    },
+    {
+      path: '/review',
+      name: 'review',
+      component: ReviewView,
+      meta: {
+        title: '審核申請'
+      }
+    },
+    {
+      path: '/setting',
+      name: 'setting',
+      component: SettingView,
+      meta: {
+        title: '系統管理'
+      }
+    },
+    {
+      path: '/:catchAll(.*)',
+      name: 'NotFound',
+      component: NotFoundView,
+      meta: {
+        title: '404 Not Found'
+      }
     },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  let costumTitle = typeof to.meta.title === 'string' ? to.meta.title : null;
+  let appName = 'UTaipei CS Locker Borrow System';
+  if (costumTitle){
+    document.title = `${costumTitle} | ${appName}`;
+  }
+  next()
 })
 
 export default router
