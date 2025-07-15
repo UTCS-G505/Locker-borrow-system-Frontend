@@ -48,6 +48,4 @@ main {
   margin: 0 auto;
   padding: 2rem;
 }
-
-}
 </style>
