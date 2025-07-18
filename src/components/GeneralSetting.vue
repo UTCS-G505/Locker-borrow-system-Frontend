@@ -6,11 +6,14 @@ const startDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStar
 const endDate = `${today.getFullYear() + 1}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 const initialStartDate = ref(startDate);
 const initialEndDate = ref(endDate);
+
+const updateSemesterInterval = () => {
+};
 </script>
 
 <template>
   <div class="general-setting">
-    <form class="semester-form" method="post">
+    <form class="semester-form" @submit.prevent="updateSemesterInterval">
       <h3>設定學年起迄</h3>
       <label for="start">學年起：</label>
       <input type="date" class="input-field" id="start" name="start" :value="initialStartDate">
