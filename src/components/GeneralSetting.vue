@@ -12,7 +12,7 @@ const updateSemesterInterval = () => {
 </script>
 
 <template>
-  <div class="general-setting">
+  <div id="general-setting">
     <form class="semester-form" @submit.prevent="updateSemesterInterval">
       <h3>設定學年起迄</h3>
       <label for="start">學年起：</label>
@@ -103,7 +103,7 @@ h3 {
 }
 
 @media screen and (min-width: 1440px) {
-  .general-setting {
+  #general-setting {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
