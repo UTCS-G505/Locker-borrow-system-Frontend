@@ -64,3 +64,8 @@ pnpm format
 feat: 新增申請頁面
 fix: 修正送出按鈕無法點擊的問題
 ```
+
+## 使用資源
+- [Favicon](https://www.freepik.com/icon/locker_2198726#fromView=keyword&page=1&position=50&uuid=4e7638bf-a543-4f71-ade1-46cf9b8b0a92)
+
+- [Search Bar Icon](https://icons.getbootstrap.com/icons/search/)
