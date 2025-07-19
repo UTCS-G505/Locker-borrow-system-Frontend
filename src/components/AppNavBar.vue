@@ -27,7 +27,7 @@ function toggleMobileUserMenu() {
   showMobileUserMenu.value = !showMobileUserMenu.value
 }
 
-// 點擊外部關閉選單
+// 點擊外部關閉電腦版使用者選單
 function handleClickOutside(event) {
   if (menuRef.value && !menuRef.value.contains(event.target)) {
     showMenu.value = false
@@ -36,10 +36,12 @@ function handleClickOutside(event) {
   }
 }
 
+// 掛載全局點擊事件
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
 })
 
+// 卸載事件監聽器
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
@@ -107,11 +109,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
 .app-navbar {
   width: 100%;
   display: flex;
@@ -120,6 +117,11 @@ html, body {
   box-shadow: none;
   margin: 0;
   padding: 0;
+}
+
+/* 電腦版樣式 */
+.desktop-header {
+  display: block;
 }
 
 .top-bar {
@@ -154,7 +156,9 @@ html, body {
   align-items: center;
   background: rgba(235, 247, 255, 0.8);
   padding: 12px 24px;
-  box-shadow: 0 -3px 6px rgba(0, 0, 0, 0.12), 0 3px 6px rgba(0, 0, 0, 0.18);
+  box-shadow:
+    0 -3px 6px rgba(0, 0, 0, 0.12),
+    0 3px 6px rgba(0, 0, 0, 0.18);
   position: relative;
   z-index: 10;
 }
@@ -178,6 +182,7 @@ html, body {
   background-color: #a1d2ff;
 }
 
+/* 使用者下拉選單 */
 .user-menu {
   position: relative;
 }
@@ -186,7 +191,6 @@ html, body {
   background: none;
   border: none;
   font-size: 16px;
-  padding: 6px 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -297,6 +301,7 @@ html, body {
   font-weight: bold;
 }
 
+/* 手機版使用者選單 */
 .mobile-user-menu {
   position: absolute;
   right: 12px;
