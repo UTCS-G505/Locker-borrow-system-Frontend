@@ -59,4 +59,10 @@ footer {
   margin: 0 auto;
   padding: 2rem;
 }
+
+@media print {
+  header, footer {
+    display: none;
+  }
+}
 </style>
