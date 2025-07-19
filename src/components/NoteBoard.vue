@@ -47,6 +47,16 @@ const filteredStudents = computed(() => {
     return 0;
   });
 });
+
+const dormitoryNote = (student) => {
+  student.note = '住宿生註記';
+};
+const violationNote = (student) => {
+  student.note = '違規註記';
+};
+const clearNote = (student) => {
+  student.note = null;
+};
 </script>
 
 <template>
@@ -78,12 +88,12 @@ const filteredStudents = computed(() => {
           <td>{{ student.name }}</td>
 
           <td v-if="student.note == null">
-            <button type="button">住宿生註記</button>
-            <button type="button">違規註記</button>
+            <button type="button" @click="dormitoryNote(student)">住宿生註記</button>
+            <button type="button" @click="violationNote(student)">違規註記</button>
           </td>
           <td v-else>
             {{ student.note }}
-            <button type="button">取消</button>
+            <button type="button" @click="clearNote(student)">取消</button>
           </td>
         </tr>
       </tbody>
