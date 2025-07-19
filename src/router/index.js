@@ -5,6 +5,7 @@ import RecordView from '@/views/RecordView.vue'
 import ReviewView from '@/views/ReviewView.vue'
 import SettingView from '@/views/SettingView.vue'
 import NotFoundView from '@/views/http-errors/NotFoundView.vue'
+import HistoryExportView from '@/views/HistoryExportView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -53,6 +54,19 @@ const router = createRouter({
       }
     },
     {
+      path: '/export',
+      name: 'export',
+      redirect: '/export/history'
+    },
+    {
+      path: '/export/history',
+      name: 'export-history',
+      component: HistoryExportView,
+      meta: {
+        title: '借用紀錄表'
+      }
+    },
+    {
       path: '/:catchAll(.*)',
       name: 'NotFound',
       component: NotFoundView,
@@ -63,7 +77,7 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   let costumTitle = typeof to.meta.title === 'string' ? to.meta.title : null;
   let appName = 'UTaipei CS Locker Borrow System';
   if (costumTitle){
