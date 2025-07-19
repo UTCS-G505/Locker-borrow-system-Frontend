@@ -19,7 +19,6 @@ import AppNavBar from './components/AppNavBar.vue';
 <style scoped>
 header {
   line-height: 1.5;
-  min-height: 10vh;
   max-height: 100vh;
   margin: 0 auto;
   padding: 0;
