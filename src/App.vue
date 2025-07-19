@@ -2,6 +2,7 @@
 import { RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import AppNavBar from './components/AppNavBar.vue';
+import AppFooter from './components/AppFooter.vue'
 </script>
 
 <template>
@@ -20,6 +21,10 @@ import AppNavBar from './components/AppNavBar.vue';
   <main>
     <RouterView />
   </main>
+
+  <footer>
+    <AppFooter />
+  </footer>
 </template>
 
 <style scoped>
@@ -45,6 +50,12 @@ nav {
 
 main {
   min-height: 80vh;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+footer {
+  min-height: 10vh;
   margin: 0 auto;
   padding: 2rem;
 }
