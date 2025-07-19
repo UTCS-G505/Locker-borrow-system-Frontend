@@ -22,7 +22,7 @@ header {
   min-height: 10vh;
   max-height: 100vh;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0;
 }
 
 .logo {
