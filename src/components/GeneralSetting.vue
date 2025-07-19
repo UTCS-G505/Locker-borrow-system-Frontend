@@ -9,6 +9,15 @@ const initialEndDate = ref(endDate);
 
 const updateSemesterInterval = () => {
 };
+
+const handleBorrowHistory = () => {
+  console.log('handleBorrowHistory');
+  // window.open('/export/history', '_blank', 'noopener');
+};
+const handleBorrowOverview = () => {
+  console.log('handleBorrowOverview');
+  // window.open('/export/overview', '_blank', 'noopener');
+};
 </script>
 
 <template>
@@ -23,8 +32,8 @@ const updateSemesterInterval = () => {
     </form>
     <div class="export-button">
       <h3>資料匯出</h3>
-      <button id="borrow-record" type="button">借用紀錄</button>
-      <button id="borrow-overview" type="button">借用概況圖</button>
+      <button id="borrow-record" type="button" @click="handleBorrowHistory">借用紀錄</button>
+      <button id="borrow-overview" type="button" @click="handleBorrowOverview">借用概況圖</button>
     </div>
   </div>
 </template>
