@@ -27,7 +27,7 @@ function toggleMobileUserMenu() {
   showMobileUserMenu.value = !showMobileUserMenu.value
 }
 
-// 點擊外部關閉電腦版使用者選單
+// 點擊外部關閉選單
 function handleClickOutside(event) {
   if (menuRef.value && !menuRef.value.contains(event.target)) {
     showMenu.value = false
@@ -36,12 +36,10 @@ function handleClickOutside(event) {
   }
 }
 
-// 掛載全局點擊事件
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
 })
 
-// 卸載事件監聽器
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
@@ -81,22 +79,17 @@ onBeforeUnmount(() => {
 
     <!-- 手機版 Header -->
     <div class="mobile-header">
-
       <div class="mobile-top-bar">
-        <!-- 漢堡選單按鈕 -->
         <button class="menu-toggle" @click.stop="toggleMobileMenu">☰</button>
 
-        <!-- Logo & 系統名稱 -->
         <RouterLink to="/" class="mobile-logo-link">
           <img class="mobile-logo" :src="logo" alt="Logo" />
           <h1 class="mobile-system-title">系櫃借用系統</h1>
         </RouterLink>
 
-        <!-- 手機版使用者圖示 -->
         <div class="mobile-user-icon" @click.stop="toggleMobileUserMenu">👤</div>
       </div>
 
-      <!-- 手機版主選單 -->
       <div v-if="showMobileMenu" class="mobile-menu">
         <RouterLink to="/" @click="toggleMobileMenu">首頁</RouterLink>
         <RouterLink to="/apply" @click="toggleMobileMenu">申請借用</RouterLink>
@@ -105,27 +98,28 @@ onBeforeUnmount(() => {
         <RouterLink to="/setting" @click="toggleMobileMenu">系統管理</RouterLink>
       </div>
 
-      <!-- 手機版使用者選單 -->
       <div v-if="showMobileUserMenu" class="mobile-user-menu">
         <div class="user-name">u11316017</div>
         <div class="logout"><a href="#">登出</a></div>
       </div>
-
     </div>
   </div>
 </template>
 
-
 <style scoped>
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
 .app-navbar {
   width: 100%;
   display: flex;
   flex-direction: column;
-}
-
-/* 電腦版樣式 */
-.desktop-header {
-  display: none;
+  background: transparent;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
 }
 
 .top-bar {
@@ -134,6 +128,7 @@ onBeforeUnmount(() => {
   align-items: center;
   padding: 16px 24px;
   border-bottom: 1px solid #ddd;
+  gap: 16px;
 }
 
 .logo {
@@ -158,8 +153,10 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   background: rgba(235, 247, 255, 0.8);
-  padding: 1rem 24px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
+  padding: 12px 24px;
+  box-shadow: 0 -3px 6px rgba(0, 0, 0, 0.12), 0 3px 6px rgba(0, 0, 0, 0.18);
+  position: relative;
+  z-index: 10;
 }
 
 .nav-links a {
@@ -181,7 +178,6 @@ onBeforeUnmount(() => {
   background-color: #a1d2ff;
 }
 
-/* 使用者下拉選單 */
 .user-menu {
   position: relative;
 }
@@ -189,7 +185,8 @@ onBeforeUnmount(() => {
 .user-btn {
   background: none;
   border: none;
-  font-size: 25px;
+  font-size: 16px;
+  padding: 6px 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -300,7 +297,6 @@ onBeforeUnmount(() => {
   font-weight: bold;
 }
 
-/* 手機版使用者選單 */
 .mobile-user-menu {
   position: absolute;
   right: 12px;
