@@ -103,7 +103,7 @@ const clearNote = (student) => {
 
 <style scoped>
 #search-bar {
-  width: 100%;
+  max-width: 100%;
 }
 
 #search-bar input{
