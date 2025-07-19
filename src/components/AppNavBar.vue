@@ -3,89 +3,134 @@ import { RouterLink } from 'vue-router'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import logo from '@/assets/logo.png'
 
+// 控制電腦版使用者選單顯示
 const showMenu = ref(false)
-const menuRef = ref(null) // 參考 user-menu 範圍
+// 控制手機版主選單顯示
+const showMobileMenu = ref(false)
+// 參考電腦版使用者選單 DOM 元素
+const menuRef = ref(null)
+// 控制手機版使用者選單顯示
+const showMobileUserMenu = ref(false)
 
+// 切換電腦版使用者選單
 function toggleMenu() {
   showMenu.value = !showMenu.value
 }
 
-// 點擊外部關閉選單
+// 切換手機版主選單
+function toggleMobileMenu() {
+  showMobileMenu.value = !showMobileMenu.value
+}
+
+// 切換手機版使用者選單
+function toggleMobileUserMenu() {
+  showMobileUserMenu.value = !showMobileUserMenu.value
+}
+
+// 點擊外部關閉電腦版使用者選單
 function handleClickOutside(event) {
   if (menuRef.value && !menuRef.value.contains(event.target)) {
     showMenu.value = false
   }
 }
 
+// 掛載全局點擊事件
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
 })
 
+// 卸載事件監聽器
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
-
 </script>
 
 <template>
   <header class="app-navbar">
-    <!-- Logo + 系統名稱 -->
-    <div class="top-bar">
-      <RouterLink to="/" class="logo-link">
-        <img class="logo" :src="logo" alt="Logo" />
-        <h1 class="system-title">系櫃借用系統</h1>
-      </RouterLink>
-    </div>
-
-    <!-- 導覽列 -->
-    <div class="nav-bar">
-      <nav class="nav-links">
-        <RouterLink to="/">首頁</RouterLink>
-        <RouterLink to="/apply">申請借用</RouterLink>
-        <RouterLink to="/record">申請紀錄</RouterLink>
-        <RouterLink to="/review">審核申請</RouterLink>
-        <RouterLink to="/setting">系統管理</RouterLink>
-      </nav>
-
-      <!-- User 下拉選單 -->
-      <div class="user-menu" ref="menuRef">
-        <button class="user-btn" @click.stop="toggleMenu">
-          u11316017
-          <span :class="['arrow', { 'arrow-up': showMenu }]">▼</span>
-        </button>
-        <div v-if="showMenu" class="dropdown">
-          <ul>
-            <li><a href="#">登出</a></li>
-          </ul>
+    <!-- 電腦版 Header -->
+    <div class="desktop-header">
+      <div class="top-bar">
+        <RouterLink to="/" class="logo-link">
+          <img class="logo" :src="logo" alt="Logo" />
+          <h1 class="system-title">系櫃借用系統</h1>
+        </RouterLink>
+      </div>
+      <div class="nav-bar">
+        <nav class="nav-links">
+          <RouterLink to="/">首頁</RouterLink>
+          <RouterLink to="/apply">申請借用</RouterLink>
+          <RouterLink to="/record">申請紀錄</RouterLink>
+          <RouterLink to="/review">審核申請</RouterLink>
+          <RouterLink to="/setting">系統管理</RouterLink>
+        </nav>
+        <div class="user-menu" ref="menuRef">
+          <button class="user-btn" @click.stop="toggleMenu">
+            u11316017
+            <span :class="['arrow', { 'arrow-up': showMenu }]">▼</span>
+          </button>
+          <div v-if="showMenu" class="dropdown">
+            <ul>
+              <li><a href="#">登出</a></li>
+            </ul>
+          </div>
         </div>
       </div>
+    </div>
+
+    <!-- 手機版 Header -->
+    <div class="mobile-header">
+      
+      <div class="mobile-top-bar">
+        <!-- 漢堡選單按鈕 -->
+        <button class="menu-toggle" @click.stop="toggleMobileMenu">☰</button>
+
+        <!-- Logo & 系統名稱 -->
+        <RouterLink to="/" class="mobile-logo-link">
+          <img class="mobile-logo" :src="logo" alt="Logo" />
+          <h1 class="mobile-system-title">系櫃借用系統</h1>
+        </RouterLink>
+
+        <!-- 手機版使用者圖示 -->
+        <div class="mobile-user-icon" @click.stop="toggleMobileUserMenu">👤</div>
+      </div>
+
+      <!-- 手機版主選單 -->
+      <div v-if="showMobileMenu" class="mobile-menu">
+        <RouterLink to="/" @click="toggleMobileMenu">首頁</RouterLink>
+        <RouterLink to="/apply" @click="toggleMobileMenu">申請借用</RouterLink>
+        <RouterLink to="/record" @click="toggleMobileMenu">申請紀錄</RouterLink>
+        <RouterLink to="/review" @click="toggleMobileMenu">審核申請</RouterLink>
+        <RouterLink to="/setting" @click="toggleMobileMenu">系統管理</RouterLink>
+      </div>
+
+      <!-- 手機版使用者選單 -->
+      <div v-if="showMobileUserMenu" class="mobile-user-menu">
+        <div class="user-name">u11316017</div>
+        <div class="logout"><a href="#">登出</a></div>
+      </div>
+
     </div>
   </header>
 </template>
 
-<style scoped>
-html, body {
-  margin: 0;
-  padding: 0;
-}
 
+<style scoped>
 .app-navbar {
   width: 100%;
-  background: transparent;
-  box-shadow: none;
   display: flex;
   flex-direction: column;
-  margin: 0;
-  padding: 0;
 }
 
-/* 第一層 */
+/* 電腦版樣式 */
+.desktop-header {
+  display: block;
+}
+
 .top-bar {
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 16px 24px;
-  gap: 16px;
   border-bottom: 1px solid #ddd;
 }
 
@@ -106,22 +151,17 @@ html, body {
   font-weight: bold;
 }
 
-/* 第二層 */
 .nav-bar {
-  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background: rgba(235, 247, 255, 0.8);
   padding: 12px 24px;
   box-shadow:
     0 -3px 6px rgba(0, 0, 0, 0.12),
     0 3px 6px rgba(0, 0, 0, 0.18);
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 10;
 }
 
-/* 導覽連結 */
 .nav-links a {
   text-decoration: none;
   color: #333;
@@ -139,7 +179,7 @@ html, body {
   background-color: #e6f3ff;
 }
 
-/* User 下拉選單 */
+/* 使用者下拉選單 */
 .user-menu {
   position: relative;
 }
@@ -148,14 +188,12 @@ html, body {
   background: none;
   border: none;
   font-size: 16px;
-  padding: 6px 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-/* 箭頭旋轉動畫 */
 .arrow {
   display: inline-block;
   transition: transform 0.3s ease;
@@ -172,7 +210,7 @@ html, body {
   background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 100%;
 }
 
@@ -191,5 +229,115 @@ html, body {
 
 .dropdown li a:hover {
   background-color: #f0f0f0;
+}
+
+/* 手機版樣式 */
+.mobile-header {
+  display: none;
+  position: relative;
+}
+
+.mobile-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #EFF9FF;
+  padding: 8px 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  height: 56px;
+}
+
+.menu-toggle {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.mobile-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.mobile-logo {
+  height: 36px;
+}
+
+.mobile-system-title {
+  font-size: 18px;
+  font-weight: bold;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.mobile-user-icon {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.mobile-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #EFF9FF;
+  padding: 12px;
+}
+
+.mobile-menu a {
+  padding: 10px 0;
+  text-decoration: none;
+  color: #333;
+}
+
+.mobile-menu a:hover {
+  font-weight: bold;
+}
+
+/* 手機版使用者選單 */
+.mobile-user-menu {
+  position: absolute;
+  right: 12px;
+  top: 56px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  width: 140px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-user-menu .user-name {
+  font-weight: bold;
+  text-align: center;
+  padding: 6px 0;
+}
+
+.mobile-user-menu .logout a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+  text-align: center;
+  padding: 6px 0;
+  border-radius: 4px;
+}
+
+.mobile-user-menu .logout a:hover {
+  background: #f0f0f0;
+}
+
+/* RWD切換 */
+@media (max-width: 768px) {
+  .desktop-header {
+    display: none;
+  }
+  .mobile-header {
+    display: block;
+  }
 }
 </style>
