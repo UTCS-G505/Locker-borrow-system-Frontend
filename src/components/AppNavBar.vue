@@ -220,7 +220,7 @@ onBeforeUnmount(() => {
 
 .dropdown ul {
   list-style: none;
-  margin: ;
+  margin: 0;
   padding: 0;
 }
 
