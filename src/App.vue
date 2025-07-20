@@ -6,7 +6,10 @@ import AppFooter from './components/AppFooter.vue'
 
 <template>
   <header>
-    <AppNavBar />
+    <nav>
+      <AppNavBar />
+    </nav>
+      <AppNavBar />
   </header>
 
   <main>
