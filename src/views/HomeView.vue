@@ -3,7 +3,5 @@
 </script>
 
 <template>
-  <main>
-    <h1>This is HomeView</h1>
-  </main>
+  <h1>This is HomeView</h1>
 </template>
