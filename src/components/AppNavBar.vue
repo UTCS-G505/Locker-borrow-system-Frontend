@@ -31,6 +31,8 @@ function toggleMobileUserMenu() {
 function handleClickOutside(event) {
   if (menuRef.value && !menuRef.value.contains(event.target)) {
     showMenu.value = false
+    showMobileMenu.value = false
+    showMobileUserMenu.value = false
   }
 }
 
