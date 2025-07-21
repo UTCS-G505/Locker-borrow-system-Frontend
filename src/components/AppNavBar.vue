@@ -162,6 +162,7 @@ onBeforeUnmount(() => {
   position: relative;
   z-index: 10;
 
+  padding: 1rem 24px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
 }
 
