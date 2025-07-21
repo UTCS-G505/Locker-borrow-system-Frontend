@@ -161,6 +161,8 @@ onBeforeUnmount(() => {
     0 3px 6px rgba(0, 0, 0, 0.18);
   position: relative;
   z-index: 10;
+
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
 }
 
 .nav-links a {
