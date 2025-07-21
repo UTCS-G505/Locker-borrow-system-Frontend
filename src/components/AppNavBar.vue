@@ -48,7 +48,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <header class="app-navbar">
+  <div class="app-navbar">
     <!-- 電腦版 Header -->
     <div class="desktop-header">
       <div class="top-bar">
@@ -105,7 +105,7 @@ onBeforeUnmount(() => {
         <div class="logout"><a href="#">登出</a></div>
       </div>
     </div>
-  </header>
+  </div>
 </template>
 
 <style scoped>
@@ -220,13 +220,14 @@ onBeforeUnmount(() => {
 
 .dropdown ul {
   list-style: none;
-  margin: 0;
+  margin: ;
   padding: 0;
 }
 
 .dropdown li a {
   display: block;
-  padding: 8px 12px;
+  padding: 14px 12px;
+  font-size: 20px;
   text-decoration: none;
   color: #333;
 }
