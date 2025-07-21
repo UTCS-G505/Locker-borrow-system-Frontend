@@ -125,7 +125,7 @@ onBeforeUnmount(() => {
 
 /* 電腦版樣式 */
 .desktop-header {
-  display: block;
+  display: none;
 }
 
 .top-bar {
@@ -233,7 +233,7 @@ onBeforeUnmount(() => {
 
 /* 手機版樣式 */
 .mobile-header {
-  display: none;
+  display: block;
   position: relative;
 }
 
@@ -332,12 +332,12 @@ onBeforeUnmount(() => {
 }
 
 /* RWD切換 */
-@media (max-width: 768px) {
+@media (min-width: 1024px) {
   .desktop-header {
-    display: none;
+    display: block;
   }
   .mobile-header {
-    display: block;
+    display: none;
   }
 }
 </style>
