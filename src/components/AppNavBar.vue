@@ -169,9 +169,9 @@ onBeforeUnmount(() => {
 .nav-links a {
   text-decoration: none;
   color: #333;
-  padding: 8px 12px;
+  padding: 12px 16px;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 25px;
 }
 
 .nav-links a.router-link-exact-active {
@@ -191,7 +191,7 @@ onBeforeUnmount(() => {
 .user-btn {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 25px;
   cursor: pointer;
   display: flex;
   align-items: center;
