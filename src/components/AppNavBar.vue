@@ -57,14 +57,14 @@ onBeforeUnmount(() => {
           <h1 class="system-title">系櫃借用系統</h1>
         </RouterLink>
       </div>
-      <div class="nav-bar">
-        <nav class="nav-links">
+      <nav class="nav-bar">
+        <div class="nav-links">
           <RouterLink to="/">首頁</RouterLink>
           <RouterLink to="/apply">申請借用</RouterLink>
           <RouterLink to="/record">申請紀錄</RouterLink>
           <RouterLink to="/review">審核申請</RouterLink>
           <RouterLink to="/setting">系統管理</RouterLink>
-        </nav>
+        </div>
         <div class="user-menu" ref="menuRef">
           <button class="user-btn" @click.stop="toggleMenu">
             u11316017
@@ -76,7 +76,7 @@ onBeforeUnmount(() => {
             </ul>
           </div>
         </div>
-      </div>
+      </nav>
     </div>
 
     <!-- 手機版 Header -->
