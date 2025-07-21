@@ -81,7 +81,7 @@ onBeforeUnmount(() => {
 
     <!-- 手機版 Header -->
     <div class="mobile-header">
-      
+
       <div class="mobile-top-bar">
         <!-- 漢堡選單按鈕 -->
         <button class="menu-toggle" @click.stop="toggleMobileMenu">☰</button>
@@ -216,13 +216,13 @@ onBeforeUnmount(() => {
 
 .dropdown ul {
   list-style: none;
-  margin: ;
+  margin: 0;
   padding: 0;
 }
 
 .dropdown li a {
   display: block;
-  padding: 14px 12px;
+  padding: 16px 12px;
   font-size: 20px;
   text-decoration: none;
   color: #333;
