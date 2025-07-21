@@ -287,6 +287,7 @@ onBeforeUnmount(() => {
 }
 
 .mobile-menu a {
+  font-size: 18px;
   padding: 10px 0;
   text-decoration: none;
   color: #333;
@@ -313,12 +314,14 @@ onBeforeUnmount(() => {
 }
 
 .mobile-user-menu .user-name {
+  font-size: 16px;
   font-weight: bold;
   text-align: center;
   padding: 6px 0;
 }
 
 .mobile-user-menu .logout a {
+  font-size: 16px;
   text-decoration: none;
   color: #333;
   display: block;
@@ -340,4 +343,33 @@ onBeforeUnmount(() => {
     display: none;
   }
 }
+
+/* 平板或大螢幕手機：增加 logo 和文字大小 */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .mobile-top-bar {
+    padding: 12px 20px; /* 增加 padding */
+  }
+
+  .mobile-system-title {
+    font-size: 26px; /* 原本是 18px，放大 */
+  }
+
+  .mobile-logo {
+    height: 48px; /* 原本是 36px，放大 */
+  }
+
+  .mobile-menu a {
+    font-size: 23px; /* 原本是 18px，放大 */
+  }
+
+  .mobile-user-menu .user-name {
+    font-size: 18px;
+  }
+
+  .mobile-user-menu .logout a {
+    font-size: 18px;
+  }
+}
 </style>
+
+
