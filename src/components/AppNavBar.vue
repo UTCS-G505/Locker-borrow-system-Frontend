@@ -360,7 +360,10 @@ onBeforeUnmount(() => {
   .mobile-system-title {
     font-size: 26px; /* 原本是 18px，放大 */
   }
+}
 
+/* 平板或大螢幕手機：增加 logo 和標題大小 */
+@media (min-width: 600px) and (max-width: 1023px) {
   .mobile-logo {
     height: 48px; /* 原本是 36px，放大 */
   }
@@ -375,7 +378,15 @@ onBeforeUnmount(() => {
 
   .mobile-user-menu .logout a {
     font-size: 18px;
+
+  .mobile-system-title {
+    font-size: 24px; /* 原本是 18px，放大 */
   }
+
+  .mobile-top-bar {
+    padding: 12px 20px; /* 增加 padding */
+  }
+}
 }
 </style>
 
