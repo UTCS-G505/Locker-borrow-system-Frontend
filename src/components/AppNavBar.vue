@@ -158,7 +158,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   background: rgba(235, 247, 255, 0.8);
-  padding: 12px 24px;
+  padding: 1rem 24px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
 }
 
