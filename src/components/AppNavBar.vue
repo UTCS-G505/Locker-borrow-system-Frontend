@@ -228,7 +228,7 @@ onBeforeUnmount(() => {
 
 .dropdown li a {
   display: block;
-  padding: 16px 12px;
+  padding: 14px 12px;
   font-size: 20px;
   text-decoration: none;
   color: #333;
