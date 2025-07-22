@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 
+// 為方便展示，在此data使用10筆寫死的模擬公告。未來將改為透過axios載入動態資料
 const data = [
   {
     "id": 1,
@@ -64,8 +65,10 @@ const data = [
   }
 ];
 
-const showAllAnnouncement = ref(false);
-const toggleShowAll = () => {
+// 此為boolean，true表示顯示全部、false表示只顯示部分(目前設定為4個)
+const showAllAnnouncement = ref(false); 
+// 此為供使用者切換「公告」顯示模式的funciton
+const toggleShowAll = () => { 
   showAllAnnouncement.value = !showAllAnnouncement.value;
 }
 </script>
