@@ -13,10 +13,8 @@ const close = () => {
 </script>
 
 <template>
-  <!-- 按鈕本體（元件自己帶） -->
   <button class="trigger" @click="open">模擬申請失敗</button>
 
-  <!-- 彈窗 -->
   <div v-if="showDialog" class="overlay" @click.self="close">
     <div class="dialog">
       <div class="dialog-header">
@@ -54,7 +52,7 @@ const close = () => {
 
 .dialog {
   width: 40%;
-  height : 30%;
+  height: 30%;
   background: #f6f7f9f2;
   border-radius: 16px;
   box-shadow:
@@ -63,7 +61,7 @@ const close = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;  
+  overflow: hidden;
 }
 
 .dialog-header {
@@ -78,11 +76,11 @@ const close = () => {
 .title {
   font-size: 2.5rem;
   font-weight: 450;
-  color: #000000ff;  
+  color: #000000ff;
   margin: 0;
 }
 
-.divider{
+.divider {
   width: 100%;
   border: none;
   border-top: 1px solid #ccc;
@@ -90,10 +88,15 @@ const close = () => {
 }
 
 .message {
-  margin: 1px ;
-  font-size: 2rem;
-  color: #000000ff;  
-  text-align: center;
+  flex: 1;
+  display: flex;  
+  justify-content: center;
   align-items: center;
+  font-size: 2rem;
+  color: #000000ff;
+  text-align: center;
+  width: 100%;
+  margin: 0;
 }
 </style>
+w
