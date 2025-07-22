@@ -19,25 +19,27 @@ const close = () => {
   <!-- 彈窗 -->
   <div v-if="showDialog" class="overlay" @click.self="close">
     <div class="dialog">
-      <h2 class="title">申請失敗</h2>
-      <p class="message">您的申請未能通過，請稍後再試。</p>
-      <button class="confirm" @click="close">確定</button>
+      <div class="dialog-header">
+        <h1 class="title">申請失敗</h1>
+      </div>
+      <hr class="divider" />
+      <p class="message">您的申請未能通過。</p>
     </div>
   </div>
 </template>
 
 <style scoped>
 .trigger {
-  background: #8b2729;
+  background: rgb(42, 0, 1);
   color: #fff;
   border: none;
-  padding: 6px 16px;
-  border-radius: 6px;
+  padding: 0.8rem 2rem;
+  border-radius: 0.2rem;
   cursor: pointer;
   transition: background 0.2s;
 }
 .trigger:hover {
-  background: #d9363e;
+  background: #016bff;
 }
 
 .overlay {
@@ -51,45 +53,47 @@ const close = () => {
 }
 
 .dialog {
-  width: 340px;
-  height: 159px;
-  background: rgba(246, 247, 249, 0.95);
+  width: 40%;
+  height : 30%;
+  background: #f6f7f9f2;
   border-radius: 16px;
   box-shadow:
     2px 4px 4px rgba(0, 0, 0, 0.35),
     -1.5px -0.5px 4px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
+  align-items: center;
+  overflow: hidden;  
+}
+
+.dialog-header {
+  width: 100%;
+  background: #EFF9FFCC;
+  padding: 10px 0;
+  display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
+  font-size: 2.5rem;
+  font-weight: 450;
+  color: #000000ff;  
+  margin: 0;
+}
+
+.divider{
+  width: 100%;
+  border: none;
+  border-top: 1px solid #ccc;
   margin: 0;
 }
 
 .message {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #666;
+  margin: 1px ;
+  font-size: 2rem;
+  color: #000000ff;  
   text-align: center;
-}
-
-.confirm {
-  margin-top: 16px;
-  background: #ff4d4f;
-  color: #fff;
-  border: none;
-  padding: 6px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.confirm:hover {
-  background: #d9363e;
+  align-items: center;
 }
 </style>
-
