@@ -97,7 +97,7 @@ const toggleShowAll = () => {
 
     <section class="rule-section">
       <h1 class="section-title">借用規則</h1>
-      <ul class="rules-list">
+      <ol class="rules-list">
         <li>每位學生每學期限借用一格系櫃，不得重複申請或轉借他人。</li>
         <li>系櫃借用期間為當學期第 1 週起至期末考週結束，請依公告時間準時清空。</li>
         <li>使用期間內須妥善保管櫃內物品，學校不負遺失或損壞之責任。</li>
@@ -105,7 +105,7 @@ const toggleShowAll = () => {
         <li>系櫃鑰匙（或密碼）遺失須立即通報系辦，補發鑰匙需自費。</li>
         <li>借用期滿未清空者，系辦有權代為清除，且不負保管責任。</li>
         <li>有違規紀錄者，將列入黑名單並停止下一學期借用資格。</li>
-      </ul>
+      </ol>
     </section>
   </div>
 </template>
@@ -197,8 +197,8 @@ const toggleShowAll = () => {
   flex-direction: column;
   border: 1px solid #DFE1E6;
   border-radius: 0.75rem;
-  list-style-type: decimal;
-  padding: 0.5rem 0.5rem 0.5rem 2rem;
+  padding: 1rem;
+  list-style-position: inside;
   font-size: 1rem;
   line-height: 1.75rem;
 }
