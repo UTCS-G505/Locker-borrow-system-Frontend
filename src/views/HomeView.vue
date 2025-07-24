@@ -76,7 +76,7 @@ const toggleShowAll = () => {
 <template>
   <div class="container">
     <section class="announcement-section">
-      <h3 class="section-title">公告</h3>
+      <h1 class="section-title">公告</h1>
       <div class="announcement-box">
         <div
           v-for="item in data.slice(0, showAllAnnouncement ? data.length : 4)"
@@ -96,7 +96,7 @@ const toggleShowAll = () => {
     </section>
 
     <section class="rule-section">
-      <h3 class="section-title">借用規則</h3>
+      <h1 class="section-title">借用規則</h1>
       <ul class="rules-list">
         <li>每位學生每學期限借用一格系櫃，不得重複申請或轉借他人。</li>
         <li>系櫃借用期間為當學期第 1 週起至期末考週結束，請依公告時間準時清空。</li>
