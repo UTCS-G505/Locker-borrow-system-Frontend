@@ -173,12 +173,12 @@ onBeforeUnmount(() => {
 }
 
 .nav-links a.router-link-exact-active {
-  background-color: #d6ecff;
+  background-color: #a1d2ff ;
   font-weight: bold;
 }
 
 .nav-links a:hover {
-  background-color: #e6f3ff;
+  background-color: #a1d2ff;
 }
 
 /* 使用者下拉選單 */
