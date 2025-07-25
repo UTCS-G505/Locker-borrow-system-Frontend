@@ -166,6 +166,8 @@ onBeforeUnmount(() => {
   text-decoration: none;
   color: #333;
   padding: 12px 16px;
+  margin-left: 1rem;
+  margin-right: 1rem;
   border-radius: 4px;
   font-size: 25px;
 }
