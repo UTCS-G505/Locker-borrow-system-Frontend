@@ -6,11 +6,9 @@ import AppFooter from './components/AppFooter.vue'
 
 <template>
   <header>
-    <nav>
-      <AppNavBar />
-    </nav>
+    <AppNavBar />
   </header>
-  
+
   <main>
     <RouterView />
   </main>
@@ -23,15 +21,9 @@ import AppFooter from './components/AppFooter.vue'
 <style scoped>
 header {
   line-height: 1.5;
-  min-height: 10vh;
   max-height: 100vh;
   margin: 0 auto;
-  padding: 2rem;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+  padding: 0;
 }
 
 nav {
