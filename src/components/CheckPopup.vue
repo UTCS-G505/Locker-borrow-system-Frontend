@@ -19,7 +19,7 @@ const close = () => {
             <h1 class="value">是否確認執行此操作？</h1>
             <!-- 確認、返回按鈕 -->
             <div class="button-group">
-              <button class="button-confirm"@click.self="close">確認</button>
+              <button class="button-confirm" @click.self="close">確認</button>
               <button class="button-cancel" @click.self="close">返回</button>
             </div>
         </div>
