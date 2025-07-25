@@ -27,11 +27,12 @@ const close = () => {
 </template>
 
 <style scoped>
-.trigger {
-  background: rgb(42, 0, 1);
-  color: #fff;
+.trigger { 
+  font-size:1.2rem;
+  background: rgb(150, 183, 244);
+  color: #000000;
   border: none;
-  padding: 0.8rem 2rem;
+  padding: 0.6rem 1.8rem;
   border-radius: 0.2rem;
   cursor: pointer;
   transition: background 0.2s;
@@ -99,4 +100,3 @@ const close = () => {
   margin: 0;
 }
 </style>
-w
