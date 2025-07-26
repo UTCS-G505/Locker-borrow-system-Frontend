@@ -1,7 +1,7 @@
 <script setup>
 import { defineEmits } from 'vue'
 
-const props = defineProps({
+defineProps({
   announcement: Object,
 })
 
@@ -94,7 +94,7 @@ button:active {
   transform: scale(0.98);         /* 按下時微微縮小 */
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .modal h2 {
     font-size: 2rem;
   }
