@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import ModalAnnouncement from '@/components/ModalAnnouncement.vue';
 
 // 為方便展示，在此data使用10筆寫死的模擬公告。未來將改為透過axios載入動態資料
 const data = [
@@ -67,6 +68,10 @@ const data = [
 
 // 此為boolean，true表示顯示全部、false表示只顯示部分(目前設定為4個)
 const showAllAnnouncement = ref(false); 
+
+// 目前被點擊的公告(物件)
+const selectedAnnouncement = ref(null) 
+
 // 此為供使用者切換「公告」顯示模式的funciton
 const toggleShowAll = () => { 
   showAllAnnouncement.value = !showAllAnnouncement.value;
@@ -74,6 +79,7 @@ const toggleShowAll = () => {
 </script>
 
 <template>
+  <ModalAnnouncement :announcement="selectedAnnouncement" v-if="selectedAnnouncement!=null" @close="selectedAnnouncement = null"/>
   <div class="container">
     <section class="announcement-section">
       <h1 class="section-title">公告</h1>
@@ -84,10 +90,9 @@ const toggleShowAll = () => {
           class="announcement-item"
         >
           <div class="announcement-header">
-            <h3 class="announcement-title">• {{ item.title }}</h3>
             <p class="announcement-date">{{ item.date }}</p>
+            <h3 class="announcement-title" @click="selectedAnnouncement = item">{{ item.title }}</h3>
           </div>
-          <p class="announcement-content">{{ item.content }}</p>
         </div>
         <button @click="toggleShowAll" class="toggle-button">
           {{ showAllAnnouncement ? '顯示較少' : '顯示全部公告' }}
@@ -143,19 +148,26 @@ const toggleShowAll = () => {
 }
 
 .announcement-item {
-  width: 100%;
+  display: flex;
 }
 
 .announcement-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
+  gap: 2rem;
 }
 
 .announcement-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #1F2937; /* gray-800 */
+  cursor: pointer; /* 游標變成手指 */
+  color: #1F2937; /* 保持原本顏色 */
+  text-decoration: none; /* 預設無底線 */
+  transition: color 0.2s ease; /* 滑過時平滑變化 */
+}
+
+.announcement-title:hover {
+  text-decoration: underline; /* 加上底線 */
 }
 
 @media (min-width: 640px) {
@@ -169,16 +181,6 @@ const toggleShowAll = () => {
   color: #6B7280; /* gray-500 */
 }
 
-.announcement-content {
-  font-size: 0.875rem;
-  color: #4B5563; /* gray-600 */
-}
-
-@media (min-width: 640px) {
-  .announcement-content {
-    font-size: 1.125rem;
-  }
-}
 
 .toggle-button {
   font-size: 0.875rem;
@@ -201,6 +203,7 @@ const toggleShowAll = () => {
   list-style-position: inside;
   font-size: 1rem;
   line-height: 1.75rem;
+  gap: 0.5rem;
 }
 
 @media (min-width: 640px) {
