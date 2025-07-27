@@ -36,7 +36,7 @@ function toggleReturn(id){
             </thead>
             <tbody>
                 <!--用item.id(唯一值)比較安全，index可能因為資料排序而有變動-->
-                <tr v-for="(item,index) in props.records" :key="item.id">
+                <tr v-for="item in props.records" :key="item.id">
                     <td>{{item.name}}</td>
                     <td>{{item.type}}</td>
                     <td>{{item.start_time}}</td>
