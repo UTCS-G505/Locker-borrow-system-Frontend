@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import ModalAnnouncement from '@/components/ModalAnnouncement.vue';
 
 // 為方便展示，在此data使用10筆寫死的模擬公告。未來將改為透過axios載入動態資料
@@ -76,6 +76,11 @@ const selectedAnnouncement = ref(null)
 const toggleShowAll = () => { 
   showAllAnnouncement.value = !showAllAnnouncement.value;
 }
+
+// **監聽 Modal 開啟/關閉，鎖住背景滾動**
+watch(selectedAnnouncement, (val) => {
+  document.body.style.overflow = val ? 'hidden' : '';
+});
 </script>
 
 <template>
@@ -154,7 +159,7 @@ const toggleShowAll = () => {
 .announcement-header {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 0.5rem;
 }
 
 .announcement-title {
@@ -209,6 +214,9 @@ const toggleShowAll = () => {
 @media (min-width: 640px) {
   .rules-list {
     font-size: 1.125rem;
+  }
+  .announcement-header {
+    gap: 2rem;
   }
 }
 </style>

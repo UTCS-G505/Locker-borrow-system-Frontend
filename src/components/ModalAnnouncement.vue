@@ -1,6 +1,4 @@
 <script setup>
-import { defineEmits } from 'vue'
-
 defineProps({
   announcement: Object,
 })
@@ -13,7 +11,9 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
     <div class="modal" @click.stop>
       <h2>{{ announcement.title }}</h2>
       <p class="date-text">發布日期：{{ announcement.date }}</p>
-      <p class="content-text">{{ announcement.content }}</p>
+      <div class="content-container">
+        <p class="content-text">{{ announcement.content }}</p>
+      </div>
       <button @click="emit('close')">關閉</button>
     </div>
   </div>
@@ -61,6 +61,13 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   display: block;
+}
+
+.content-container {
+  max-height: 60vh;      /* 內容區塊最大高度 */
+  overflow-y: auto;      /* 出現垂直捲軸 */
+  margin-bottom: 2rem;
+  width: 100%;           /* 讓捲動區塊佔滿寬度 */
 }
 
 /* 內容字體黑色，比日期稍大 */
