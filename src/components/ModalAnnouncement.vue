@@ -9,7 +9,9 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
 <template>
   <div v-if="announcement != null" class="modal-backdrop" @click="emit('close')">
     <div class="modal" @click.stop>
-      <h2>{{ announcement.title }}</h2>
+      <div class="modal-header">
+        <h2>{{ announcement.title }}</h2>
+      </div>
       <p class="date-text">發布日期：{{ announcement.date }}</p>
       <div class="content-container">
         <p class="content-text">{{ announcement.content }}</p>
@@ -35,7 +37,7 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
 
 .modal {
   background: white;
-  padding: 1.5rem;
+  padding-bottom: 1rem;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
   max-width: 700px;          /* 原本 400px，擴大寬度 */
@@ -46,11 +48,19 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
   align-items: center;
 }
 
+.modal-header {
+  text-align: center;
+  padding: 1rem;
+  width: 100%;  /* 讓 header 撐滿 */
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  background-color: rgba(235, 247, 255, 0.8);
+}
+
 /* 標題字體大一點，視覺醒目 */
 .modal h2 {
   font-weight: bold;
   font-size: 1.25rem;
-  margin-bottom: 1rem;
 }
 
 /* 日期靠左，小灰字 */
@@ -64,9 +74,9 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
 }
 
 .content-container {
+  padding: 1rem;
   max-height: 60vh;      /* 內容區塊最大高度 */
   overflow-y: auto;      /* 出現垂直捲軸 */
-  margin-bottom: 2rem;
   width: 100%;           /* 讓捲動區塊佔滿寬度 */
 }
 
@@ -84,6 +94,7 @@ button {
   background-color: #a1d2ff;      
   color: white;                   /* 白色文字 */
   padding: 0.6rem 1.2rem;
+  margin-top: 0.5rem;
   font-size: 1rem;
   border: none;
   border-radius: 8px;
