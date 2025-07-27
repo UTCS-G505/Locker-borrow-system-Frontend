@@ -1,17 +1,25 @@
 <script setup>
-/* 
-    下面有個"empty-row" 作用是第三筆資料輸出後，下面留的空白處；
-    而" colspan="8" "作用是要橫跨 8 欄位的寬度
-*/
-const record = [
-    {name:'陳胤華', type:'學年借用', start_time:'2024/9/1', end_time:'2025/6/30', num:'39', state:'審核中'},
-    {name:'陳胤華', type:'學年借用', start_time:'2024/9/1', end_time:'2025/6/30', num:'39', state:'駁回'},
-    {name:'陳胤華', type:'臨時借用', start_time:'2024/9/1', end_time:'2025/6/30', num:'39', state:'借用中'}
-]
+
+/* 子元件用props接收父元件傳來的record資料，它是個Array*/
+const props = defineProps({
+    records: Array
+})
+
+/* 讓子元件可以合法發出事件(沒有這行可能會出錯) */
+const emit = defineEmits(['cancel','return'])
+
+function cancel(id){
+    emit('cancel',id)
+}
+
+function toggleReturn(id){
+    emit('return',id)
+}
+
 </script>
 
 <template>
-    <div class="all_table">
+    <div class="all_table"> 
         <div class="inside_table">
         <table>
             <thead class="head">
@@ -27,7 +35,8 @@ const record = [
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item,index) in record" :key="index">
+                <!--用item.id(唯一值)比較安全，index可能因為資料排序而有變動-->
+                <tr v-for="(item,index) in props.records" :key="item.id">
                     <td>{{item.name}}</td>
                     <td>{{item.type}}</td>
                     <td>{{item.start_time}}</td>
@@ -38,12 +47,14 @@ const record = [
                     </td>
                     <td>{{item.state}}</td>
                     <td>
-                        <button v-if="index == 0" class="operate_button">取消申請</button> 
-                        <button v-else-if="index == 2" class="operate_button">歸還</button>
+                        <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operate_button">取消申請</button> 
+                        <button v-else-if="item.state === '借用中' || item.state === '歸還中' " @click="toggleReturn(item.id)" class="operate_button">
+                            {{item.state === '借用中'?'歸還':'取消歸還'}}
+                        </button>
                     </td>
                 </tr>
-                <tr class="empty-row">
-                    <td colspan="8"></td>
+                <tr class="empty-row"> <!-- "empty-row" 作用是第三筆資料輸出後，下面留的空白處-->
+                    <td colspan="8"></td> <!-- " colspan="8" "作用是要橫跨8個欄位的寬度-->
                 </tr>
             </tbody>
         </table>
@@ -113,6 +124,7 @@ td,th{
     background-color: #ECE8E8;
     border-radius: 10px;
     padding: 2px 8px;
+    cursor: pointer;
 }
 
 .empty-row td {
