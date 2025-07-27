@@ -29,16 +29,16 @@ const close = () => {
 <style scoped>
 .trigger { 
   font-size:1.2rem;
-  background: rgb(150, 183, 244);
+  background: rgb(150, 183, 244); /* 淺藍色 */
   color: #000000;
   border: none;
-  padding: 0.6rem 1.8rem;
+  padding: 0.6rem 1.8rem; /* 本來是0.8rem 2.0rem */
   border-radius: 0.2rem;
   cursor: pointer;
   transition: background 0.2s;
 }
-.trigger:hover {
-  background: #016bff;
+.trigger:hover { 
+  background: #016bff;  /* 深藍色 */
 }
 
 .overlay {
