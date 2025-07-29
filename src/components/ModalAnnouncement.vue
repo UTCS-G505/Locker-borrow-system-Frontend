@@ -36,9 +36,9 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
 }
 
 .modal {
-  background: white;
+  background: #FAFAFBF2;
   padding-bottom: 1rem;
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
   max-width: 700px;          /* 原本 400px，擴大寬度 */
   width: 80%;                /* 讓它在小螢幕也自適應 */
@@ -54,7 +54,7 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
   width: 100%;  /* 讓 header 撐滿 */
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
-  background-color: rgba(235, 247, 255, 0.8);
+  background-color: rgba(235, 247, 255, 1);
   box-shadow: 0 2px 2px 0 #DFE1E6;
 }
 
@@ -94,8 +94,8 @@ button {
   background-color: #FFF;
   border: 2px solid #DFE1E6;
   border-radius: 10px;
-  padding: 0 1.5rem;
-  font-size: 20px;
+  padding: 0.3rem 1.5rem;
+  font-size: 1rem;
 }
 
 button:hover {
@@ -111,6 +111,9 @@ button:hover {
   }
   .content-text {
     font-size: 1.75rem;
+  }
+  button {
+    font-size: 1.25rem;
   }
 }
 </style>
