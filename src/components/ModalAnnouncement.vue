@@ -55,6 +55,7 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
   background-color: rgba(235, 247, 255, 0.8);
+  box-shadow: 0 2px 2px 0 #DFE1E6;
 }
 
 /* 標題字體大一點，視覺醒目 */
@@ -90,26 +91,15 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
 }
 
 button {
-  display: flex;
-  background-color: #a1d2ff;      
-  color: white;                   /* 白色文字 */
-  padding: 0.6rem 1.2rem;
-  margin-top: 0.5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;      /* 動畫過渡效果 */
+  background-color: #FFF;
+  border: 2px solid #DFE1E6;
+  border-radius: 10px;
+  padding: 0 1.5rem;
+  font-size: 20px;
 }
 
 button:hover {
-  background-color: #7bb8ff;      /* 滑鼠移過去顏色稍微變深 */
-  transform: scale(1.05);         /* 微微放大 */
-}
-
-button:active {
-  background-color: #4d9fff;      /* 按下去顏色更深 */
-  transform: scale(0.98);         /* 按下時微微縮小 */
+  background-color: #DFE1E6;
 }
 
 @media (min-width: 640px) {
