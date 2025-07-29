@@ -51,7 +51,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 
-const props = defineProps({
+defineProps({
   modelValue: {
     type: String,
     default: '學年借用'
