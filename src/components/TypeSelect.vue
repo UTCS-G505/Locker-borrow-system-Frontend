@@ -1,7 +1,10 @@
 <template>
   <div class="type-select-wrapper">
-    <!-- 左：選擇類型按鈕 -->
-    <button @click="toggleDropdown" class="view-button">{{ modelValue }}</button>
+    <!-- 選擇類型按鈕 -->
+    <button @click="toggleDropdown" class="view-button">
+      {{ modelValue }}
+      <span class="dropdown-arrow">▾</span>
+    </button>
 
     <!-- 下拉選單 -->
     <div v-if="showDropdown" class="dropdown-menu">
@@ -177,6 +180,12 @@ function selectType(type) {
 
 .dropdown-item:hover {
   background-color: #f0f0f0;
+}
+
+.dropdown-arrow {
+  margin-left: 8px;
+  font-size: 20px;
+  pointer-events: none;
 }
 
 .time-picker-container {

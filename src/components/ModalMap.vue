@@ -98,8 +98,8 @@
   /* 等比例區塊定位（百分比） */
   .year1 { top: 40%; left: 6.6%; width: 20%; height: 25%; }
   .year2 { top: 15%; left: 6.6%; width: 20%; height: 25%; }
-  .year3 { top: 15%; left: 45%; width: 25%; height: 20%; }
-  .year4 { top: 15%; left: 70%; width: 25%; height: 20%; }
+  .year3 { top: 30%; left: 60%; width: 30%; height: 15%; }
+  .year4 { top: 13%; left: 60%; width: 30%; height: 15%; }
   .stairs { top: 70%; left: 6.6%; width: 20%; height: 25%; }
   .classroom { top: 62%; left: 45%; width: 20%; height: 33.3%; }
   .toilet { top: 62%; left: 65%; width: 30%; height: 33.3%; }
