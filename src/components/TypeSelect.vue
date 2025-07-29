@@ -51,13 +51,6 @@
 <script setup>
   import { ref, watch, computed } from 'vue'
 
-  const props = defineProps({
-    modelValue: {
-      type: String,
-      default: '學年借用'
-    }
-  })
-
   const emit = defineEmits(['update:modelValue', 'update:timeRange'])
 
   const typeOptions = ['學年借用', '臨時借用']
