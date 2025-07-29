@@ -8,6 +8,12 @@ const initialStartDate = ref(startDate);
 const initialEndDate = ref(endDate);
 
 const updateSemesterInterval = () => {
+  const start = document.getElementById('start').value;
+  const end = document.getElementById('end').value;
+  if(end <= start){
+    // TODO: alert popup, message:"學年結束時間應晚於學年起始時間"
+    return;
+  }
 };
 
 const handleBorrowHistory = () => {
