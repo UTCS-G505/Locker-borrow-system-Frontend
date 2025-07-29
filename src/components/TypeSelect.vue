@@ -40,9 +40,29 @@
       </template>
 
       <template v-else-if="modelValue === '學年借用'">
-        <label>起始時間： 2025-09-01 </label>
-        <label>結束時間： 2026-06-30 </label>
-      </template>
+      <div class="time-input-now">
+        <span class="label-text">起始時間：</span>
+        <input 
+          type="date" 
+          v-model="startDate"
+          :min="today"
+          class="time-input"
+          disabled
+        />
+      </div>
+
+      <div class="time-input-now">
+        <span class="label-text">結束時間：</span>
+        <input 
+          type="date"
+          v-model="endDate" 
+          :min="endMinDate"
+          class="time-input"
+          disabled
+        />
+      </div>
+    </template>
+
     </div>
   </div>
 </template>
@@ -87,9 +107,13 @@ function selectType(type) {
   showDropdown.value = false
 
   if (type === '學年借用') {
-    startDate.value = ''
-    endDate.value = ''
-    emit('update:timeRange', null) // 清除臨時借用區間
+    startDate.value = '2025-09-01'
+    endDate.value = '2026-06-30'
+
+    emit('update:timeRange', {
+      start: startDate.value,
+      end: endDate.value,
+    })
 
   } else if (type === '臨時借用') {
     // 預設起始、結束時間為隔天（可調整）
