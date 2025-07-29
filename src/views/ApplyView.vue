@@ -49,7 +49,7 @@
       :locker="selectedLocker"
       :borrowType="selectedType"
       :timeRange="timeRange"
-      @close="closeConfirmModal"
+      @close="showConfirmModal = false"
       @confirm="handleConfirmBorrow"
     />
   </div>

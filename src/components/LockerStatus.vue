@@ -35,6 +35,7 @@
 </script>
 
 <style scoped>
+  /*櫃子外面的框，框的大小固定*/
   .container {
     overflow-x: auto;
     max-width:100%;
@@ -50,6 +51,7 @@
     justify-content: center;
   }
 
+  /*排列櫃子，四個櫃子一個column*/
   .locker-grid {
     display: grid;
     justify-content: space-between;
@@ -59,6 +61,7 @@
     min-width: 600px;
   }
 
+  /*單一櫃子*/
   .locker {
     box-sizing: border-box;
     width: 100%;
