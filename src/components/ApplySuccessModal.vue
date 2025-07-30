@@ -14,7 +14,10 @@
         <p>申請類型：學期借用</p>
         <p>起迄時間：2025/3/29 ~ 2025/12/6</p>
         <p>系櫃號碼：<span class="locker-number">93</span></p>
+<<<<<<< HEAD
         <p>借用理由：</p>
+=======
+>>>>>>> b7c4a02 (把code review提到的所有問題進行修正)
       </div>
     </div>
   </div>
@@ -46,7 +49,11 @@ defineEmits(['update:modelValue']);
 /* Modal 外框容器 */
 .modal {
   position: absolute;
+<<<<<<< HEAD
   top: 260px;
+=======
+  top: 64px;
+>>>>>>> b7c4a02 (把code review提到的所有問題進行修正)
   left: 50%;
   transform: translateX(-50%);
   width: 90%;
@@ -81,7 +88,10 @@ defineEmits(['update:modelValue']);
   font-weight: 500;
   color: #222;
   line-height: 1.6;
+<<<<<<< HEAD
   text-align: left;
+=======
+>>>>>>> b7c4a02 (把code review提到的所有問題進行修正)
 }
 
 /* Modal 標題文字樣式 */
@@ -91,6 +101,7 @@ defineEmits(['update:modelValue']);
   margin-bottom: 0;
 }
 
+<<<<<<< HEAD
 /* 關閉按鈕 */
 .close-btn {
   margin-top: 15px;
@@ -102,6 +113,8 @@ defineEmits(['update:modelValue']);
   cursor: pointer;
 }
 
+=======
+>>>>>>> b7c4a02 (把code review提到的所有問題進行修正)
 /* 桌機版調整位置 */
 @media (min-width: 1024px) {
   .modal {
