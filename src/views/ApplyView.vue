@@ -98,10 +98,33 @@
   watch(selectedGrade, (newGrade) => {
     lockers.value = generateLockersByGrade(newGrade)
   })
+
   function generateLockersByGrade(grade) {
-    const base = { '一年級': 1, '二年級': 26, '三年級': 51, '四年級': 76 }[grade] || 1
-    return Array.from({ length: 25 }, (_, i) => {
-      const id = base + i
+    let lockers = []
+
+    if (grade === '一年級') {
+      lockers = generateLockerRange(1, 25)
+    } else if (grade === '二年級') {
+      lockers = generateLockerRange(26, 25)
+    } else if (grade === '三年級') {
+      
+      // 加兩個空白（用 null 或自訂字段）
+      lockers.push(null)
+      lockers.push(null)
+      // 再加特殊 2 個
+      lockers = lockers.concat(generateLockerRange(75, 2))
+      // 加正常 24 個
+      lockers = lockers.concat(generateLockerRange(51, 24))
+    } else if (grade === '四年級') {
+      lockers = generateLockerRange(77, 24)
+    }
+
+    return lockers
+  }
+
+  function generateLockerRange(startId, count) {
+    return Array.from({ length: count }, (_, i) => {
+      const id = startId + i
       return {
         id,
         name: `${id}`,
@@ -110,6 +133,11 @@
       }
     })
   }
+
+
+
+
+
 </script>
 
 <style scoped>

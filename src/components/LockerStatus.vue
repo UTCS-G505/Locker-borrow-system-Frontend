@@ -3,26 +3,30 @@
   <div class="container">
     <div class="locker-grid">
       <div
-        v-for="locker in lockers"
-        :key="locker.id"
+        v-for="(locker, index) in lockers"
+        :key="locker?.id || 'empty-' + index"
         class="locker"
         :class="{
-          borrowed: locker.isBorrowed,
-          reviewed: locker.isReviewed,
-          selectable: !locker.isBorrowed && !locker.isReviewed,
-          hovered: hoverId === locker.id && !locker.isBorrowed &&!locker.isReviewed,
+          borrowed: locker?.isBorrowed,
+          reviewed: locker?.isReviewed,
+          selectable: locker && !locker.isBorrowed && !locker.isReviewed,
+          hovered: locker && hoverId === locker.id && !locker.isBorrowed && !locker.isReviewed,
+          empty: !locker,
         }"
-        @mouseenter="hoverId = locker.id"
+        @mouseenter="locker && (hoverId = locker.id)"
         @mouseleave="hoverId = null"
-        @click="!locker.isBorrowed &&!locker.isReviewed && $emit('select', locker)"
+        @click="locker && !locker.isBorrowed && !locker.isReviewed && $emit('select', locker)"
       >
-        <div class="locker-content">
-          <div class="locker-name">{{ locker.name }}</div>
-          <div v-if="locker.isBorrowed" class="locker-code">
-            {{ locker.code || '********' }}
+        <template v-if="locker">
+          <div class="locker-content">
+            <div class="locker-name">{{ locker.name }}</div>
+            <div v-if="locker.isBorrowed" class="locker-code">
+              {{ locker.code || 'U11316017' }}
+            </div>
           </div>
-        </div>
+        </template>
       </div>
+
     </div>
   </div>
 </template>
@@ -92,6 +96,11 @@
     width: 100%;
     height: 100%;
   }
+
+  .locker.empty {
+    visibility: hidden;
+  }
+
 
 
   /* 中間顯示 locker.code（限已借用） */
