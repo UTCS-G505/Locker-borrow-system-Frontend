@@ -14,7 +14,6 @@
         <p>申請類型：學期借用</p>
         <p>起迄時間：2025/3/29 ~ 2025/12/6</p>
         <p>系櫃號碼：<span class="locker-number">93</span></p>
-        <p>借用理由：</p>
       </div>
     </div>
   </div>
@@ -81,7 +80,6 @@ defineEmits(['update:modelValue']);
   font-weight: 500;
   color: #222;
   line-height: 1.6;
-  text-align: left;
 }
 
 /* Modal 標題文字樣式 */
