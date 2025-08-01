@@ -96,6 +96,7 @@ watch(selectedAnnouncement, (val) => {
         >
           <div class="announcement-header">
             <p class="announcement-date">{{ item.date }}</p>
+            <span class="divider"></span>
             <h3 class="announcement-title" @click="selectedAnnouncement = item">{{ item.title }}</h3>
           </div>
         </div>
@@ -159,7 +160,15 @@ watch(selectedAnnouncement, (val) => {
 .announcement-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
+}
+
+.divider {
+  width: 0.05rem;
+  height: 80%;
+  border-radius: 25%;
+  background-color: #6B7280;     /* gray-500 */
+  margin: auto 0;
 }
 
 .announcement-title {
@@ -216,7 +225,11 @@ watch(selectedAnnouncement, (val) => {
     font-size: 1.125rem;
   }
   .announcement-header {
-    gap: 2rem;
+    gap: 0.75rem;
+  }
+
+  .divider {
+    width: 0.1rem;
   }
 }
 </style>
