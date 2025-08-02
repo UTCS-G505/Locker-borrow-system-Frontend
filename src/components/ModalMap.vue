@@ -9,10 +9,10 @@
       </div>
 
       <div class="floor-plan">
-        <div class="area-locker year1" @click="select('一年級')">大一</div>
-        <div class="area-locker year2" @click="select('二年級')">大二</div>
-        <div class="area-locker year3" @click="select('三年級')">大三</div>
-        <div class="area-locker year4" @click="select('四年級')">大四</div>
+        <div class="area-locker year1" @click="select('一年級')">一年級</div>
+        <div class="area-locker year2" @click="select('二年級')">二年級</div>
+        <div class="area-locker year3" @click="select('三年級')">三年級</div>
+        <div class="area-locker year4" @click="select('四年級')">四年級</div>
         <div class="area stairs">樓梯間</div>
         <div class="area toilet">廁所</div>
         <div class="area classroom">G314</div>
