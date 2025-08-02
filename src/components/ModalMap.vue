@@ -1,5 +1,6 @@
 <template>
   <div class="modal-overlay" @click.self="$emit('close')">
+    <!-- 位置圖 -->
     <div class="modal-content" @click.stop>
       <div class="modal-color-bar">
         <div class="up-color">

@@ -1,4 +1,5 @@
 <template>
+  <!-- 年級下拉選單 -->
   <select
     :value="modelValue"
     @change="$emit('update:modelValue', $event.target.value)"
@@ -13,10 +14,12 @@
 <script setup>
   const grades = ['一年級', '二年級', '三年級', '四年級']
 
+  // 接收父層傳入的 modelValue，用來綁定目前選中的值（v-model）
   defineProps({
     modelValue: String
   })
 
+  // 宣告可發出的事件，這裡是為了支援 v-model 雙向綁定
   defineEmits(['update:modelValue'])
 </script>
 

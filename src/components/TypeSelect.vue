@@ -1,283 +1,179 @@
 <template>
   <div class="type-select-wrapper">
-    <!-- 選擇類型按鈕 -->
-    <button @click="toggleDropdown" class="view-button">
-      {{ modelValue }}
-      <span class="dropdown-arrow">▾</span>
-    </button>
-
-    <!-- 下拉選單 -->
-    <div v-if="showDropdown" class="dropdown-menu">
-      <div
-        v-for="type in typeOptions"
-        :key="type"
-        class="dropdown-item"
-        @click="selectType(type)"
-      >
+    <!-- 類型選擇 -->
+    <select
+      :value="modelValue"
+      @change="onTypeChange"
+      class="type-select"
+    >
+      <option v-for="type in typeOptions" :key="type" :value="type">
         {{ type }}
-      </div>
-    </div>
+      </option>
+    </select>
 
-    <!-- 右：時間輸入區 -->
+    <!-- 時間欄位 -->
     <div class="time-picker-inline">
-      <template v-if="modelValue === '臨時借用'">
-        <div class="time-input-now">
-            <span class="label-text">起始時間：</span>
-            <input 
-              type="date" 
-              v-model="startDate"
-              :min="today"
-              class="time-input"
-            />
-        </div>
-
-        <div class="time-input-now">
-            <span class="label-text">結束時間：</span>
-            <input 
-              type="date"
-              v-model="endDate" 
-              :min="endMinDate"
-              class="time-input"
-            />
-        </div>
-      </template>
-
-      <template v-else-if="modelValue === '學年借用'">
-      <div class="time-input-now">
+      <div class="time-input-row">
         <span class="label-text">起始時間：</span>
-        <input 
-          type="date" 
+        <input
+          type="date"
           v-model="startDate"
-          :min="today"
+          :min="modelValue === '臨時借用' ? today : '2025-09-01'"
           class="time-input"
-          disabled
+          :disabled="modelValue === '學年借用'"
         />
       </div>
-
-      <div class="time-input-now">
+      <div class="time-input-row">
         <span class="label-text">結束時間：</span>
-        <input 
+        <input
           type="date"
-          v-model="endDate" 
+          v-model="endDate"
           :min="endMinDate"
           class="time-input"
-          disabled
+          :disabled="modelValue === '學年借用'"
         />
       </div>
-    </template>
-
     </div>
   </div>
 </template>
 
-
 <script setup>
-import { ref, watch, computed } from 'vue'
+  import { ref, watch, computed } from 'vue'
 
-defineProps({
-  modelValue: {
-    type: String,
-    default: '學年借用'
-  }
-})
+  defineProps({
+    modelValue: {
+      type: String,
+      default: '學年借用',
+    },
+  })
 
-const emit = defineEmits(['update:modelValue', 'update:timeRange'])
+  const emit = defineEmits(['update:modelValue', 'update:timeRange'])
 
-const typeOptions = ['學年借用', '臨時借用']
-const showDropdown = ref(false)
+  const typeOptions = ['學年借用', '臨時借用']
 
-// 時間欄位（預設為空）
-const startDate = ref('')
-const endDate = ref('')
+  const startDate = ref('')
+  const endDate = ref('')
 
-//  結束時間的最小值 = max(today, startTime)
-const endMinDate = computed(() => {
-  if (!startDate.value) return today
-  return startDate.value > today ? startDate.value : today
-})
+  const today = new Date().toISOString().slice(0, 10)
 
-// 今天日期 yyyy-mm-dd
-const today = new Date().toISOString().slice(0, 10)
+  const endMinDate = computed(() => {
+    if (!startDate.value) return today
+    return startDate.value > today ? startDate.value : today
+  })
 
-//下拉選單
-function toggleDropdown() {
-  showDropdown.value = !showDropdown.value
-}
+  function onTypeChange(event) {
+    const selectedType = event.target.value
+    emit('update:modelValue', selectedType)
 
-//選擇借用類型
-function selectType(type) {
-  emit('update:modelValue', type)
-  showDropdown.value = false
-
-  if (type === '學年借用') {
-    startDate.value = '2025-09-01'
-    endDate.value = '2026-06-30'
-
-    emit('update:timeRange', {
-      start: startDate.value,
-      end: endDate.value,
-    })
-
-  } else if (type === '臨時借用') {
-    // 預設起始、結束時間為隔天（可調整）
-    const now = new Date()
-    const tomorrow = new Date(now.getTime() + 24*60*60*1000)
-
-    startDate.value = today
-    endDate.value = tomorrow.toISOString().slice(0,10)
+    if (selectedType === '學年借用') {
+      startDate.value = '2025-09-01'
+      endDate.value = '2026-06-30'
+    } else if (selectedType === '臨時借用') {
+      const now = new Date()
+      const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000)
+      startDate.value = today
+      endDate.value = tomorrow.toISOString().slice(0, 10)
+    }
 
     emit('update:timeRange', {
       start: startDate.value,
       end: endDate.value,
     })
   }
-}
 
-//  當起訖時間改變時，自動修正並發送
   watch([startDate, endDate], ([start, end]) => {
-  if (!start || !end) return
+    if (!start || !end) return
 
-  // 如果 end 比 start 早或比 today 早，自動修正
-  const correctedEnd = start > today ? start : today
-  if (end < start || end < today) {
-    endDate.value = correctedEnd
-  }
+    const correctedEnd = start > today ? start : today
+    if (end < start || end < today) {
+      endDate.value = correctedEnd
+    }
 
-  emit('update:timeRange', { start: startDate.value, end: endDate.value })
-})
-
+    emit('update:timeRange', {
+      start: startDate.value,
+      end: endDate.value,
+    })
+  })
 </script>
 
 <style scoped>
-.view-button {
-  background-color: white;
-  color: black;
-  border: 1px solid #aaa;
-  border-radius: 12px;
-  padding: 6px 20px;
-  cursor: pointer;
-  font-size: 18px;
-  user-select: none;
-}
-
-.dropdown-menu {
-  position: absolute;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-top: 4px;
-  padding: 4px 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-  width: 140px;
-}
-
-.dropdown-item {
-  padding: 8px 16px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.dropdown-item:hover {
-  background-color: #f0f0f0;
-}
-
-.dropdown-arrow {
-  margin-left: 8px;
-  font-size: 20px;
-  pointer-events: none;
-}
-
-.time-picker-container {
-  font-size: 16px;
-  margin-top: 8px;
-}
-
-.time-picker-container label {
-  display: block;
-  margin-top: 8px;
-  font-weight: 600;
-}
-
-.type-select-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: nowrap;
-  width: 100%;
-}
-
-
-.time-picker-inline label {
-  font-weight: 600;
-  display: flex;
-  flex-direction: column;
-}
-
-.time-picker-inline {
-  display: flex;
-  gap: 16px;
-  font-size: 16px;
-  flex-wrap: nowrap;
-  align-items: center;
-}
-
-/* 這是時間輸入與文字一行排列的容器 */
-.time-input-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* 文字label的樣式 */
-.label-text {
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-/* 輸入框寬度可調 */
-.time-input {
-  font-size: 16px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-
-.static-text {
-  font-size: 16px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
-
-}
-@media screen and (max-width: 425px) {
   .type-select-wrapper {
-    flex-direction: column;
-    align-items: stretch;
+    display: flex;
+    align-items: center;
     gap: 12px;
+    flex-wrap: nowrap;
+    width: 100%;
   }
 
-  .view-button {
-    width: 100%;
-    font-size: 16px;
+  .type-select {
+    padding: 6px 36px 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background-color: white;
+    color: #333;
+    font-size: 18px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px 16px;
+    cursor: pointer;
   }
 
   .time-picker-inline {
-    flex-direction: column;
-    align-items: flex-start;
+    display: flex;
+    gap: 16px;
+    font-size: 16px;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .time-input-row {
+    display: flex;
+    align-items: center;
     gap: 8px;
   }
 
-  .time-input-now {
-    width: 100%;
+  .label-text {
+    font-weight: 600;
+    white-space: nowrap;
   }
 
-  .label-text,
   .time-input {
     font-size: 16px;
-    width: 100%;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
   }
-}
+
+  /* RWD */
+  @media screen and (max-width: 425px) {
+    .type-select-wrapper {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    .type-select {
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .time-picker-inline {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .time-input-row {
+      width: 100%;
+    }
+
+    .label-text,
+    .time-input {
+      font-size: 16px;
+      width: 100%;
+    }
+  }
 </style>
