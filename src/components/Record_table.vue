@@ -1,21 +1,16 @@
 <script setup>
-
 /* 子元件用props接收父元件傳來的record資料，它是個Array*/
 const props = defineProps({
     records: Array
 })
-
 /* 讓子元件可以合法發出事件(沒有這行可能會出錯) */
 const emit = defineEmits(['cancel','return'])
-
 function cancel(id){
     emit('cancel',id)
 }
-
 function toggleReturn(id){
     emit('return',id)
 }
-
 </script>
 
 <template>
@@ -26,9 +21,9 @@ function toggleReturn(id){
                 <tr id="data">
                     <th>申請人</th>
                     <th>借用類型</th>
-                    <th>開始時間</th>
-                    <th>結束時間</th>
-                    <th>系櫃編號</th>
+                    <th class="moblie_hide">開始時間</th>
+                    <th class="moblie_hide">結束時間</th>
+                    <th class="moblie_hide">系櫃編號</th>
                     <th>詳細資訊</th>
                     <th>狀態</th>
                     <th>操作</th>
@@ -39,9 +34,9 @@ function toggleReturn(id){
                 <tr v-for="item in props.records" :key="item.id">
                     <td>{{item.name}}</td>
                     <td>{{item.type}}</td>
-                    <td>{{item.start_time}}</td>
-                    <td>{{item.end_time}}</td>
-                    <td>{{item.num}}</td>
+                    <td class="moblie_hide">{{item.start_time}}</td>
+                    <td class="moblie_hide">{{item.end_time}}</td>
+                    <td class="moblie_hide">{{item.num}}</td>
                     <td>
                         <button class="operate_button">詳細資訊</button>
                     </td>
@@ -73,23 +68,26 @@ function toggleReturn(id){
     position: relative;
     border-radius: 25px; 
     overflow: hidden; /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
-    width: 105%;
-    padding: 10px;
-    margin: 20px auto;
-    background-color: white;
+    margin: 10px auto;
+    max-width: 100%; /* 保護不要暴衝超出容器 */
+    width: 100%;
+    z-index: 0;
 }
 
 table{
+    border-collapse: collapse; /* 讓格線合併 (不然會只有資料下方有灰線，一段一段的感覺) */
     border-radius: 25px;
     overflow: hidden;
-    border:4px solid #ECE8E8; 
+    border:2px solid #ECE8E8; 
     border-collapse: separate; /* 如果用collapse，圓角會被吃掉 */
     border-spacing: 0;
-    width: 97%;
+    width: 100%;
+    background-color: white;
 }
 
 .head{
     background-color: aliceblue;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* 製作下方陰影處 */
 }
 
 .head th{
@@ -102,35 +100,83 @@ table{
     border-spacing: 0px;
 }
 
-tr th{
-    padding: 4px;
-}
-
 tr td{
+    position: relative;  /* 讓偽元素定位參考 */
     text-align: center; /* 字體置中 */
-    padding: 4px;
+    padding-bottom: 10px;
     font-size: 17px;
     color: black;
-    border-bottom: 2px solid #ECE8E8; /* 每一筆資料結束後，下面加入線條使每一筆資料分隔 */
+}
+
+tbody tr {
+    height: 45px;
+}
+
+tbody tr {
+  background-image: linear-gradient(
+    to right, /* 從左到右畫背景 */
+    transparent 0%, /* 從 0% 開始是透明 */
+    transparent 10px, /* 前 10px 是透明的(也就是左邊留空隙) */
+    rgba(236, 232, 232, 0.35) 10px, /* 第 10px 開始畫淡灰色線 */
+    rgba(236, 232, 232, 0.35) calc(100% - 10px), /* 畫到右邊剩 10px 為止 */
+    transparent calc(100% - 10px), /* 最後 10px 再變回透明（也就是右邊留空隙） */
+    transparent 100%  /* 到結束的時候還是透明 */
+  );
+  background-repeat: no-repeat; /* 不要重複，不然會疊加 */
+  background-position: bottom; /* 將背景線貼在每列的下方 */
+  background-size: 100% 4px; /* 100% 的意思為寬度是整列(含前後透明區域) */
+}
+
+tbody tr:last-child {
+  background-image: none; /* 如果沒有這行，會讓下面再出現一條線 */
 }
 
 td,th{
     border: none; /* 不要有預設的格線 */
-    padding: 8px 12px; /* 上下8px，左右12px */
+    padding: 8px;
 }
 
 .operate_button{
     border: none;
-    background-color: #ECE8E8;
+    background-color: rgb(235, 242, 247);
     border-radius: 10px;
     padding: 2px 8px;
     cursor: pointer;
+}
+
+.operate_button:hover{
+    background-color: #e4e4e4; /* 滑鼠放上去時會變灰色 */
 }
 
 .empty-row td {
   height: 200px; /* 製作下方空白處 */
   border: none;
   background: transparent;
+}
+
+/* 手機版 */
+@media (max-width: 640px) {
+
+tr td{
+    font-size: 15px;
+}
+
+th{
+    font-size: 17px;
+}
+
+.operate_button{
+    font-size: 14px;
+}
+
+.moblie_hide{
+    display: none; /* 手機版沒有顯示開始時間、結束時間、系櫃編號，因此使用此程式碼讓它隱藏 */
+}
+
+tbody tr {
+  height: 30px; 
+}
+
 }
 
 </style>
