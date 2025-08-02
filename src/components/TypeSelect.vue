@@ -38,9 +38,9 @@
 </template>
 
 <script setup>
-  import { ref, watch, computed } from 'vue'
+  import { ref, watch, computed, onMounted } from 'vue'
 
-  defineProps({
+  const props = defineProps({
     modelValue: {
       type: String,
       default: '學年借用',
@@ -54,21 +54,18 @@
   const startDate = ref('')
   const endDate = ref('')
 
-  const today = new Date().toISOString().slice(0, 10)
+  const today = new Date().toLocaleDateString('sv-SE') 
 
   const endMinDate = computed(() => {
     if (!startDate.value) return today
     return startDate.value > today ? startDate.value : today
   })
 
-  function onTypeChange(event) {
-    const selectedType = event.target.value
-    emit('update:modelValue', selectedType)
-
-    if (selectedType === '學年借用') {
+  function initializeDates(type) {
+    if (type === '學年借用') {
       startDate.value = '2025-09-01'
       endDate.value = '2026-06-30'
-    } else if (selectedType === '臨時借用') {
+    } else if (type === '臨時借用') {
       const now = new Date()
       const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000)
       startDate.value = today
@@ -81,6 +78,18 @@
     })
   }
 
+  function onTypeChange(event) {
+    const selectedType = event.target.value
+    emit('update:modelValue', selectedType)
+    initializeDates(selectedType)
+  }
+
+  // 初始掛載時就設定時間
+  onMounted(() => {
+    initializeDates(props.modelValue)
+  })
+
+  // 監聽 startDate / endDate 改變時同步 emit
   watch([startDate, endDate], ([start, end]) => {
     if (!start || !end) return
 
