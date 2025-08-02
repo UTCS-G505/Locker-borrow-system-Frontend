@@ -41,7 +41,7 @@
   function confirm() {
     emit('confirm', {
       locker: props.locker,
-      reason: reason.value.trim() || undefined
+      reason: reason.value.trim() || "無"
     })
   }
 
