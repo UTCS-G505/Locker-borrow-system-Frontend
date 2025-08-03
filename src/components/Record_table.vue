@@ -15,68 +15,76 @@ function toggleReturn(id){
 
 <template>
     <div class="all_table"> 
-        <div class="inside_table">
-        <table>
-            <thead class="head">
-                <tr id="data">
-                    <th>申請人</th>
-                    <th>借用類型</th>
-                    <th class="moblie_hide">開始時間</th>
-                    <th class="moblie_hide">結束時間</th>
-                    <th class="moblie_hide">系櫃編號</th>
-                    <th>詳細資訊</th>
-                    <th>狀態</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!--用item.id(唯一值)比較安全，index可能因為資料排序而有變動-->
-                <tr v-for="item in props.records" :key="item.id">
-                    <td>{{item.name}}</td>
-                    <td>{{item.type}}</td>
-                    <td class="moblie_hide">{{item.start_time}}</td>
-                    <td class="moblie_hide">{{item.end_time}}</td>
-                    <td class="moblie_hide">{{item.num}}</td>
-                    <td>
-                        <button class="operate_button">詳細資訊</button>
-                    </td>
-                    <td>{{item.state}}</td>
-                    <td>
-                        <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operate_button">取消申請</button> 
-                        <button v-else-if="item.state === '借用中' || item.state === '歸還中' " @click="toggleReturn(item.id)" class="operate_button">
-                            {{item.state === '借用中'?'歸還':'取消歸還'}}
-                        </button>
-                    </td>
-                </tr>
-                <tr class="empty-row"> <!-- "empty-row" 作用是第三筆資料輸出後，下面留的空白處-->
-                    <td colspan="8"></td> <!-- " colspan="8" "作用是要橫跨8個欄位的寬度-->
-                </tr>
-            </tbody>
-        </table>
-        </div>
+        <div class="scroll_wrapper">
+            <div class="inside_table">
+            <table>
+                <thead class="head">
+                    <tr id="data">
+                        <th>申請人</th>
+                        <th>借用類型</th>
+                        <th class="moblie_hide">開始時間</th>
+                        <th class="moblie_hide">結束時間</th>
+                        <th class="moblie_hide">系櫃編號</th>
+                        <th>詳細資訊</th>
+                        <th>狀態</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--用item.id(唯一值)比較安全，index可能因為資料排序而有變動-->
+                    <tr v-for="item in props.records" :key="item.id">
+                        <td>{{item.name}}</td>
+                        <td>{{item.type}}</td>
+                        <td class="moblie_hide">{{item.start_time}}</td>
+                        <td class="moblie_hide">{{item.end_time}}</td>
+                        <td class="moblie_hide">{{item.num}}</td>
+                        <td>
+                            <button class="operate_button">詳細資訊</button>
+                        </td>
+                        <td>{{item.state}}</td>
+                        <td>
+                            <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operate_button">取消申請</button> 
+                            <button v-else-if="item.state === '借用中' || item.state === '歸還中' " @click="toggleReturn(item.id)" class="operate_button">
+                                {{item.state === '借用中'?'歸還':'取消歸還'}}
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="empty-row"> <!-- "empty-row" 作用是第三筆資料輸出後，下面留的空白處-->
+                        <td colspan="8"></td> <!-- " colspan="8" "作用是要橫跨8個欄位的寬度-->
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        </div> 
     </div>
 </template>
 
-<style>
+<style scoped>
 
 /*
     table那邊外層包了兩個<div>，我有嘗試過包一層會沒效果，包兩層才有，
     然後CSS設定在第二層，這部分我有先跟Allen說過，那邊有點玄(?)，歡迎電神們的討論~~
 */
 
+.scroll_wrapper{
+    overflow-x: auto; /* 出現橫向滾動條 */
+    width: 100%; /* 確保包覆容器不會收縮 */
+}
+
 .inside_table{
     position: relative;
-    border-radius: 25px; 
+    border-radius: 14px; 
     overflow: hidden; /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
     margin: 10px auto;
     max-width: 100%; /* 保護不要暴衝超出容器 */
+    min-width: 480px; /* 不要自動變窄 (表格至少需要這麼寬) */
     width: 100%;
     z-index: 0;
 }
 
 table{
     border-collapse: collapse; /* 讓格線合併 (不然會只有資料下方有灰線，一段一段的感覺) */
-    border-radius: 25px;
+    border-radius: 14px;
     overflow: hidden;
     border:2px solid #ECE8E8; 
     border-collapse: separate; /* 如果用collapse，圓角會被吃掉 */
@@ -95,7 +103,7 @@ table{
 }
 
 #data{
-    font-size: 20px;
+    font-size: 25px;
     color: black;
     border-spacing: 0px;
 }
@@ -104,7 +112,7 @@ tr td{
     position: relative;  /* 讓偽元素定位參考 */
     text-align: center; /* 字體置中 */
     padding-bottom: 10px;
-    font-size: 17px;
+    font-size: 20px;
     color: black;
 }
 
@@ -137,11 +145,12 @@ td,th{
 }
 
 .operate_button{
-    border: none;
+    border: 2px solid #DFE1E6;
     background-color: rgb(235, 242, 247);
     border-radius: 10px;
-    padding: 2px 8px;
+    padding: 2px 12px;
     cursor: pointer;
+    font-size: 20px;
 }
 
 .operate_button:hover{
