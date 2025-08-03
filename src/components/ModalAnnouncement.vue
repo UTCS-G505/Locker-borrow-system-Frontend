@@ -92,11 +92,12 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
 
 button {
   background-color: #FFF;
-  border: 2px solid #DFE1E6;
-  border-radius: 10px;
-  padding: 0.3rem 1.5rem;
-  font-size: 1rem;
+  border: 1px solid #DFE1E6;
+  border-radius: 7px;
+  padding: 0.1rem 1rem;
+  font-size: 0.75rem;
   cursor: pointer;
+  box-shadow: 0.5px 0.5px 1.5px 0.75px rgba(0, 0, 0, 0.25);
 }
 
 button:hover {
@@ -115,6 +116,8 @@ button:hover {
   }
   button {
     font-size: 1.25rem;
+    padding: 0.2rem 2rem;
+    border-radius: 10px;
   }
 }
 </style>
