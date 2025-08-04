@@ -97,7 +97,7 @@ button {
   padding: 0.1rem 1rem;
   font-size: 0.75rem;
   cursor: pointer;
-  box-shadow: 0.5px 0.5px 1.5px 0.75px rgba(0, 0, 0, 0.25);
+  box-shadow: 0.5px 1px 4px 0px #00000040;
 }
 
 button:hover {
