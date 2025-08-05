@@ -82,16 +82,20 @@ onBeforeUnmount(() => {
     <!-- 手機版 Header -->
     <div class="mobile-header">
       <div class="mobile-top-bar">
+        <!-- 漢堡選單按鈕 -->
         <button class="menu-toggle" @click.stop="toggleMobileMenu">☰</button>
 
+        <!-- Logo & 系統名稱 -->
         <RouterLink to="/" class="mobile-logo-link">
           <img class="mobile-logo" :src="logo" alt="Logo" />
           <h1 class="mobile-system-title">系櫃借用系統</h1>
         </RouterLink>
 
+        <!-- 手機版使用者圖示 -->
         <div class="mobile-user-icon" @click.stop="toggleMobileUserMenu">👤</div>
       </div>
 
+      <!-- 手機版主選單 -->
       <div v-if="showMobileMenu" class="mobile-menu">
         <RouterLink to="/" @click="toggleMobileMenu">首頁</RouterLink>
         <RouterLink to="/apply" @click="toggleMobileMenu">申請借用</RouterLink>
@@ -100,23 +104,22 @@ onBeforeUnmount(() => {
         <RouterLink to="/setting" @click="toggleMobileMenu">系統管理</RouterLink>
       </div>
 
+      <!-- 手機版使用者選單 -->
       <div v-if="showMobileUserMenu" class="mobile-user-menu">
         <div class="user-name">u11316017</div>
         <div class="logout"><a href="#">登出</a></div>
       </div>
+
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .app-navbar {
   width: 100%;
   display: flex;
   flex-direction: column;
-  background: transparent;
-  box-shadow: none;
-  margin: 0;
-  padding: 0;
 }
 
 /* 電腦版樣式 */
@@ -130,7 +133,6 @@ onBeforeUnmount(() => {
   align-items: center;
   padding: 16px 24px;
   border-bottom: 1px solid #ddd;
-  gap: 16px;
 }
 
 .logo {
@@ -155,13 +157,6 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   background: rgba(235, 247, 255, 0.8);
-  padding: 12px 24px;
-  box-shadow:
-    0 -3px 6px rgba(0, 0, 0, 0.12),
-    0 3px 6px rgba(0, 0, 0, 0.18);
-  position: relative;
-  z-index: 10;
-
   padding: 1rem 24px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
 }
@@ -218,6 +213,7 @@ onBeforeUnmount(() => {
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 100%;
+
 }
 
 .dropdown ul {
@@ -228,7 +224,7 @@ onBeforeUnmount(() => {
 
 .dropdown li a {
   display: block;
-  padding: 14px 12px;
+  padding: 16px 12px;
   font-size: 20px;
   text-decoration: none;
   color: #333;
@@ -360,10 +356,7 @@ onBeforeUnmount(() => {
   .mobile-system-title {
     font-size: 26px; /* 原本是 18px，放大 */
   }
-}
-
-/* 平板或大螢幕手機：增加 logo 和標題大小 */
-@media (min-width: 600px) and (max-width: 1023px) {
+  
   .mobile-logo {
     height: 48px; /* 原本是 36px，放大 */
   }
@@ -378,15 +371,7 @@ onBeforeUnmount(() => {
 
   .mobile-user-menu .logout a {
     font-size: 18px;
-
-  .mobile-system-title {
-    font-size: 24px; /* 原本是 18px，放大 */
   }
-
-  .mobile-top-bar {
-    padding: 12px 20px; /* 增加 padding */
-  }
-}
 }
 </style>
 
