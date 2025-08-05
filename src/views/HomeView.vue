@@ -130,7 +130,7 @@ watch(selectedAnnouncement, (val) => {
 }
 
 .section-title {
-  color: #1A1A1A;
+  color: black;
   font-size: 2.25rem;
   margin: 0.5rem;
 }
@@ -175,7 +175,7 @@ watch(selectedAnnouncement, (val) => {
   font-size: 1.125rem;
   font-weight: 600;
   cursor: pointer; /* 游標變成手指 */
-  color: #1F2937; /* 保持原本顏色 */
+  color: black; /* 保持原本顏色 */
   text-decoration: none; /* 預設無底線 */
   transition: color 0.2s ease; /* 滑過時平滑變化 */
 }
