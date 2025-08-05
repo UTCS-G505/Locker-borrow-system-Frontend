@@ -60,6 +60,7 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
 
 /* 標題字體大一點，視覺醒目 */
 .modal h2 {
+  color: #1A1A1A;
   font-weight: bold;
   font-size: 1.25rem;
 }
