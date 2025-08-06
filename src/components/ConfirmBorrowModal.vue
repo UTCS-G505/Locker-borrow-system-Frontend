@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-  import { ref, watch, defineProps, defineEmits } from 'vue'
+  import { ref, watch} from 'vue'
 
   const props = defineProps({
     locker: Object,
@@ -58,7 +58,7 @@
   .modal-backdrop {
     position: fixed;
     inset: 0;
-    background-color: rgba(0,0,0,0.2);
+    background-color: rgba(0,0,0,0.5);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -124,8 +124,10 @@
     font-size: 16px;
     cursor: pointer;
     user-select: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
   }
   .confirm-button:hover {
     background-color: #DFE1E6;
+    background-color: rgba(0, 0, 0, 0.5);
   }
 </style>
