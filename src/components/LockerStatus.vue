@@ -53,6 +53,7 @@
     box-sizing: border-box;
     align-items: center;
     justify-content: center;
+    background-color: #fff;
   }
 
   /*排列櫃子，四個櫃子一個column*/
@@ -134,4 +135,5 @@
     outline-offset: -2px;
     background-color:white;
   }
+
 </style>
