@@ -12,26 +12,28 @@
     </select>
 
     <!-- 時間欄位 -->
-    <div class="time-picker-inline">
-      <div class="time-input-row">
-        <span class="label-text">起始時間：</span>
-        <input
-          type="date"
-          v-model="startDate"
-          :min="modelValue === '臨時借用' ? today : '2025-09-01'"
-          class="time-input"
-          :disabled="modelValue === '學年借用'"
-        />
-      </div>
-      <div class="time-input-row">
-        <span class="label-text">結束時間：</span>
-        <input
-          type="date"
-          v-model="endDate"
-          :min="endMinDate"
-          class="time-input"
-          :disabled="modelValue === '學年借用'"
-        />
+    <div class="time-align">
+      <div class="time-picker-inline">
+        <div class="time-input-row">
+          <span class="label-text">起始時間：</span>
+          <input
+            type="date"
+            v-model="startDate"
+            :min="modelValue === '臨時借用' ? today : '2025-09-01'"
+            class="time-input"
+            :disabled="modelValue === '學年借用'"
+          />
+        </div>
+        <div class="time-input-row">
+          <span class="label-text">結束時間：</span>
+          <input
+            type="date"
+            v-model="endDate"
+            :min="endMinDate"
+            class="time-input"
+            :disabled="modelValue === '學年借用'"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -157,7 +159,7 @@
   }
 
   /* RWD */
-  @media screen and (max-width: 425px) {
+  @media screen and (max-width: 729px) {
     .type-select-wrapper {
       flex-direction: column;
       align-items: stretch;
@@ -177,12 +179,25 @@
 
     .time-input-row {
       width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .label-text,
+    .label-text {
+      width: auto;       /* 不要撐滿 */
+      white-space: nowrap;
+    }
+
     .time-input {
-      font-size: 16px;
+      width: 100%;       /* 填滿剩下空間 */
+    }
+
+    .time-align {
       width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      padding-right: 40px;
     }
   }
 </style>
