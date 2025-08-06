@@ -100,26 +100,26 @@
   })
 
   function generateLockersByGrade(grade) {
-    let lockers = []
+    let lockers = [];
 
     if (grade === '一年級') {
-      lockers = generateLockerRange(1, 25)
+      lockers = generateLockerRange(1, 25);
     } else if (grade === '二年級') {
-      lockers = generateLockerRange(26, 25)
+      lockers.push(null);
+      lockers = lockers.concat(generateLockerRange(26, 23));
+      lockers.push(null);
+      lockers.push(null);
+      lockers = lockers.concat(generateLockerRange(49, 2));
     } else if (grade === '三年級') {
-      
-      // 加兩個空白（用 null 或自訂字段）
-      lockers.push(null)
-      lockers.push(null)
-      // 再加特殊 2 個
-      lockers = lockers.concat(generateLockerRange(75, 2))
-      // 加正常 24 個
-      lockers = lockers.concat(generateLockerRange(51, 24))
+      lockers.push(null);
+      lockers.push(null);
+      lockers = lockers.concat(generateLockerRange(75, 2));
+      lockers = lockers.concat(generateLockerRange(51, 24));
     } else if (grade === '四年級') {
-      lockers = generateLockerRange(77, 24)
+      lockers = generateLockerRange(77, 24);
     }
 
-    return lockers
+    return lockers;
   }
 
   function generateLockerRange(startId, count) {
@@ -133,10 +133,6 @@
       }
     })
   }
-
-
-
-
 
 </script>
 
@@ -309,8 +305,6 @@
       margin-left: 0;
     }
   }
-
-
 
   /* 平板版 */
   @media (min-width: 768px) and (max-width: 1023px) {
