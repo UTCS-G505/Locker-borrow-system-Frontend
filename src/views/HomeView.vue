@@ -84,7 +84,6 @@ watch(selectedAnnouncement, (val) => {
 </script>
 
 <template>
-  <h1>This is HomeView</h1>
   <ModalAnnouncement :announcement="selectedAnnouncement" v-if="selectedAnnouncement!=null" @close="selectedAnnouncement = null"/>
   <div class="container">
     <section class="announcement-section">
