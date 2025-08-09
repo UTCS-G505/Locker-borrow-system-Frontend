@@ -2,6 +2,7 @@
   <div class="type-select-wrapper">
     <!-- 類型選擇 -->
     <select
+      id="type-select"
       :value="modelValue"
       @change="onTypeChange"
       class="type-select"
@@ -17,6 +18,7 @@
         <div class="time-input-row">
           <span class="label-text">起始時間：</span>
           <input
+            id="time-input"
             type="date"
             v-model="startDate"
             :min="modelValue === '臨時借用' ? today : '2025-09-01'"
@@ -27,6 +29,7 @@
         <div class="time-input-row">
           <span class="label-text">結束時間：</span>
           <input
+            id="time-input"
             type="date"
             v-model="endDate"
             :min="endMinDate"

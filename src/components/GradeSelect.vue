@@ -1,6 +1,7 @@
 <template>
   <!-- 年級下拉選單 -->
   <select
+    id="grade-select"
     :value="modelValue"
     @change="$emit('update:modelValue', $event.target.value)"
     class="grade-select"
