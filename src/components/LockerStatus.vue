@@ -17,16 +17,13 @@
         @mouseleave="hoverId = null"
         @click="locker && !locker.isBorrowed && !locker.isReviewed && $emit('select', locker)"
       >
-        <template v-if="locker">
-          <div class="locker-content">
-            <div class="locker-name">{{ locker.name }}</div>
-            <div v-if="locker.isBorrowed" class="locker-code">
-              {{ locker.code || 'U11316017' }}
-            </div>
+        <div class="locker-content" v-if="locker">
+          <div class="locker-name">{{ locker.name }}</div>
+          <div v-if="locker.isBorrowed" class="locker-code">
+            {{ locker.code || 'U11316017' }}
           </div>
-        </template>
+        </div>
       </div>
-
     </div>
   </div>
 </template>
