@@ -1,7 +1,18 @@
 <script setup>
+<<<<<<< Updated upstream
 import { ref, watch } from 'vue';
 import ModalAnnouncement from '@/components/ModalAnnouncement.vue';
 
+=======
+<<<<<<< HEAD
+
+
+=======
+import { ref, watch } from 'vue';
+import ModalAnnouncement from '@/components/ModalAnnouncement.vue';
+>>>>>>> 
+
+>>>>>>> Stashed changes
 // 為方便展示，在此data使用10筆寫死的模擬公告。未來將改為透過axios載入動態資料
 const data = [
   {
@@ -84,6 +95,13 @@ watch(selectedAnnouncement, (val) => {
 </script>
 
 <template>
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+  <h1>This is HomeView</h1>
+  <InfoPopup />
+=======
+>>>>>>> Stashed changes
   <ModalAnnouncement :announcement="selectedAnnouncement" v-if="selectedAnnouncement!=null" @close="selectedAnnouncement = null"/>
   <div class="container">
     <section class="announcement-section">
@@ -119,6 +137,10 @@ watch(selectedAnnouncement, (val) => {
       </ol>
     </section>
   </div>
+<<<<<<< Updated upstream
+=======
+>>>>>>> 0cd6ec6b4a42a4726c7a594dc882b17de52849ca
+>>>>>>> Stashed changes
 </template>
 
 <style scoped>
