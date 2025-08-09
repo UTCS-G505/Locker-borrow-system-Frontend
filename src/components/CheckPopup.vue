@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const checkPopup = ref(false)
 
@@ -10,6 +10,11 @@ const open = () => {
 const close = () => {
   checkPopup.value = false
 }
+
+watch(checkPopup, (val) => {
+document.body.style.overflow = val ? 'hidden' : ''
+})
+
 </script>
 
 <template>
