@@ -8,13 +8,10 @@
         <div class="content">          
           <h3>櫃子編號：{{ locker.name }}</h3>
           <h3>借用類型：{{ borrowType }}</h3>
-          <h3>借用時間：
-            <span v-if="timeRange.start">{{ timeRange.start }}</span> ~ 
-            <span v-if="timeRange.end">{{ timeRange.end }}</span>
-          </h3>
+          <h3>借用時間：{{ timeRange.start }} ~ {{ timeRange.end }}</h3>
           <h3>
-            <div class="borrow-reason">借用理由（非必填）</div>
-            <textarea v-model="reason" rows="4" placeholder="請輸入借用理由"></textarea>
+            <div class="borrow-reason">借用理由（必填）</div>
+            <textarea id="borrow-reason" v-model="reason" rows="4" placeholder="請輸入借用理由"></textarea>
           </h3>
         </div>
         <div class="buttons">
@@ -26,7 +23,7 @@
 </template>
 
 <script setup>
-  import { ref, watch} from 'vue'
+  import { ref, watch, onMounted } from 'vue'
 
   const props = defineProps({
     locker: Object,
@@ -39,9 +36,15 @@
   const reason = ref('')
 
   function confirm() {
+    // 驗證必填
+    if (!reason.value.trim()) {
+      alert('請輸入借用理由')
+      return
+    }
+
     emit('confirm', {
       locker: props.locker,
-      reason: reason.value.trim() || "無"
+      reason: reason.value.trim()
     })
   }
 
@@ -49,10 +52,23 @@
     emit('close')
   }
 
+  // 每次 locker 改變時重設理由（並檢查借用類型）
   watch(() => props.locker, () => {
-    reason.value = ''
+    if (props.borrowType === '學年借用') {
+      reason.value = '學年借用'
+    } else {
+      reason.value = ''
+    }
+  })
+
+  // 掛載時也做一次檢查
+  onMounted(() => {
+    if (props.borrowType === '學年借用') {
+      reason.value = '學年借用'
+    }
   })
 </script>
+
 
 <style scoped>
   .modal-backdrop {
