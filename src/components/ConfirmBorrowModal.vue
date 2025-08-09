@@ -128,6 +128,6 @@
   }
   .confirm-button:hover {
     background-color: #DFE1E6;
-    background-color: rgba(0, 0, 0, 0.5);
+    
   }
 </style>
