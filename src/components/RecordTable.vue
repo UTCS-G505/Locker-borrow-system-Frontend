@@ -14,17 +14,17 @@ function toggleReturn(id){
 </script>
 
 <template>
-    <div class="all_table"> 
-        <div class="scroll_wrapper">
-            <div class="inside_table">
+    <div class="allTable"> 
+        <div class="scrollWrapper">
+            <div class="insideTable">
             <table>
                 <thead class="head">
                     <tr id="data">
                         <th>申請人</th>
                         <th>借用類型</th>
-                        <th class="moblie_hide">開始時間</th>
-                        <th class="moblie_hide">結束時間</th>
-                        <th class="moblie_hide">系櫃編號</th>
+                        <th class="mobileHide">開始時間</th>
+                        <th class="mobileHide">結束時間</th>
+                        <th class="mobileHide">系櫃編號</th>
                         <th>詳細資訊</th>
                         <th>狀態</th>
                         <th>操作</th>
@@ -35,21 +35,21 @@ function toggleReturn(id){
                     <tr v-for="item in props.records" :key="item.id">
                         <td>{{item.name}}</td>
                         <td>{{item.type}}</td>
-                        <td class="moblie_hide">{{item.start_time}}</td>
-                        <td class="moblie_hide">{{item.end_time}}</td>
-                        <td class="moblie_hide">{{item.num}}</td>
+                        <td class="mobileHide">{{item.startTime}}</td>
+                        <td class="mobileHide">{{item.endTime}}</td>
+                        <td class="mobileHide">{{item.num}}</td>
                         <td>
-                            <button class="operate_button">詳細資訊</button>
+                            <button class="operateButton">詳細資訊</button>
                         </td>
                         <td>{{item.state}}</td>
                         <td>
-                            <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operate_button">取消申請</button> 
-                            <button v-else-if="item.state === '借用中' || item.state === '歸還中' " @click="toggleReturn(item.id)" class="operate_button">
+                            <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operateButton">取消申請</button> 
+                            <button v-else-if="item.state === '借用中' || item.state === '歸還中' " @click="toggleReturn(item.id)" class="operateButton">
                                 {{item.state === '借用中'?'歸還':'取消歸還'}}
                             </button>
                         </td>
                     </tr>
-                    <tr class="empty-row"> <!-- "empty-row" 作用是第三筆資料輸出後，下面留的空白處-->
+                    <tr class="emptyRow"> <!-- "emptyRow" 作用是第三筆資料輸出後，下面留的空白處-->
                         <td colspan="8"></td> <!-- " colspan="8" "作用是要橫跨8個欄位的寬度-->
                     </tr>
                 </tbody>
@@ -66,12 +66,12 @@ function toggleReturn(id){
     然後CSS設定在第二層，這部分我有先跟Allen說過，那邊有點玄(?)，歡迎電神們的討論~~
 */
 
-.scroll_wrapper{
+.scrollWrapper{
     overflow-x: auto; /* 出現橫向滾動條 */
     width: 100%; /* 確保包覆容器不會收縮 */
 }
 
-.inside_table{
+.insideTable{
     position: relative;
     border-radius: 14px; 
     overflow: hidden; /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
@@ -144,7 +144,7 @@ td,th{
     padding: 8px;
 }
 
-.operate_button{
+.operateButton{
     border: 2px solid #DFE1E6;
     background-color: rgb(235, 242, 247);
     border-radius: 10px;
@@ -153,11 +153,11 @@ td,th{
     font-size: 20px;
 }
 
-.operate_button:hover{
+.operateButton:hover{
     background-color: #e4e4e4; /* 滑鼠放上去時會變灰色 */
 }
 
-.empty-row td {
+.emptyRow td {
   height: 200px; /* 製作下方空白處 */
   border: none;
   background: transparent;
@@ -174,11 +174,11 @@ th{
     font-size: 17px;
 }
 
-.operate_button{
+.operateButton{
     font-size: 14px;
 }
 
-.moblie_hide{
+.mobileHide{
     display: none; /* 手機版沒有顯示開始時間、結束時間、系櫃編號，因此使用此程式碼讓它隱藏 */
 }
 
