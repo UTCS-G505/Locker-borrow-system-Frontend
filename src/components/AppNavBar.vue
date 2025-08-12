@@ -81,7 +81,6 @@ onBeforeUnmount(() => {
 
     <!-- 手機版 Header -->
     <div class="mobile-header">
-
       <div class="mobile-top-bar">
         <!-- 漢堡選單按鈕 -->
         <button class="menu-toggle" @click.stop="toggleMobileMenu">☰</button>
@@ -214,6 +213,7 @@ onBeforeUnmount(() => {
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 100%;
+
 }
 
 .dropdown ul {
@@ -356,7 +356,7 @@ onBeforeUnmount(() => {
   .mobile-system-title {
     font-size: 26px; /* 原本是 18px，放大 */
   }
-
+  
   .mobile-logo {
     height: 48px; /* 原本是 36px，放大 */
   }
