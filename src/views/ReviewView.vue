@@ -53,9 +53,11 @@
             class="search-input"
           />
         </div>
+      </div>
+      <div class="right">
         <div class="action-buttons">
-          <button @click="exportUsage" v-if="selectedType === '審核'">使用紀錄匯出</button>
-          <button @click="visualizeUsage" v-if="selectedType === '審核'">使用概況圖匯出</button>
+          <button @click="exportUsage" v-if="selectedType === '審核'">借用紀錄匯出</button>
+          <button @click="visualizeUsage" v-if="selectedType === '審核'">借用概況圖匯出</button>
         </div>
         <button
           class="topbutton"
@@ -93,8 +95,8 @@
             <th>
               <select v-model="borrowTypeFilter" class="dropdown2">
                 <option value="">全部</option>
-                <option value="學年借用">學年借用</option>
-                <option value="臨時借用">臨時借用</option>
+                <option value="學年借用">學年</option>
+                <option value="臨時借用">臨時</option>
               </select>
             </th>
             <th>開始時間</th>
@@ -342,6 +344,7 @@ function rejectMobile() {
   padding: 20px;
 }
 .header-bar h1 {
+  font-size: 30px;
   color: black;
 }
 
@@ -353,16 +356,26 @@ function rejectMobile() {
   align-items: center;
   gap: 35px;
   justify-content: left;
+  flex: 1;
+}
+.right {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+  flex-shrink: 0; /* 不縮小 */
 }
 .topbutton {
   margin-right: 35px;
   display: block;
-  padding: 10px 20px;
+  padding: 4px 12px;
   border-radius: 8px;
   cursor: pointer;
   background-color: white;
   color: black;
   border: solid 1px black;
+}
+button:hover {
+  background-color: #eee;
 }
 .controls {
   display: flex;
@@ -398,7 +411,7 @@ table {
 th,
 td {
   border: 1px solid #ccc;
-  padding: 10px 8px;
+  padding: 20px 8px;
   text-align: center;
   word-break: break-word;
   color: #333;
@@ -409,6 +422,7 @@ th {
   padding: 4px 8px;
   max-width: 160px; /* 或依實際情況調整寬度 */
   overflow: hidden;
+  font-size: 18px;
 }
 button {
   display: block;
@@ -455,6 +469,9 @@ input[type="text"] {
   background-repeat: no-repeat;
   background-position: right 8px center;
   background-size: 16px 16px;
+}
+.search-input:hover {
+  background-color: #eee;
 }
 .custom-checkbox {
   display: inline-block;
@@ -541,10 +558,10 @@ input[type="text"] {
   background-color: #e0e0e0;
 }
 .dropdown2 {
-  width: auto;
   min-width: 60px;
+  width: auto;
   font-family: "Noto Sans TC", sans-serif;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: normal;
   color: #333;
   border: none;
@@ -553,16 +570,20 @@ input[type="text"] {
   -webkit-appearance: none;
   text-align: center;
   text-align-last: center;
+  -moz-appearance: none;
   display: block;
   margin: 0 auto;
 }
 .dropdown2 option {
   font-size: 14px;
-  padding: 2px 5px;
+  border: 1px solid #ccc;
+  background-color: white;
+  padding: 5px;
+  color: black;
+  cursor: pointer;
 }
 .dropdown option {
   font-size: 14px;
-  padding: 2px 5px;
 }
 /* ✅ 手機版樣式 */
 @media screen and (max-width: 768px) {
