@@ -40,7 +40,7 @@ function handleReturn(id){
 
 .record {
   font-size: 30px;
-  color: black;
+  color: #1a1a1a;
   margin-left: 15px;
   margin-bottom: 0;
 }

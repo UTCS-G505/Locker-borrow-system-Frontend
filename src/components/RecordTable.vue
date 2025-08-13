@@ -86,7 +86,7 @@ table{
     border-collapse: collapse; /* 讓格線合併 (不然會只有資料下方有灰線，一段一段的感覺) */
     border-radius: 14px;
     overflow: hidden;
-    border:2px solid #ECE8E8; 
+    border:2px solid #dfe1e6; 
     border-collapse: separate; /* 如果用collapse，圓角會被吃掉 */
     border-spacing: 0;
     width: 100%;
@@ -145,7 +145,7 @@ td,th{
 }
 
 .operateButton{
-    border: 2px solid #DFE1E6;
+    border: 2px solid #dbdcdd;
     background-color: rgb(235, 242, 247);
     border-radius: 10px;
     padding: 2px 12px;
@@ -154,7 +154,7 @@ td,th{
 }
 
 .operateButton:hover{
-    background-color: #e4e4e4; /* 滑鼠放上去時會變灰色 */
+    background-color: #dbdcdd; /* 滑鼠放上去時會變灰色 */
 }
 
 .emptyRow td {
