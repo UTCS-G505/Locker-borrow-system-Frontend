@@ -126,4 +126,10 @@
   .selectable {
     background-color: #c3e2f8;
   }
-  </style>
+
+  .hovered {
+    outline: 4px solid #b4e2d7;
+    outline-offset: -2px;
+    background-color:white;
+  }
+</style>
