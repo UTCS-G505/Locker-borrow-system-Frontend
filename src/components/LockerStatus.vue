@@ -19,8 +19,8 @@
       >
         <div class="locker-content" v-if="locker">
           <div class="locker-name">{{ locker.name }}</div>
-          <div v-if="locker.isBorrowed" class="locker-code">
-            {{ locker.code || 'U11316017' }}
+          <div class="locker-code">
+            {{ locker.isBorrowed ? (locker.code || 'U11316017') : '' }}
           </div>
         </div>
       </div>
@@ -126,11 +126,4 @@
   .selectable {
     background-color: #c3e2f8;
   }
-
-  .hovered {
-    outline: 4px solid #b4e2d7;
-    outline-offset: -2px;
-    background-color:white;
-  }
-
-</style>
+  </style>
