@@ -87,7 +87,7 @@
   }
   function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
-    alert(`櫃子 ${locker.name} 已確認借用，理由：${reason}`)
+    alert(`成功申請借用櫃子 ${locker.name} ，理由：${reason}`)
   }
   function handleTimeRangeUpdate(range) {
     timeRange.value = range
@@ -188,7 +188,6 @@
   }
 
   .label-text h2 {
-    font-size: 25px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -198,12 +197,12 @@
   .view-button {
     background-color: white;
     color: black;
-    border: 1px solid #aaa;
+    border: 1px solid #ccc;
     border-radius: 12px;
-    padding: 6px 20px;
+    padding: 4px 20px;
     cursor: pointer;
-    font-size: 14px;
     user-select: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   .view-button:hover {
     background-color: #DFE1E6;
@@ -213,7 +212,6 @@
   .status-legend {
     display: flex;
     align-items: center;
-    font-size: 18px;
     gap: 6px;
   }
   .status-color {
@@ -235,6 +233,13 @@
   .view-word h4 {
     font-weight: bold;
   }
+
+  /* 統一字體大小為 16px */
+  .view-button,
+  .status-legend span {
+    font-size: 16px;
+  }
+
 
   /* 手機版 */
   @media (max-width: 767px) {
