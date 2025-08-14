@@ -20,7 +20,9 @@
         <div class="locker-content" v-if="locker">
           <div class="locker-name">{{ locker.name }}</div>
           <div class="locker-code">
-            {{ locker.isBorrowed ? (locker.code || 'U11316017') : '' }}
+            <template v-if="locker.isBorrowed || locker.isReviewed">
+              {{ locker.code || 'U11316017' }}
+            </template>
           </div>
         </div>
       </div>
