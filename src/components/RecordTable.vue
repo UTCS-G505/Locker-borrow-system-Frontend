@@ -43,9 +43,9 @@ function toggleReturn(id){
                         </td>
                         <td>{{item.state}}</td>
                         <td>
-                            <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operateButton">取消申請</button> 
+                            <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operateButton">取消</button> 
                             <button v-else-if="item.state === '借用中' || item.state === '歸還中' " @click="toggleReturn(item.id)" class="operateButton">
-                                {{item.state === '借用中'?'歸還':'取消歸還'}}
+                                {{item.state === '借用中'?'歸還':'取消'}}
                             </button>
                         </td>
                     </tr>
@@ -60,28 +60,24 @@ function toggleReturn(id){
 </template>
 
 <style scoped>
-
 /*
     table那邊外層包了兩個<div>，我有嘗試過包一層會沒效果，包兩層才有，
     然後CSS設定在第二層，這部分我有先跟Allen說過，那邊有點玄(?)，歡迎電神們的討論~~
 */
-
 .scrollWrapper{
     overflow-x: auto; /* 出現橫向滾動條 */
     width: 100%; /* 確保包覆容器不會收縮 */
 }
-
 .insideTable{
     position: relative;
     border-radius: 14px; 
-    overflow: hidden; /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
+    overflow-y: hidden; /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
     margin: 10px auto;
     max-width: 100%; /* 保護不要暴衝超出容器 */
     min-width: 480px; /* 不要自動變窄 (表格至少需要這麼寬) */
     width: 100%;
     z-index: 0;
 }
-
 table{
     border-collapse: collapse; /* 讓格線合併 (不然會只有資料下方有灰線，一段一段的感覺) */
     border-radius: 14px;
@@ -92,22 +88,18 @@ table{
     width: 100%;
     background-color: white;
 }
-
 .head{
     background-color: aliceblue;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* 製作下方陰影處 */
 }
-
 .head th{
     border-bottom:2px solid #ECE8E8;
 }
-
 #data{
     font-size: 25px;
     color: black;
     border-spacing: 0px;
 }
-
 tr td{
     position: relative;  /* 讓偽元素定位參考 */
     text-align: center; /* 字體置中 */
@@ -115,11 +107,9 @@ tr td{
     font-size: 20px;
     color: black;
 }
-
 tbody tr {
     height: 45px;
 }
-
 tbody tr {
   background-image: linear-gradient(
     to right, /* 從左到右畫背景 */
@@ -134,58 +124,47 @@ tbody tr {
   background-position: bottom; /* 將背景線貼在每列的下方 */
   background-size: 100% 4px; /* 100% 的意思為寬度是整列(含前後透明區域) */
 }
-
 tbody tr:last-child {
   background-image: none; /* 如果沒有這行，會讓下面再出現一條線 */
 }
-
 td,th{
     border: none; /* 不要有預設的格線 */
     padding: 8px;
+    white-space: nowrap; /* 不允許自動換行 */
 }
-
 .operateButton{
     border: 2px solid #dbdcdd;
-    background-color: rgb(235, 242, 247);
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     padding: 2px 12px;
     cursor: pointer;
     font-size: 20px;
 }
-
 .operateButton:hover{
     background-color: #dbdcdd; /* 滑鼠放上去時會變灰色 */
 }
-
 .emptyRow td {
   height: 200px; /* 製作下方空白處 */
   border: none;
   background: transparent;
 }
-
 /* 手機版 */
 @media (max-width: 640px) {
-
 tr td{
     font-size: 15px;
 }
-
 th{
     font-size: 17px;
 }
-
 .operateButton{
     font-size: 14px;
 }
-
 .mobileHide{
     display: none; /* 手機版沒有顯示開始時間、結束時間、系櫃編號，因此使用此程式碼讓它隱藏 */
 }
-
 tbody tr {
   height: 30px; 
 }
-
 }
-
 </style>
