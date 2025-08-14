@@ -199,7 +199,7 @@
     color: black;
     border: 1px solid #ccc;
     border-radius: 12px;
-    padding: 3.5px 20px;
+    padding: 3.3px 20px;
     cursor: pointer;
     user-select: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -253,8 +253,7 @@
       margin-right: 0;
     }
     .view-button {
-      font-size: 14px;
-      padding: 6px 14px;
+      padding: 3.4px 14px;
     }
     .status-legend {
       font-size: 16px;
@@ -281,8 +280,7 @@
       font-size: 18px;
     }
     .view-button {
-      font-size: 14px;
-      padding: 4px 12px;
+      padding: 3.4px 12px;
     }
     .status-legend {
       font-size: 14px;
