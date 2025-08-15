@@ -106,7 +106,7 @@
   .toilet { top: 62%; left: 65%; width: 30%; height: 33.3%; }
 
   /*768px以上時字變大 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 426px) {
     .modal-content {
       font-size: 1rem;
     }
@@ -147,6 +147,10 @@
     .up-color h1 {
       font-size: 2em;
       margin: 0;
+    }
+
+    .area, .area-locker {
+      font-size: 1.5em;
     }
   }
 </style>
