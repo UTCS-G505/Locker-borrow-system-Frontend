@@ -56,40 +56,6 @@ function submit() {
 </template>
 
 <style scoped>
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-.modal-content {
-  background: rgba(250, 250, 251, 0.95);
-  padding: 24px;
-  border-radius: 16px;
-  width: 608px;
-  max-width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-sizing: border-box;
-  box-shadow: 2px 4px 4px rgba(0,0,0,0.35), -1.5px -0.5px 4px rgba(0,0,0,0.25);
-}
-.modal-header {
-  min-height: 60px;
-  background-color: #E8F7FFCC;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: -25px -24px 0px -24px;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  box-shadow: 0px 1px 4px 0px #00000040;
-}
-.content {
-  padding: 15px 10px 0;
-}
 input, textarea {
   width: 100%;
   resize: none;
@@ -98,6 +64,7 @@ input, textarea {
   box-sizing: border-box;
   border-radius: 6px;
   border: 1px solid #DFE1E6;
+  background-color: #FFF;
   font-family: inherit;
 }
 .buttons {
