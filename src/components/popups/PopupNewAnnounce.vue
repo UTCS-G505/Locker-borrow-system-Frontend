@@ -25,15 +25,11 @@ function submit() {
   }
 
   emit('submit', {
-    date: date.value,
     title: title.value.trim(),
+    date: date.value,
     content: content.value.trim()
   })
 };
-
-document.addEventListener('input', () => {
-  document.getElementById('title-length').textContent = document.getElementById('title').value.length;
-})
 </script>
 
 <template>
@@ -46,7 +42,7 @@ document.addEventListener('input', () => {
       <h3>發布日期</h3>
       <input id="date" v-model="date" type="date" placeholder="請輸入日期（必填）" />
 
-      <h3>公告標題 (<span id="title-length">0</span>/20)</h3>
+      <h3>公告標題 (<span id="title-length">{{ title.length }}</span>/20)</h3>
       <input id="title" v-model="title" type="text" placeholder="請輸入公告標題（必填）" maxlength="20" />
       
       <h3>公告內容</h3>
