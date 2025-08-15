@@ -2,12 +2,15 @@
 import { ref, computed } from 'vue'
 import IconSearch from './icons/IconSearch.vue';
 import PopupNewAnnounce from './popups/PopupNewAnnounce.vue';
+import PopupEditAnnounce from './popups/PopupEditAnnounce.vue';
 
 const searchValue = ref('');
-const showPopup = ref(false);
+const showNewPopup = ref(false);
+const showEditPopup = ref(false);
+const editAnnouncement = ref(null);
 
 // sample data
-const announcements = [
+const announcements = ref([
   {
     "id": 1,
     "title": "系櫃系統維護通知",
@@ -68,18 +71,18 @@ const announcements = [
     "date": "2025/09/25",
     "content": "歡迎新生參加 7 月 23 日中午 12:10 在 D201 教室舉辦的系櫃使用說明會。"
   }
-];
+]);
 
 const handleNewAnnounce = (announce) => {
   alert(`日期：${announce.date}\n標題：${announce.title}\n內容：${announce.content}`);
-  showPopup.value = false;
+  showNewPopup.value = false;
 };
 
 const filteredAnnounce = computed(() => {
-  return announcements.filter((announce) => {
+  return announcements.value.filter((announce) => {
     return announce.title.toLowerCase().includes(searchValue.value.toLowerCase())
   }).sort((a, b) => {
-    return b.id - a.id;
+    return dateStringToDate(b.date) - dateStringToDate(a.date);
   })
 })
 
@@ -97,6 +100,23 @@ const isDraft = (date) => {
   const announcementDate = dateStringToDate(date);
   return today < announcementDate;
 }
+
+const editAnnounce = (announce) => {
+  showEditPopup.value = true;
+  editAnnouncement.value = announce;
+}
+
+const handleEditAnnounce = (announce) => {
+  showEditPopup.value = false;
+  editAnnouncement.value = null;
+  alert(`日期：${announce.date}\n標題：${announce.title}\n內容：${announce.content}`);
+  announcements.value[announce.id - 1] = announce;
+  console.log(announcements.value);
+}
+
+const deleteAnnounce = (announce) => {
+  announcements.value.pop(announcements.value.indexOf(announce));
+}
 </script>
 
 <template>
@@ -113,7 +133,7 @@ const isDraft = (date) => {
         <IconSearch />
       </label>
     </div>
-    <button type="button" id="add-announce" @click="showPopup = true">新增公告＋</button>
+    <button type="button" id="add-announce" @click="showNewPopup = true">新增公告＋</button>
   </div>
 
   <div id="announce-board">
@@ -133,7 +153,8 @@ const isDraft = (date) => {
             <span class="draft" v-if="isDraft(announce.date)">(草稿)</span>
           </td>
           <td>
-            <button type="button">刪除</button>
+            <button type="button" @click="editAnnounce(announce)">編輯</button>
+            <button type="button" @click="deleteAnnounce(announce)">刪除</button>
           </td>
         </tr>
       </tbody>
@@ -147,9 +168,15 @@ const isDraft = (date) => {
   </div>
 
   <PopupNewAnnounce
-    v-if="showPopup"
-    @close="showPopup = false"
+    v-if="showNewPopup"
+    @close="showNewPopup = false"
     @submit="handleNewAnnounce"
+  />
+  <PopupEditAnnounce
+    v-if="showEditPopup"
+    @close="showEditPopup = false"
+    @submit="handleEditAnnounce"
+    :announcement="editAnnouncement"
   />
 </template>
 
