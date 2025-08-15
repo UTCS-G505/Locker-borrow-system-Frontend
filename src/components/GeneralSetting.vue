@@ -1,6 +1,16 @@
 <script setup>
 import { ref } from 'vue'
 
+defineProps({
+  board: {
+    type: String,
+    default: 'note',
+    required: true
+  }
+})
+
+const emit = defineEmits(['update:board'])
+
 const today = new Date();
 const startDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 const endDate = `${today.getFullYear() + 1}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -28,8 +38,13 @@ const handleBorrowOverview = () => {
 
 <template>
   <div id="general-setting">
+    <div class="board-select">
+      <select id="boardselect" :value="board" @change="emit('update:board', $event.target.value)">
+        <option value="note">身分註記</option>
+        <option value="announcement">公告與規則</option>
+      </select>
+    </div>
     <form class="semester-form" @submit.prevent="updateSemesterInterval">
-      <h3>設定學年起迄</h3>
       <label for="start">學年起：</label>
       <input type="date" class="input-field" id="start" name="start" :value="initialStartDate">
       <label for="end">學年迄：</label>
@@ -37,7 +52,6 @@ const handleBorrowOverview = () => {
       <button type="submit">儲存</button>
     </form>
     <div class="export-button">
-      <h3>資料匯出</h3>
       <button id="borrow-record" type="button" @click="handleBorrowHistory">借用紀錄</button>
       <button id="borrow-overview" type="button" @click="handleBorrowOverview">借用概況圖</button>
     </div>
@@ -45,10 +59,22 @@ const handleBorrowOverview = () => {
 </template>
 
 <style scoped>
-h3 {
+#boardselect {
+  min-width: 160px;
+  border: 2px solid #DFE1E6;
+  border-radius: 10px;
+  padding: 0.5rem;
   margin-right: 1rem;
+  font-size: 16px;
+  box-shadow: 0 2px 4px #0000001a;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px 16px;
 }
 
+.board-select,
 .semester-form,
 .export-button {
   display: flex;
@@ -60,11 +86,13 @@ h3 {
 }
 
 .semester-form .input-field {
+  background-color: #FFF;
   border: 2px solid #DFE1E6;
   border-radius: 10px;
   margin-right: 1rem;
   padding: 0.5rem;
-  font-size: 20px;
+  font-size: 16px;
+  box-shadow: 0 2px 4px #0000001a;
 }
 
 .semester-form button,
@@ -72,7 +100,8 @@ h3 {
   background-color: #FFF;
   border: 2px solid #DFE1E6;
   border-radius: 10px;
-  font-size: 20px;
+  font-size: 16px;
+  box-shadow: 0 2px 4px #0000001a;
 }
 
 .semester-form button {
@@ -87,6 +116,22 @@ h3 {
 .semester-form button:hover,
 .export-button button:hover {
   background-color: #DFE1E6;
+}
+
+@media screen and (min-width: 426px) {
+  #boardselect,
+  .semester-form label,
+  .semester-form .input-field,
+  .semester-form button,
+  .export-button button {
+    font-size: 20px;
+  }
+}
+
+@media screen and (max-width: 1439px) {
+  #borrow-record {
+    margin-left: 0;
+  }
 }
 
 @media screen and (max-width: 1024px) {
