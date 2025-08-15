@@ -6,11 +6,13 @@
       <h1>審核申請</h1>
 
       <!-- 下拉式表單 -->
+          <div class="select-wrapper">
           <select v-model="selectedType" class="dropdown">
             <option value="借用">借用申請</option>
             <option value="歸還">歸還申請</option>
             <option value="審核">審核紀錄</option>
           </select>
+        </div>
       <!-- 按鈕 -->
       <button class="btn" @click="approveMobile"  v-if="selectedType === '借用'">通過</button>
       <button class="btn" @click="rejectMobile"  v-if="selectedType === '借用'">駁回</button>
@@ -21,10 +23,6 @@
         >
           送出
         </button>
-        <div class="action-buttons">
-          <button @click="exportUsage" v-if="selectedType === '審核'" class="font-bold text-black">使用紀錄匯出</button>
-          <button @click="visualizeUsage" v-if="selectedType === '審核'" class="font-bold text-black">使用概況圖匯出</button>
-        </div>
     </div>
 
     <!-- 搜尋欄 -->
@@ -41,11 +39,13 @@
       <div class="left">
         <h1>審核申請</h1>
         <div class="controls">
+        <div class="select-wrapper">
           <select v-model="selectedType" class="dropdown">
             <option value="借用">借用申請</option>
             <option value="歸還">歸還申請</option>
             <option value="審核">審核紀錄</option>
           </select>
+        </div>
           <input
             type="text"
             v-model="searchName"
@@ -55,10 +55,6 @@
         </div>
       </div>
       <div class="right">
-        <div class="action-buttons">
-          <button @click="exportUsage" v-if="selectedType === '審核'">借用紀錄匯出</button>
-          <button @click="visualizeUsage" v-if="selectedType === '審核'">借用概況圖匯出</button>
-        </div>
         <button
           class="topbutton"
           v-if="selectedType === '借用'"
@@ -87,7 +83,7 @@
               <th>申請人</th>
               <th>
                 <select v-model="gradeFilter" class="dropdown2">
-                <option value="">全部</option>
+                <option value="">年級</option>
                 <option value="大一">大一</option>
                 <option value="大二">大二</option>
                 <option value="大三">大三</option>
@@ -96,9 +92,9 @@
               </th>
               <th>
                 <select v-model="borrowTypeFilter" class="dropdown2">
-                  <option value="">全部</option>
-                  <option value="學年借用">學年</option>
-                  <option value="臨時借用">臨時</option>
+                  <option value="">借用類型</option>
+                  <option value="學年借用">學年借用</option>
+                  <option value="臨時借用">臨時借用</option>
                 </select>
               </th>
               <th>開始時間</th>
@@ -110,7 +106,7 @@
               <th v-if="selectedType === '歸還'">確認歸還</th>
               <th v-if="selectedType === '審核'">
                 <select v-model="statusFilter" class="dropdown2">
-                  <option value="">全部</option>
+                  <option value="">狀態</option>
                   <option value="審核中">審核中</option>
                   <option value="駁回">駁回</option>
                   <option value="借用中">借用中</option>
@@ -302,16 +298,6 @@ function submitReturnConfirmations() {
   });
   returnSelections.value = [];
 }
-
-function exportUsage() {
-  // 將來可連接下載 API 或觸發 CSV 匯出
-  alert("匯出使用紀錄功能尚未實作");
-}
-
-function visualizeUsage() {
-  // 將來可跳出圖表或轉跳頁面
-  alert("概況圖匯出功能尚未實作");
-}
 const isMobile = ref(window.innerWidth <= 768);
 window.addEventListener("resize", () => {
   isMobile.value = window.innerWidth <= 768;
@@ -376,7 +362,6 @@ function rejectMobile() {
   cursor: pointer;
   background-color: white;
   color: black;
-  border: solid 1px black;
   border: 1px solid #ccc;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
@@ -392,14 +377,10 @@ button:hover {
   gap: 10px;
 }
 .controls select,
-.controls input,
-.controls button {
+.controls input {
   padding: 6px;
   border-radius: 4px;
   border: 1px solid #ccc;
-}
-.info {
-  border: solid 1px gray;
 }
 .search-input {
   width: 200px;
@@ -422,15 +403,18 @@ button:hover {
   background-color: white;
   border-radius: 14px;
   border: 2px solid #dfe1e6;
-  min-width: 840px; /* 關鍵：固定表格寬度大於螢幕 */
+  min-width: 960px;
   overflow: hidden;
+  min-height: 500px;
+  table-layout: auto;
 }
 
 table {
-  border-collapse: separate;
   border-spacing: 0;
   width: 100%;
   background-color: white;
+  table-layout: fixed;
+  border-collapse: separate;
 }
 
 thead {
@@ -439,11 +423,16 @@ thead {
 
 th {
   border-bottom: 2px solid #ECE8E8;
-  padding: 10px;
+  padding: 10px 2px;
   text-align: center;
   font-size: 18px;
   font-weight: 560;
-
+  white-space: nowrap;
+  padding-left: 24px;
+  align-items: center;
+  justify-content: space-between;
+  display:flexbox;
+  position: relative;
 }
 tr {
   background-image: linear-gradient(
@@ -466,21 +455,24 @@ tbody tr:last-child {
 
 td {
   padding: 8px;
+  padding-left: 24px;
   text-align: center;
   white-space: nowrap; /* 防止換行，方便滑動 */
+}
+
+.info{
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
 }
 button {
   display: block;
   margin: 0 auto;
   padding: 6px 12px;
-  border: none;
   border-radius: 12px;
   cursor: pointer;
   background-color: white;
   color: black;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
 }
 .status-tag {
   padding: 5px 10px;
@@ -505,7 +497,6 @@ select {
 input[type="text"] {
   background-color: white;
   color: black;
-  border: 1px solid black;
   padding: 6px 10px;
   border-radius: 10px;
   margin-left: 35px;
@@ -546,7 +537,7 @@ input[type="text"] {
   display: inline-block;
   width: 28px;
   height: 28px;
-  border: 3px solid gray;
+  border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
   transition: background-color 0.2s, border-color 0.2s;
@@ -593,38 +584,24 @@ input[type="text"] {
   gap: 10px;
 }
 
-.action-buttons button {
-  padding: 6px 12px;
-  border-radius: 6px;
-  background-color: white;
-  border: 1px solid black;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  color:black;
-}
-
-.action-buttons button:hover {
-  background-color: #e0e0e0;
-}
 .dropdown2 {
-  min-width: 60px;
-  width: auto;
-  font-family: "Noto Sans TC", sans-serif;
+  width:auto;
   font-size: 18px;
   font-weight: 560;
   color: #333;
   border: none;
   background-color: transparent;
-  text-align: center;
-  text-align-last: center;
-  display: block;
+  padding-left: 20px;
+  white-space: nowrap;
   margin: 0 auto;
+
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background:url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 2px center;
+  background:url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 6px center;
   background-size: 30px 60px;
   padding: 6px 30px 6px 10px;
+  transform: translateX(-8%);
 }
 .dropdown2 option {
   font-size: 14px;
@@ -634,15 +611,37 @@ input[type="text"] {
   color: black;
   cursor: pointer;
 }
-.dropdown{
-  border-radius: 16px;
+.select-wrapper {
+  display: inline-block;
+  position: relative;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: white;
+  overflow: hidden;
+}
+
+.select-wrapper .dropdown {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background:url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 2px center;
-  background-size: 30px 60px;
-  padding: 6px 30px 6px 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
+  outline: none;
+  width: 120px;
+  height: 36px;
+  padding: 0 30px 0 10px;
+  background: transparent;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.select-wrapper::after {
+  content: '▼';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: gray;
 }
 .dropdown option {
   font-size: 14px;
@@ -687,7 +686,6 @@ input[type="text"] {
   cursor: pointer;
   background-color: white;
   color: black;
-  border: solid 1px black;
   border: 1px solid #ccc;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
@@ -710,18 +708,11 @@ input[type="text"] {
   box-sizing: border-box;
   font-size: 14px;
 }
-
-.action-buttons {
-  border-radius: 20px;
-  color:black;
-}
 .dropdown2 {
   width: auto;
-  min-width: 10px;
-  max-width: 48px;
   font-family: "Noto Sans TC", sans-serif;
-  font-size: 14px;
-  font-weight: normal;
+  font-size: 18px;
+  font-weight: 560;
   color: #333;
   border: none;
   background-color: transparent;
@@ -731,8 +722,7 @@ input[type="text"] {
   text-align-last: center;
   display: block;
   margin: 0 auto;
-  white-space: normal; /* 允許斷行 */
-  word-break: break-word;
+  white-space: nowrap;
 }
 .search-input {
   width: 90%;
