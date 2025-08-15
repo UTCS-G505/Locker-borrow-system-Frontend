@@ -38,19 +38,21 @@ const handleBorrowOverview = () => {
 
 <template>
   <div id="general-setting">
-    <div class="board-select">
-      <select id="boardselect" :value="board" @change="emit('update:board', $event.target.value)">
-        <option value="note">身分註記</option>
-        <option value="announcement">公告與規則</option>
-      </select>
+    <div>
+      <div class="board-select">
+        <select id="boardselect" :value="board" @change="emit('update:board', $event.target.value)">
+          <option value="note">身分註記</option>
+          <option value="announcement">公告與規則</option>
+        </select>
+      </div>
+      <form class="semester-form" @submit.prevent="updateSemesterInterval">
+        <label for="start">學年起：</label>
+        <input type="date" class="input-field" id="start" name="start" :value="initialStartDate">
+        <label for="end">學年迄：</label>
+        <input type="date" class="input-field" id="end" name="end" :value="initialEndDate">
+        <button type="submit">儲存</button>
+      </form>
     </div>
-    <form class="semester-form" @submit.prevent="updateSemesterInterval">
-      <label for="start">學年起：</label>
-      <input type="date" class="input-field" id="start" name="start" :value="initialStartDate">
-      <label for="end">學年迄：</label>
-      <input type="date" class="input-field" id="end" name="end" :value="initialEndDate">
-      <button type="submit">儲存</button>
-    </form>
     <div class="export-button">
       <button id="borrow-record" type="button" @click="handleBorrowHistory">借用紀錄</button>
       <button id="borrow-overview" type="button" @click="handleBorrowOverview">借用概況圖</button>
@@ -118,6 +120,10 @@ const handleBorrowOverview = () => {
   background-color: #DFE1E6;
 }
 
+select, button {
+  cursor: pointer;
+}
+
 @media screen and (min-width: 426px) {
   #boardselect,
   .semester-form label,
@@ -166,7 +172,12 @@ const handleBorrowOverview = () => {
   #general-setting {
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: space-between;
+  }
+
+  #general-setting div{
+    display: flex;
+    flex-direction: row;
   }
 
   .semester-form {
