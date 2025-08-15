@@ -40,7 +40,10 @@ const filteredStudents = computed(() => {
   return studentsList.value.filter(student =>
       !searchValue.value.trim() ||
       student.id.includes(searchValue.value) ||
-      student.name.includes(searchValue.value)
+      student.name.includes(searchValue.value) ||
+      searchValue.value === '無註記' && !student.note ||
+      searchValue.value === '住宿生註記' && student.note === '住宿生註記' ||
+      searchValue.value === '違規註記' && student.note === '違規註記'
     ).sort((studentA, studentB) => {
     const code = ['U', 'G', 'M'];
     if (code.indexOf(studentA.id.charAt(0)) < code.indexOf(studentB.id.charAt(0))) return -1;
