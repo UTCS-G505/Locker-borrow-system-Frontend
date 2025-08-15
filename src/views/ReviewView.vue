@@ -31,7 +31,7 @@
     <input
             type="text"
             v-model="searchName"
-            placeholder="搜尋申請人姓名"
+            placeholder="搜尋"
              class="search-input mobile-search"
     />
   </div>
@@ -41,7 +41,7 @@
       <div class="left">
         <h1>審核申請</h1>
         <div class="controls">
-          <select v-model="selectedType">
+          <select v-model="selectedType" class="dropdown">
             <option value="借用">借用申請</option>
             <option value="歸還">歸還申請</option>
             <option value="審核">審核紀錄</option>
@@ -49,7 +49,7 @@
           <input
             type="text"
             v-model="searchName"
-            placeholder="搜尋申請人姓名"
+            placeholder="搜尋"
             class="search-input"
           />
         </div>
@@ -78,88 +78,92 @@
 
     <!-- 表格 -->
     <div class="review-list">
-      <table>
-        <thead>
-          <tr>
-            <th>申請人學號</th>
-            <th>申請人</th>
-            <th>
-              <select v-model="gradeFilter" class="dropdown2">
-              <option value="">全部</option>
-              <option value="大一">大一</option>
-              <option value="大二">大二</option>
-              <option value="大三">大三</option>
-              <option value="大四">大四</option>
-            </select>
-            </th>
-            <th>
-              <select v-model="borrowTypeFilter" class="dropdown2">
-                <option value="">全部</option>
-                <option value="學年借用">學年</option>
-                <option value="臨時借用">臨時</option>
-              </select>
-            </th>
-            <th>開始時間</th>
-            <th>結束時間</th>
-            <th>系櫃編號</th>
-            <th>詳細資訊</th>
-            <th v-if="selectedType === '借用' && !isMobile">駁回</th>
-            <th v-if="selectedType === '借用' && !isMobile">通過</th>
-            <th v-if="selectedType === '歸還'">確認歸還</th>
-            <th v-if="selectedType === '審核'">
-              <select v-model="statusFilter" class="dropdown2">
-                <option value="">全部</option>
-                <option value="審核中">審核中</option>
-                <option value="駁回">駁回</option>
-                <option value="借用中">借用中</option>
-                <option value="已歸還">已歸還</option>
-              </select>
-            </th>
-            <th v-if="isMobile&&selectedType=='借用'">選擇</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="item in filteredApplications" :key="item.id">
+      <div class="scrollWrapper">
+        <div class="insideTable">
+        <table>
+          <thead>
             <tr>
-              <td>{{ item.studentId }}</td>
-              <td>{{ item.name }}</td>
-              <td>{{ item.grade }}</td>
-              <td>{{ item.borrowType }}</td>
-              <td>{{ item.startTime }}</td>
-              <td>{{ item.endTime }}</td>
-              <td>{{ item.cabinet }}</td>
-              <td><button class="info">詳細資訊</button></td>
-              <td v-if="selectedType === '借用' && !isMobile">
-                <button class="info" @click="rejectApplication(item)" >駁回</button>
-              </td>
-              <td v-if="selectedType === '借用' && !isMobile">
-                <label class="custom-checkbox">
-                  <input type="checkbox" v-model="approvalSelections" :value="item.id" />
-                  <span></span>
-                </label>
-              </td>
-              <td v-if="selectedType === '歸還'">
-                <label class="custom-checkbox">
-                  <input type="checkbox" v-model="returnSelections" :value="item.id" />
-                  <span></span>
-                </label>
-              </td>
-              <td v-if="selectedType === '審核'">
-                <span class="status-tag" :class="statusColor(item.status)">
-                  {{ item.status }}
-                </span>
-              </td>
-              <td v-if="isMobile && selectedType === '借用'">
-                <label class="custom-checkbox">
-                  <input type="checkbox" :value="item.id" v-model="mobileSelections" />
-                  <span></span>
-                </label>
-              </td>
-
+              <th>申請人學號</th>
+              <th>申請人</th>
+              <th>
+                <select v-model="gradeFilter" class="dropdown2">
+                <option value="">全部</option>
+                <option value="大一">大一</option>
+                <option value="大二">大二</option>
+                <option value="大三">大三</option>
+                <option value="大四">大四</option>
+              </select>
+              </th>
+              <th>
+                <select v-model="borrowTypeFilter" class="dropdown2">
+                  <option value="">全部</option>
+                  <option value="學年借用">學年</option>
+                  <option value="臨時借用">臨時</option>
+                </select>
+              </th>
+              <th>開始時間</th>
+              <th>結束時間</th>
+              <th>系櫃編號</th>
+              <th>詳細資訊</th>
+              <th v-if="selectedType === '借用' && !isMobile">駁回</th>
+              <th v-if="selectedType === '借用' && !isMobile">通過</th>
+              <th v-if="selectedType === '歸還'">確認歸還</th>
+              <th v-if="selectedType === '審核'">
+                <select v-model="statusFilter" class="dropdown2">
+                  <option value="">全部</option>
+                  <option value="審核中">審核中</option>
+                  <option value="駁回">駁回</option>
+                  <option value="借用中">借用中</option>
+                  <option value="已歸還">已歸還</option>
+                </select>
+              </th>
+              <th v-if="isMobile&&selectedType=='借用'">選擇</th>
             </tr>
-          </template>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <template v-for="item in filteredApplications" :key="item.id">
+              <tr>
+                <td>{{ item.studentId }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.grade }}</td>
+                <td>{{ item.borrowType }}</td>
+                <td>{{ item.startTime }}</td>
+                <td>{{ item.endTime }}</td>
+                <td>{{ item.cabinet }}</td>
+                <td><button class="info">詳細資訊</button></td>
+                <td v-if="selectedType === '借用' && !isMobile">
+                  <button class="info" @click="rejectApplication(item)" >駁回</button>
+                </td>
+                <td v-if="selectedType === '借用' && !isMobile">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" v-model="approvalSelections" :value="item.id" />
+                    <span></span>
+                  </label>
+                </td>
+                <td v-if="selectedType === '歸還'">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" v-model="returnSelections" :value="item.id" />
+                    <span></span>
+                  </label>
+                </td>
+                <td v-if="selectedType === '審核'">
+                  <span class="status-tag" :class="statusColor(item.status)">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td v-if="isMobile && selectedType === '借用'">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" :value="item.id" v-model="mobileSelections" />
+                    <span></span>
+                  </label>
+                </td>
+
+              </tr>
+            </template>
+          </tbody>
+        </table>
+        </div>
+      </div>
     </div>
   </section>
 </template>
@@ -367,13 +371,17 @@ function rejectMobile() {
 .topbutton {
   margin-right: 35px;
   display: block;
-  padding: 4px 12px;
-  border-radius: 8px;
+  padding: 3px 30px;
+  border-radius: 12px;
   cursor: pointer;
   background-color: white;
   color: black;
   border: solid 1px black;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
 }
+
 button:hover {
   background-color: #eee;
 }
@@ -401,28 +409,65 @@ button:hover {
   margin: 0;
   padding: 5px 20px;
   font-family: "Noto Sans TC", sans-serif;
-}
-table {
   width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
+}
+.scrollWrapper {
+  overflow-x: auto; /* 可左右滑動 */
+  width: 100%;
+}
+
+.insideTable {
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: white;
+  border-radius: 14px;
+  border: 2px solid #dfe1e6;
+  min-width: 840px; /* 關鍵：固定表格寬度大於螢幕 */
+  overflow: hidden;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
   background-color: white;
 }
-th,
-td {
-  border: 1px solid #ccc;
-  padding: 20px 8px;
-  text-align: center;
-  word-break: break-word;
-  color: #333;
+
+thead {
+  background-color: aliceblue;
 }
+
 th {
-  background-color: #ebf7ffcc;
-  vertical-align: middle;
-  padding: 4px 8px;
-  max-width: 160px; /* 或依實際情況調整寬度 */
-  overflow: hidden;
+  border-bottom: 2px solid #ECE8E8;
+  padding: 10px;
+  text-align: center;
   font-size: 18px;
+  font-weight: 560;
+
+}
+tr {
+  background-image: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 10px,
+    rgba(236, 232, 232, 0.35) 10px,
+    rgba(236, 232, 232, 0.35) calc(100% - 10px),
+    transparent calc(100% - 10px),
+    transparent 100%
+  );
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 100% 4px;
+}
+
+tbody tr:last-child {
+  background-image: none;
+}
+
+td {
+  padding: 8px;
+  text-align: center;
+  white-space: nowrap; /* 防止換行，方便滑動 */
 }
 button {
   display: block;
@@ -469,6 +514,7 @@ input[type="text"] {
   background-repeat: no-repeat;
   background-position: right 8px center;
   background-size: 16px 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .search-input:hover {
   background-color: #eee;
@@ -562,17 +608,20 @@ input[type="text"] {
   width: auto;
   font-family: "Noto Sans TC", sans-serif;
   font-size: 18px;
-  font-weight: normal;
+  font-weight: 560;
   color: #333;
   border: none;
   background-color: transparent;
-  appearance: none;
-  -webkit-appearance: none;
   text-align: center;
   text-align-last: center;
-  -moz-appearance: none;
   display: block;
   margin: 0 auto;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background:url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 2px center;
+  background-size: 30px 60px;
+  padding: 6px 30px 6px 10px;
 }
 .dropdown2 option {
   font-size: 14px;
@@ -582,9 +631,20 @@ input[type="text"] {
   color: black;
   cursor: pointer;
 }
+.dropdown{
+  border-radius: 16px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background:url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 2px center;
+  background-size: 30px 60px;
+  padding: 6px 30px 6px 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 .dropdown option {
   font-size: 14px;
 }
+
 /* ✅ 手機版樣式 */
 @media screen and (max-width: 768px) {
   .mobile-ops {
@@ -602,29 +662,32 @@ input[type="text"] {
   align-items: center;      /* 垂直置中 */
   justify-content: flex-start; /* 元素從左往右排列 */
   gap: 10px;                /* 元素間距 */
+  width: 100%;
 }
 .mobile-header-row > h1 {
-  flex-shrink: 0;           /* 不縮小標題 */
-  font-size: 20px;          /* 字體調大 */
+  flex-shrink: 0;
+  font-size: 32px;
   margin: 0;
   color: black;
 }
 .mobile-header-row > select {
-  flex-grow: 1;             /* 下拉框可撐開剩餘空間 */
-  min-width: 120px;         /* 下拉框最小寬度 */
-  max-width: 200px;         /* 最大寬度 */
+  flex-grow: 1;
+  min-width: 120px;
+  max-width: 200px;
   padding: 6px 8px;
-  border-radius: 6px;
+  border-radius: 14px;
   border: 1px solid black;
 }
 .mobile-header-row > button {
-  flex-shrink: 0;           /* 按鈕不縮小 */
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: solid 1px black;
-  background-color: white;
+  padding: 3px 30px;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: bold;
+  background-color: white;
+  color: black;
+  border: solid 1px black;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
 }
 
 .dropdown {
@@ -667,6 +730,13 @@ input[type="text"] {
   margin: 0 auto;
   white-space: normal; /* 允許斷行 */
   word-break: break-word;
+}
+.search-input {
+  width: 90%;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M10 2a8 8 0 105.293 14.293l5.707 5.707 1.414-1.414-5.707-5.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px 16px;
 }
 }
 
