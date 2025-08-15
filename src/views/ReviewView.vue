@@ -473,11 +473,14 @@ button {
   display: block;
   margin: 0 auto;
   padding: 6px 12px;
-  background-color: #f3f7f9;
-  color: black;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
+  background-color: white;
+  color: black;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
 }
 .status-tag {
   padding: 5px 10px;
