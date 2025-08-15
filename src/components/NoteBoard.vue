@@ -1,8 +1,11 @@
 <script setup>
 import { ref, computed } from 'vue'
 import IconSearch from './icons/IconSearch.vue';
+import PopupViolationNote from './popups/PopupViolationNote.vue';
 
 const searchValue = ref('');
+const showPopup = ref(false);
+const selectedStudent = ref(null);
 
 // sample data
 const studentsList = ref([
@@ -52,8 +55,14 @@ const dormitoryNote = (student) => {
   student.note = '住宿生註記';
 };
 const violationNote = (student) => {
-  student.note = '違規註記';
+  selectedStudent.value = student;
+  showPopup.value = true;
 };
+const handleViolationNote = (note) => {
+  selectedStudent.value.note = '違規註記';
+  alert(`學號：${note.user.id}\n姓名：${note.user.name}\n事由：${note.reason}`);
+  showPopup.value = false;
+}
 const clearNote = (student) => {
   student.note = null;
 };
@@ -99,6 +108,13 @@ const clearNote = (student) => {
       </tbody>
     </table>
   </div>
+
+  <PopupViolationNote
+    v-if="showPopup"
+    :user="selectedStudent"
+    @close="showPopup = false"
+    @confirm="handleViolationNote"
+  />
 </template>
 
 <style scoped>
@@ -113,6 +129,7 @@ const clearNote = (student) => {
   padding: 0.5rem;
   margin-bottom: 1rem;
   font-size: 20px;
+  box-shadow: 0 2px 4px #0000001a;
 }
 
 #search-bar svg {
@@ -126,7 +143,7 @@ const clearNote = (student) => {
 
 table {
   width: 100%;
-  min-width: 768px;
+  min-width: 960px;
   border-collapse: collapse;
   font-size: 20px;
 }
@@ -140,8 +157,12 @@ thead {
   text-align: left;
 }
 
+tr {
+  border-bottom: rgba(236,232,232,.35) solid 4px;
+}
+
 th, td {
-  padding: 0.8rem 0.5rem;
+  padding: 0.8rem;
 }
 
 th:first-child {
@@ -159,9 +180,27 @@ button {
   padding: 0 1.5rem;
   margin-right: 1rem;
   font-size: 20px;
+  box-shadow: 0 2px 4px #0000001a;
 }
 
 button:hover {
   background-color: #DFE1E6;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 425px) {
+  #search-bar input::-webkit-input-placeholder {
+    font-size: 16px;
+  }
+  table {
+    min-width: 700px;
+    font-size: 16px;
+  }
+  thead {
+    font-size: 20px;
+  }
+  button {
+    font-size: 16px;
+  }
 }
 </style>
