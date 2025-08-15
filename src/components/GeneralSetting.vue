@@ -70,6 +70,7 @@ const handleBorrowOverview = () => {
   font-size: 16px;
   box-shadow: 0 2px 4px #0000001a;
   appearance: none;
+  background-color: #FFF;
   background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
   background-position: right 8px center;
