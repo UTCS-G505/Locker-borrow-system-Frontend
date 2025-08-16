@@ -70,11 +70,13 @@ input, textarea {
   background-color: #FFF;
   font-family: inherit;
 }
+
 .buttons {
   display: flex;
   justify-content: center;
   margin-top: 5px;
 }
+
 .confirm-button {
   width: 100px;
   height: 30px;
@@ -87,6 +89,7 @@ input, textarea {
   user-select: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
+
 .confirm-button:hover {
   background-color: #DFE1E6;
 }

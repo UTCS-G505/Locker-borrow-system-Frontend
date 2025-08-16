@@ -6,6 +6,7 @@ const props = defineProps({
   user: Object
 });
 const emit = defineEmits(['close', 'confirm']);
+
 const reason = ref('');
 
 function confirm() {
@@ -51,9 +52,11 @@ function confirm() {
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
+
 .violation-reason {
   margin: 0 0 5px 0;
 }
+
 textarea {
   width: 100%;
   resize: none;
@@ -64,12 +67,14 @@ textarea {
   border: 1px solid #DFE1E6;
   font-family: inherit;
 }
+
 .common-reasons {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-bottom: 10px;
 }
+
 .common-reasons button {
   width: 100%;
   height: 30px;
@@ -82,9 +87,11 @@ textarea {
   user-select: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
+
 .common-reasons button:hover {
   background-color: #DFE1E6;
 }
+
 .confirm-button {
   width: 100px;
   height: 30px;
@@ -97,6 +104,7 @@ textarea {
   user-select: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
+
 .confirm-button:hover {
   background-color: #DFE1E6;
 }
@@ -105,6 +113,7 @@ textarea {
   .user-info {
     grid-template-columns: 1fr;
   }
+  
   .common-reasons {
     grid-template-columns: 1fr;
   }
