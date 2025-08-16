@@ -251,6 +251,16 @@ th:last-child {
   border-top-right-radius: 10px;
 }
 
+th:first-child, td:first-child {
+  width: 15%;
+  min-width: 150px;
+}
+
+th:last-child, td:last-child {
+  width: 30%;
+  min-width: 300px;
+}
+
 .draft {
   color: #888;
 }
@@ -312,16 +322,20 @@ hr {
   #add-announce {
     width: 100%;
   }
+
   #search-bar input::-webkit-input-placeholder {
     font-size: 16px;
   }
+
   table {
     min-width: 700px;
     font-size: 16px;
   }
+
   thead {
     font-size: 20px;
   }
+  
   button {
     font-size: 16px;
   }

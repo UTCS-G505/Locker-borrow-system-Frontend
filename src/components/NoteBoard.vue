@@ -146,7 +146,7 @@ const clearNote = (student) => {
 
 table {
   width: 100%;
-  min-width: 960px;
+  min-width: 1024px;
   border-collapse: collapse;
   font-size: 20px;
 }
@@ -176,6 +176,16 @@ th:last-child {
   border-top-right-radius: 10px;
 }
 
+th:first-child, td:first-child {
+  width: 20%;
+  min-width: 200px;
+}
+
+th:nth-child(2), td:nth-child(2) {
+  width: 30%;
+  min-width: 450px;
+}
+
 button {
   background-color: #FFF;
   border: 2px solid #DFE1E6;
@@ -195,13 +205,16 @@ button:hover {
   #search-bar input::-webkit-input-placeholder {
     font-size: 16px;
   }
+
   table {
     min-width: 700px;
     font-size: 16px;
   }
+
   thead {
     font-size: 20px;
   }
+  
   button {
     font-size: 16px;
   }
