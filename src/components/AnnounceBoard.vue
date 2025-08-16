@@ -221,7 +221,7 @@ const deleteAnnounce = (announce) => {
 
 table {
   width: 100%;
-  min-width: 960px;
+  min-width: 1024px;
   border-collapse: collapse;
   font-size: 20px;
 }
@@ -335,7 +335,7 @@ hr {
   thead {
     font-size: 20px;
   }
-  
+
   button {
     font-size: 16px;
   }
