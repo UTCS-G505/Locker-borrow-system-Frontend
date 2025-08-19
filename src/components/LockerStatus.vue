@@ -89,7 +89,6 @@
     flex-shrink:0;
   }
 
-
   .locker-content {
     position: relative;
     width: 100%;
