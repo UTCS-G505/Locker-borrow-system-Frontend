@@ -46,7 +46,7 @@ defineEmits(['update:modelValue']);
 /* Modal 外框容器 */
 .modal {
   position: absolute;
-  top: 290px;
+  top: 70px;
   left: 50%;
   transform: translateX(-50%);
   width: 90%;
@@ -94,7 +94,7 @@ defineEmits(['update:modelValue']);
 /* 桌機版調整位置 */
 @media (min-width: 1024px) {
   .modal {
-    top: 230px; /* 如果桌機的導覽列比較高可以調整這個值 */
+    top: 200px; /* 如果桌機的導覽列比較高可以調整這個值 */
     width: 400px;
   }
 }
