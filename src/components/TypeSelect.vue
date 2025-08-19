@@ -172,6 +172,7 @@
     border: 1px solid #ccc;
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #000;
   }
 
   /* 只有臨時借用模式才有 hover 灰底 */
