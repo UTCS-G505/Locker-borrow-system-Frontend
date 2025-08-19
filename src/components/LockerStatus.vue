@@ -40,7 +40,6 @@
 <style scoped>
   /*櫃子外面的框，框的大小固定*/
   .container {
-    overflow-x: auto;
     max-width:100%;
     margin: 0 auto;
     display: block;
@@ -62,7 +61,7 @@
     grid-template-rows: repeat(4,minmax(60px,1fr));
     grid-auto-flow: column;
     gap: 20px;
-    min-width: 600px;
+    overflow-x: auto;
   }
 
   /*單一櫃子*/
@@ -100,8 +99,6 @@
   .locker.empty {
     visibility: hidden;
   }
-
-
 
   /* 中間顯示 locker.code（限已借用） */
   .locker-code {
