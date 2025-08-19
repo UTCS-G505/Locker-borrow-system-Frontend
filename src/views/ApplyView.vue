@@ -1,22 +1,24 @@
 <template>
   <div class="app-container">
+    <!-- 標題  -->
+    <div class="left-group">
+      <div class="label-text"><h2>請填寫申請內容</h2></div>
+    </div>
+    
     <!-- 借用類型與時間 -->
-    <div class="row">
-      <div class="left-group">
-        <TypeSelect
-          v-model="selectedType"
-          @update:timeRange="handleTimeRangeUpdate"
-        />
-      </div>
+    <div class="left-group">
+      <TypeSelect
+        v-model="selectedType"
+        @update:timeRange="handleTimeRangeUpdate"
+      />
     </div>
 
     <!-- 借用位置與狀態說明 -->
     <div class="row-space-between">
-      <!-- 左邊：標題 + 年級 + 按鈕 -->
+      <!-- 左邊： 年級 + 位置按鈕 -->
       <div class="left-group">
-        <div class="label-text"><h2>請選擇要借用的位置</h2></div>
         <GradeSelect v-model="selectedGrade" />
-        <button @click="openModal" class="view-button">查看位置</button>
+        <button @click="openModal" class="control-button">查看位置</button>
         <div  class="view-word">
           <h4>＊位置僅供參考</h4>
         </div>
@@ -87,7 +89,7 @@
   }
   function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
-    alert(`成功申請借用櫃子 ${locker.name} ，理由：${reason}`)
+    alert(`櫃子 ${locker.name} 已確認借用，理由：${reason}`)
   }
   function handleTimeRangeUpdate(range) {
     timeRange.value = range
@@ -145,66 +147,80 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 20px;
+    padding-inline: 20px;  /*  左右留白唯一來源 */
+    padding-block: 20px;   /* 上下距離 */
+    align-items: flex-start; /* 子元素都往左靠齊 */
+    padding-top: 0;
   }
-
-  .content-container {
-    padding: 0 20px;
-    box-sizing: border-box;
-  }
-
-  .row {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-left: 10px;
-  }
-
-  .row-space-between {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    box-sizing: border-box;
-  }
-
+  
   .left-group {
     display: flex;
     align-items: center;
     gap: 12px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     flex: 1;
     min-width: 0;
-    margin-left: 20px;
   }
-
-  .right-group {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
+  
+  /* 標題 */
   .label-text h2 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     margin-right: 12px;
+    margin-left: 0; /* 保證跟左邊對齊 */
   }
 
-  .view-button {
-    background-color: white;
-    color: black;
+  /* 左右組合容器 */
+  .row-space-between {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;    
+    justify-content: space-between;
+    box-sizing: border-box;
+    width: 100%; /* 撐滿，元素左對齊 */
+    gap: 12px;                 /* 行間隙 */
+    
+  }
+
+  /* 右側狀態標示 */
+  .right-group {
+    display: flex;
+    align-items: center;   /* 與左側底部對齊 */
+    gap: 12px;
+    flex-wrap: wrap;         /* 寬度不足自動換行 */
+    margin-left: auto;       /* 桌面版靠右 */
+    white-space: nowrap;      /* 文字不換行 */
+    justify-content: flex-end; /* 換行後靠左 */
+  }
+
+    /* 文字不要換行 */
+  .left-group, .right-group {
+    white-space: nowrap;
+  }
+
+  .content-container {
+    box-sizing: border-box;
+    width: 100%; /* 撐滿但內容依然左對齊 */
+  }
+
+  .control-button {
+    font-size: 16px;
+    padding: 4px 12px;
     border: 1px solid #ccc;
     border-radius: 12px;
-    padding: 3.3px 20px;
-    cursor: pointer;
-    user-select: none;
+    background-color: white;
+    color: #333;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    cursor: pointer;
+    appearance: none;
+    
   }
-  .view-button:hover {
+  .control-button:focus {
+    outline: none;
+  }
+  .control-button:hover {
     background-color: #DFE1E6;
   }
 
@@ -234,89 +250,16 @@
     font-weight: bold;
   }
 
-  /* 統一字體大小為 16px */
-  .view-button,
-  .status-legend span {
-    font-size: 16px;
-  }
-
-
-  /* 手機版 */
-  @media (max-width: 767px) {
-    .row-space-between {
-      flex-direction: column;
-      gap: 12px;
-    }
-    .label-text h2 {
-      font-size: 20px;
-      white-space: normal;
-      margin-right: 0;
-    }
-    .view-button {
-      padding: 3.4px 14px;
-    }
-    .status-legend {
-      font-size: 16px;
-      margin-left: 20px;
-    }
-  }
-
-  /* 極小手機 320px 以下 */
-  @media (max-width: 360px) {
-    .row-space-between {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-    }
-    .left-group {
-      width: 100%;
-      flex-wrap: wrap;
-    }
-    .right-group {
-      width: 100%;
-      justify-content: flex-start;
-    }
-    .label-text h2 {
-      font-size: 18px;
-    }
-    .view-button {
-      padding: 3.4px 12px;
-    }
-    .status-legend {
-      font-size: 14px;
-    }
-  }
-
-  @media (max-width: 425px) {
-    .app-container {
-      padding-left: 10px; /* 往左靠一點 */
-      padding-right: 10px;
-      padding-top: 0;
-    }
-
-    .row-space-between,
-    .left-group,
-    .right-group,
-    .content-container {
-      margin-left: 0;
-      padding-left: 0;
-    }
-
-    .label-text h2,
-    .view-button,
-    .status-legend {
-      margin-left: 0;
-    }
-  }
-
   /* 平板版 */
   @media (min-width: 768px) and (max-width: 1023px) {
     /* 先讓整體容器垂直排列 */
     .row-space-between {
       display: flex;
-      flex-direction: column; /* 兩排 */
-      gap: 12px;
-      padding: 0 20px;
+      flex-direction: row;      /* 保持 row 排列 */
+      flex-wrap: wrap;          /* 允許換行 */
+      align-items: flex-start;  /* 換行後靠左對齊 */
+      justify-content: flex-start;
+      gap: 8px;
       box-sizing: border-box;
     }
 
@@ -326,19 +269,114 @@
       align-items: center;
       gap: 12px;
       flex-wrap: nowrap;
-      justify-content: flex-start; 
       width: 100%;  /* 加寬度撐滿 */
     }
+  }
 
-    /* 下方一排：狀態標示 */
+    /* 手機版 */
+
+  @media (max-width: 767px) {
+    .row-space-between {
+      flex-direction: column;
+      gap: 12px;
+      justify-content: flex-start; /* 換行時靠左 */
+      align-items: flex-start;
+    }
+    .label-text h2 {
+      font-size: 20px;
+      white-space: normal;
+      margin-right: 0;
+    }
+    /*.view-button {
+      font-size: 14px;
+      padding: 6px 14px;
+    }*/
+    .status-legend {
+      font-size: 16px;
+      margin-left: 20px;
+    }
+
+     /* 下方一排：狀態標示 */
     .right-group {
       display: flex;
       align-items: center;
       gap: 12px;
       flex-wrap: nowrap;
-      justify-content: flex-start; 
       width: 100%;  /* 加寬度撐滿 */
-      margin-left: 20px;
+      margin-left: 0px;
+      justify-content: flex-start;
+    }
+  }
+
+    /*mobile L*/
+  @media (max-width: 425px ) {
+    .app-container {
+      padding-left: 10px; /* 往左靠一點 */
+      padding-right: 10px;
+    }
+    
+    .row-space-between {
+      justify-content: flex-start; /* 換行時靠左 */
+      align-items: flex-start;
+    }
+    
+    .row-space-between,
+    .left-group,
+    .content-container {
+      margin-left: 0;
+      padding-left: 0;
+    }
+
+    .right-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between; /* 三個元素平均分布 */
+      flex-wrap: nowrap;               /* 不換行 */
+      width: 100%;                     /* 撐滿容器 */
+      white-space: nowrap;             /* 文字不換行 */
+    }
+
+    .status-legend {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;             /* 文字不換行 */
+      flex: 1;                         /* 平分寬度 */
+      justify-content: center;         /* 元素內置中排列 */
+    }
+  }
+
+    /* 極小手機 320px 以下 mobile S*/
+  @media (max-width: 360px) {
+    .row-space-between {
+      flex-direction: column;
+      justify-content: flex-start; /* 換行時靠左 */
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .left-group {
+      width: 100%;
+      flex-wrap: wrap;
+    }
+    .right-group {
+      margin-left: 0 !important;     /* 解除桌機版推到右邊 */
+      width: 100%;
+      flex-wrap: wrap !important;     /* 允許換行 */
+      justify-content: flex-start !important; /* 換行後靠左 */
+      align-items: center;
+      gap: 8px;
+      white-space: normal !important; /* 解除先前的 nowrap */
+    }
+    .label-text h2 {
+      font-size: 18px;
+    }
+
+    .status-legend {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;             /* 文字不換行 */
+      flex: 0 0 auto;                 /* 依內容寬度排列，不被平均撐開 */
+      justify-content: flex-start;    /* 每個小塊內部也靠左 */
     }
   }
 </style>
