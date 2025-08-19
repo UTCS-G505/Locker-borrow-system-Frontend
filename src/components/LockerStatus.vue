@@ -62,7 +62,7 @@
     grid-auto-flow: column;
     gap: 20px;
     overflow-x: auto;
-    padding: 40px;
+    padding: 5px;
   }
 
   /*單一櫃子*/
