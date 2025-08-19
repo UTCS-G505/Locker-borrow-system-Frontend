@@ -95,6 +95,11 @@
   .area-locker {
     background-color: #ebf7ff;
   }
+  .area-locker:hover{
+    background-color: #97acca;
+    color:white;
+    cursor: pointer;
+  }
 
   /* 等比例區塊定位（百分比） */
   .year1 { top: 40%; left: 6.6%; width: 20%; height: 25%; }
