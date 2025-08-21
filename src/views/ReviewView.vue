@@ -387,7 +387,7 @@ button:hover {
 }
 .review-list {
   max-width: 1024px;
-  margin: 0;
+  margin: 0 auto;
   padding: 5px 20px;
   font-family: "Noto Sans TC", sans-serif;
   width: 100%;
