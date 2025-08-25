@@ -15,6 +15,9 @@
         <p>起迄時間：2025/3/29 ~ 2025/12/6</p>
         <p>系櫃號碼：<span class="locker-number">93</span></p>
         <p>借用理由：</p>
+        <div class="borrow-reason-container">
+          <p>不要開學阿aaaaaaaaaaa</p>
+        </div>
       </div>
     </div>
   </div>
@@ -89,6 +92,16 @@ defineEmits(['update:modelValue']);
   font-size: 30px;
   color: #222;
   margin-bottom: 0;
+}
+
+.borrow-reason-container {
+  max-height: 20vh; /* 內容區塊最大高度 */
+  overflow-y: auto; /* 出現垂直捲軸 */
+  overflow-x: hidden; /* 禁止水平捲軸 */
+  width: 100%; /* 讓捲動區塊佔滿寬度 */
+  word-wrap: break-word; /* 自動換行 */
+  word-break: break-word; /* 強制換行，避免長字串溢出 */
+  white-space: normal; /* 確保文字可以換行 */
 }
 
 /* 桌機版調整位置 */

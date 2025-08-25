@@ -10,10 +10,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import ApplySuccessModal from '@/components/ApplySuccessModal.vue'
 
 const showSuccessModal = ref(false)
+
+watch(showSuccessModal, (val) => {
+document.body.style.overflow = val ? 'hidden' : ''
+})
 </script>
 
 <style scoped>
