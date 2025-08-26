@@ -74,6 +74,10 @@ const announcements = ref([
 ]);
 
 const handleNewAnnounce = (announce) => {
+  if(announce.title.length > 20){
+    alert('標題長度不可超過20字');
+    return;
+  }
   alert(`日期：${announce.date}\n標題：${announce.title}\n內容：${announce.content}`);
   showNewPopup.value = false;
 };
@@ -107,11 +111,14 @@ const editAnnounce = (announce) => {
 }
 
 const handleEditAnnounce = (announce) => {
+  if(announce.title.length > 20){
+    alert('標題長度不可超過20字');
+    return;
+  }
   showEditPopup.value = false;
   editAnnouncement.value = null;
-  alert(`日期：${announce.date}\n標題：${announce.title}\n內容：${announce.content}`);
   announcements.value[announce.id - 1] = announce;
-  console.log(announcements.value);
+  alert(`日期：${announce.date}\n標題：${announce.title}\n內容：${announce.content}`);
 }
 
 const deleteAnnounce = (announce) => {
