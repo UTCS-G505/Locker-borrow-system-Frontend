@@ -89,6 +89,7 @@ const handleBorrowOverview = () => {
 }
 
 .semester-form .input-field {
+  color: #000;
   background-color: #FFF;
   border: 2px solid #DFE1E6;
   border-radius: 10px;
@@ -123,6 +124,7 @@ const handleBorrowOverview = () => {
 
 select, button {
   cursor: pointer;
+  color: #000;
 }
 
 @media screen and (min-width: 426px) {

@@ -187,6 +187,7 @@ th:nth-child(2), td:nth-child(2) {
 }
 
 button {
+  color: #000;
   background-color: #FFF;
   border: 2px solid #DFE1E6;
   border-radius: 10px;

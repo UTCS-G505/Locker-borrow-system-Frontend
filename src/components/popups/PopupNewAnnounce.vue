@@ -65,6 +65,7 @@ input, textarea {
   box-sizing: border-box;
   border-radius: 6px;
   border: 1px solid #DFE1E6;
+  color: #000;
   background-color: #FFF;
   font-family: inherit;
 }
