@@ -61,6 +61,11 @@ const handleBorrowOverview = () => {
 </template>
 
 <style scoped>
+#general-setting div {
+  display: flex;
+  flex-direction: row;
+}
+
 #boardselect {
   min-width: 160px;
   border: 2px solid #DFE1E6;
@@ -143,7 +148,11 @@ select, button {
   }
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1023px) {
+  #general-setting div {
+    display: block;
+  }
+  
   .semester-form {
     flex-direction: column;
     align-items: start;
@@ -178,10 +187,6 @@ select, button {
     justify-content: space-between;
   }
 
-  #general-setting div{
-    display: flex;
-    flex-direction: row;
-  }
 
   .semester-form {
     margin-right: 4rem;
