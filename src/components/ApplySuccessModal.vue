@@ -18,6 +18,7 @@
         <div class="borrow-reason-container">
           <p>不要開學阿aaaaaaaaaaa</p>
         </div>
+        <bottom class="close-bottom" @click="$emit('update:modelValue', false)">關閉</bottom>
       </div>
     </div>
   </div>
@@ -39,7 +40,7 @@ defineEmits(['update:modelValue']);
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -55,8 +56,8 @@ defineEmits(['update:modelValue']);
   width: 90%;
   max-width: 400px;
   border-radius: 12px;
-  background: white;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  background: #FAFAFBF2;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
   overflow: hidden;
   text-align: center;
   z-index: 1001;
@@ -65,19 +66,19 @@ defineEmits(['update:modelValue']);
 
 /* Modal 標題區塊 */
 .modal-header {
-  background: #EFF9FFCC;
+  background: rgba(235, 247, 255, 1);
   padding: 6px 12px;
   font-size: 20px;
   font-weight: bold;
   color: #222;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 2px 0 #DFE1E6;
   z-index: 1;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+   border-bottom: 1px solid #DFE1E6;
 }
 
 /* Modal 內文區塊 */
 .modal-body {
-  background: #F6F7F9F2;
+  background: #FAFAFBF2;
   padding: 20px 16px;
   font-size: 20px;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -90,8 +91,31 @@ defineEmits(['update:modelValue']);
 /* Modal 標題文字樣式 */
 .modal h2 {
   font-size: 30px;
-  color: #222;
+  font-weight: bold;
+  color: #1A1A1A;
   margin-bottom: 0;
+}
+
+.close-bottom {
+  display: flex;
+  justify-content: center; /* 水平置中 */
+  align-items: center;     /* 垂直置中 */
+  margin: 12px auto 0 auto; /* 上方20px，左右自動置中 */
+  padding: 6px 20px;
+  background-color: #fff;
+  border: 1px solid #DFE1E6;
+  border-radius: 7px;
+  font-size: 20px;
+  font-weight: 400;
+  width: 100px;
+  height: 35px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0.5px 1px 4px 0px #00000040;
+}
+
+.close-bottom:hover {
+  background-color:   #DFE1E6;
 }
 
 .borrow-reason-container {
