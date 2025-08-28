@@ -1,40 +1,39 @@
 <template>
   <div v-if="show" class="modal-overlay" @click.self="close">
     <div class="modal-container">
-      <h2 class="modal-title">駁回</h2>
-
-      <!-- 駁回原因 -->
-      <label class="modal-label">駁回原因</label>
-      <textarea
-        class="modal-textarea"
-        v-model="rejectReason"
-        placeholder="請輸入駁回原因"
-      ></textarea>
-
-      <!-- 常用選項 -->
-      <div class="quick-options">
-        <button
-          v-for="option in quickOptions"
-          :key="option"
-          class="quick-option-btn"
-          @click="selectOption(option)"
-        >
-          {{ option }}
-        </button>
+      <!-- 上半部 -->
+      <div class="modal-header">
+        <h2 class="modal-title">駁回</h2>
       </div>
 
-      <!-- 送出與取消 -->
+      <div class="divider"></div>
+
+      <div class="modal-body">
+        <!-- 駁回原因 -->
+        <label class="modal-label">駁回原因</label>
+        <textarea
+          class="modal-textarea"
+          v-model="rejectReason"
+        ></textarea>
+
+        <!-- 常用選項 -->
+        <div class="quick-options">
+          <button
+            v-for="option in quickOptions"
+            :key="option"
+            class="quick-option-btn"
+            @click="selectOption(option)"
+          >
+            {{ option }}
+          </button>
+        </div>
+      </div>
+
       <div class="modal-actions">
         <button class="submit-btn" @click="submit">送出</button>
-        <button class="cancel-btn" @click="close">取消</button>
       </div>
     </div>
   </div>
-  	<!-- 
-    <button @click="openRejectModal">駁回</button>
-    <RejectModal ref="rejectModal" @submit="handleRejectSubmit" />
-    直接引用這些
-    -->
 </template>
 
 <script>
@@ -70,26 +69,10 @@ export default {
       this.close();
     },
     selectOption(option) {
-      this.rejectReason += (this.rejectReason ? "\n" : "") + option;
+      this.rejectReason = option;
     },
   },
 };
-/*
-import RejectModal from "@/components/RejectModal.vue";
-
-export default {
-  components: { RejectModal },
-  methods: {
-    openRejectModal() {
-      this.$refs.rejectModal.open(); // 叫子元件的 open 方法
-    },
-    handleRejectSubmit(reason) {
-      console.log("駁回原因：", reason); 
-    },
-  },
-}; 
-這段直接引用
-*/ 
 </script>
 
 <style scoped>
@@ -97,20 +80,6 @@ export default {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
-}
-.modal-container {
-  margin: 100px auto;
-  background: white;
-  padding: 20px;
-  width: 300px;
-}
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -119,104 +88,174 @@ export default {
 
 .modal-container {
   background: white;
-  width: 500px;
+  width: 750px;
   max-width: 90%;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.2s ease-in-out;
 }
 
-.modal-title {
+.modal-header {
+  background: #e6f2ff;
+  padding: 22px;
   text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 15px;
 }
 
+.modal-title {
+  font-size: 2.25rem;
+  margin: 0;
+}
+
+.divider {
+  height: 3px;
+  background: #ccc;
+}
+
+.modal-body {
+  background: #f5f5f5;
+  padding: 22px;
+}
+
+/* 調整駁回原因文字 */
 .modal-label {
   display: block;
-  font-weight: bold;
-  margin-bottom: 8px;
+  font-weight: 500;   /* 不那麼粗 */
+  margin-bottom: 12px;
+  font-size: 1.75rem; /* 再大一些 */
+  color: black;
 }
 
 .modal-textarea {
   width: 100%;
-  height: 80px;
-  padding: 10px;
+  height: 120px;
+  padding: 15px;
   resize: none;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  margin-bottom: 15px;
+  border: none;
+  outline: none;
+  border-radius: 15px;
+  margin-bottom: 22px;
+  background: white;
+  color: black;
+  font-size: 1.125rem;
 }
 
 .quick-options {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 15px;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
 }
 
 .quick-option-btn {
-  background: #f0f0f0;
+  background: white;       
   border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 6px 12px;
+  border-radius: 20px;     
+  padding: 9px 12px;
   cursor: pointer;
+  text-align: center;
+  font-size: 1.125rem;
+  color: black;
+  flex: 1;
+  max-width: 120px;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* 陰影 */
 }
+
 .quick-option-btn:hover {
-  background: #e0e0e0;
+  background: #f0f0f0;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* 滑過加強陰影 */
 }
 
 .modal-actions {
   text-align: center;
-}
-.submit-btn {
-  background: #007bff;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.submit-btn:hover {
-  background: #0056b3;
+  background: #f5f5f5;
+  padding: 15px;
 }
 
-.cancel-btn {
-  margin-left: 10px;
-  background: #6c757d;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
+.submit-btn {
+  background: white;
+  color: black;
+  padding: 15px 30px;
+  border: 1px solid #ccc;
+  border-radius: 20px;     
   cursor: pointer;
+  font-size: 1.125rem;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* 陰影 */
 }
-.cancel-btn:hover {
-  background: #5a6268;
+
+.submit-btn:hover {
+  background: #f0f0f0;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* 滑過加強陰影 */
+}
+
+@media (max-width: 768px) {
+  .modal-container {
+    width: 95%;
+  }
+
+  .modal-title {
+    font-size: 1.8rem;
+  }
+
+  .modal-label {
+    font-size: 1.5rem; /* 手機版稍小 */
+  }
+
+  .modal-textarea {
+    height: 100px;
+    font-size: 1rem;
+    padding: 12px;
+  }
+
+  .quick-option-btn {
+    padding: 8px 12px;
+    font-size: 1rem;
+    max-width: 100px;
+  }
+
+  .submit-btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+
+  .quick-options {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 
 @media (max-width: 480px) {
-  .modal-container {
-    width: 95%;
-    padding: 15px;
-  }
   .modal-title {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
   }
-  .quick-options {
-    flex-direction: column;
-    align-items: stretch;
+
+  .modal-label {
+    font-size: 1.3rem; /* 小螢幕調整 */
   }
+
+  .modal-textarea {
+    height: 90px;
+    font-size: 0.95rem;
+  }
+
   .quick-option-btn {
-    width: 100%;
+    font-size: 0.95rem;
+    padding: 7px 10px;
+    max-width: 100%;
+  }
+
+  .submit-btn {
+    font-size: 0.95rem;
+    padding: 10px 20px;
   }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-15px);
   }
   to {
     opacity: 1;
@@ -224,5 +263,3 @@ export default {
   }
 }
 </style>
-
- 
