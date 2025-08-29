@@ -371,6 +371,7 @@ function rejectMobile() {
   border: 1px solid #ccc;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
+  height: 36px;
 }
 
 button:hover {
@@ -420,26 +421,27 @@ table {
   border-spacing: 0;
   width: 100%;
   background-color: white;
-  table-layout: fixed;
-  border-collapse: separate;
+  table-layout: auto;
 }
 
 thead {
   background-color: aliceblue;
 }
-
 th {
-  border-bottom: 2px solid #ECE8E8;
-  padding: 10px 2px;
+  border-bottom:none;
+  background-image: none;
+  box-shadow: 0  1px rgba(0, 0, 0, 0.1);
+  padding: 10px;
   text-align: center;
   font-size: 18px;
   font-weight: 560;
   white-space: nowrap;
-  padding-left: 24px;
   align-items: center;
   justify-content: space-between;
-  display:flexbox;
   position: relative;
+}
+thead tr {
+  background-image: none !important; /* 移除背景線 */
 }
 tr {
   background-image: linear-gradient(
@@ -461,10 +463,12 @@ tbody tr:last-child {
 }
 
 td {
-  padding: 8px;
-  padding-left: 24px;
+  padding: 9px;
   text-align: center;
   white-space: nowrap; /* 防止換行，方便滑動 */
+  vertical-align: middle;
+  justify-content: center;
+  align-items: center;
 }
 
 .info{
@@ -507,6 +511,7 @@ input[type="text"] {
   padding: 6px 10px;
   border-radius: 10px;
   margin-left: 35px;
+  height:36px;
 }
 .search-input {
   width: 200px;
@@ -555,8 +560,8 @@ input[type="text"] {
 .custom-checkbox input[type="checkbox"]:checked + span::after {
   content: "";
   position: absolute;
-  left: 7px;
-  top: 3px;
+  left: 9px;
+  top: 4px;
   width: 8px;
   height: 14px;
   border: solid green;
@@ -573,7 +578,6 @@ input[type="text"] {
   display: flex;
   gap: 10px;
 }
-
 .dropdown2 {
   width:auto;
   font-size: 18px;
@@ -591,7 +595,7 @@ input[type="text"] {
   background:url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 6px center;
   background-size: 30px 60px;
   padding: 6px 30px 6px 10px;
-  transform: translateX(-8%);
+  /* transform: translateX(-8%); */
 }
 .dropdown2 option {
   font-size: 14px;
@@ -614,12 +618,12 @@ input[type="text"] {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  border: none;
-  outline: none;
+  border: 1px solid #ccc;
   width: 120px;
   height: 36px;
   padding: 0 30px 0 10px;
-  background: transparent;
+  border-radius: 12px;
+  background: white;
   font-size: 14px;
   cursor: pointer;
 }
