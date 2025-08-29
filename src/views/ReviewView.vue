@@ -338,26 +338,30 @@ function rejectMobile() {
 .header-bar h1 {
   font-size: 30px;
   color: black;
+  margin: 0;
 }
 
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 0;
+  margin: 0 auto;
+}
 .left {
-  max-width: 1024px;
-  margin: 0 auto 0px;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 35px;
-  justify-content: left;
-  flex: 1;
+  justify-content: space-between;
+  align-items: center;
 }
 .right {
   display: flex;
-  gap: 15px;
+  align-items: center;
+  gap: 10px;
   justify-content: flex-end;
-  flex-shrink: 0; /* 不縮小 */
 }
 .topbutton {
-  margin-right: 35px;
   display: block;
   padding: 3px 30px;
   border-radius: 12px;
@@ -563,23 +567,6 @@ input[type="text"] {
 /* 滑鼠移入時改色（選擇性） */
 .custom-checkbox:hover span {
   border-color: #555;
-}
-.header-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 20px 0;
-  max-width: 1024px;
-  margin: 0 auto;
-}
-
-.header-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 20px 0;
-  max-width: 1024px;
-  margin: 0 auto;
 }
 
 .action-buttons {
