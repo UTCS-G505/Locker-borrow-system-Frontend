@@ -3,6 +3,7 @@
   <!-- 手機版操作列 -->
   <div v-if="isMobile" class="mobile-ops">
     <div class="mobile-header-row">
+    <div class="mobile-header-top">
       <h1>審核申請</h1>
 
       <!-- 下拉式表單 -->
@@ -13,7 +14,9 @@
             <option value="審核">審核紀錄</option>
           </select>
         </div>
+        </div>
       <!-- 按鈕 -->
+      <div class="mobile-header-bottom">
       <button class="btn" @click="approveMobile"  v-if="selectedType === '借用'">通過</button>
       <button class="btn" @click="rejectMobile"  v-if="selectedType === '借用'">駁回</button>
       <button
@@ -23,6 +26,7 @@
         >
           送出
         </button>
+    </div>
     </div>
 
     <!-- 搜尋欄 -->
@@ -328,12 +332,16 @@ function rejectMobile() {
 </script>
 
 <style scoped>
+html, body {
+  margin: 0;
+  padding: 0;
+}
 .upboard {
   background: transparent;
   border: none ;
   box-shadow: none ;
-  min-height: 100vh;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
 }
 .header-bar h1 {
   font-size: 30px;
@@ -345,7 +353,7 @@ function rejectMobile() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 20px 0;
+  padding: 0px 20px 0 20px;
   margin: 0 auto;
 }
 .left {
@@ -647,18 +655,31 @@ input[type="text"] {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    margin:0;
     padding: 10px;
-    margin-bottom: 10px;
+     padding: 0 20px;
     border-radius: 8px;
   }
 /* 手機版：水平排列 */
 .mobile-header-row {
   display: flex;
-  flex-wrap: wrap;          /* 允許換行 */
-  align-items: center;      /* 垂直置中 */
-  justify-content: flex-start; /* 元素從左往右排列 */
-  gap: 10px;                /* 元素間距 */
-  width: 100%;
+  flex-wrap: wrap;              /* 允許換行 */
+  align-items: center;          /* 垂直置中 */
+  justify-content: flex-start;  /* 初始同一行靠左 */
+  gap: 10px;
+}
+.mobile-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 標題與下拉左右對齊 */
+  gap: 10px;
+}
+
+.mobile-header-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* 按鈕靠左 */
+  gap: 10px;
 }
 .mobile-header-row > h1 {
   flex-shrink: 0;
@@ -683,6 +704,7 @@ input[type="text"] {
   border: 1px solid #ccc;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .dropdown {
