@@ -329,7 +329,9 @@ function rejectMobile() {
 
 <style scoped>
 .upboard {
-  background-color: white;
+  background: transparent;
+  border: none ;
+  box-shadow: none ;
   min-height: 100vh;
   padding: 20px;
 }
@@ -393,7 +395,10 @@ button:hover {
 }
 .scrollWrapper {
   overflow-x: auto; /* 可左右滑動 */
-  width: 100%
+  width: 100%;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .insideTable {
