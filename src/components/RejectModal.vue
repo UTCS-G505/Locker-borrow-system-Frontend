@@ -55,10 +55,12 @@ export default {
   methods: {
     open() {
       this.show = true;
+      document.body.style.overflow = "hidden";
     },
     close() {
       this.rejectReason = "";
       this.show = false;
+      document.body.style.overflow = "";
     },
     submit() {
       if (!this.rejectReason.trim()) {
@@ -87,8 +89,10 @@ export default {
 }
 
 .modal-container {
-  background: white;
-  width: 750px;
+  background: #f5f5f5;
+  width: 800px;
+  max-width: 90%;
+  height: 420px;
   max-width: 90%;
   border-radius: 18px;
   overflow: hidden;
@@ -98,32 +102,31 @@ export default {
 
 .modal-header {
   background: #e6f2ff;
-  padding: 22px;
+  padding: 16px;
   text-align: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
 }
 
 .modal-title {
   font-size: 2.25rem;
   margin: 0;
-}
-
-.divider {
-  height: 3px;
-  background: #ccc;
+  font-weight: bold;
+  color: #1A1A1A;
 }
 
 .modal-body {
-  background: #f5f5f5;
-  padding: 22px;
+  background: transparent;
+  padding: 6px 40px;
 }
 
 /* 調整駁回原因文字 */
 .modal-label {
   display: block;
-  font-weight: 500;   /* 不那麼粗 */
-  margin-bottom: 12px;
-  font-size: 1.75rem; /* 再大一些 */
+  font-weight: normal;   /* 不那麼粗 */
+  margin-bottom: 4px;
+  font-size: 2rem; /* 再大一些 */
   color: black;
+  padding-left: 12px;
 }
 
 .modal-textarea {
@@ -134,7 +137,7 @@ export default {
   border: none;
   outline: none;
   border-radius: 15px;
-  margin-bottom: 22px;
+  margin-bottom: 12px;
   background: white;
   color: black;
   font-size: 1.125rem;
@@ -142,24 +145,24 @@ export default {
 
 .quick-options {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 22px;
+  justify-content: center;
+  gap: 10.75rem;
+  margin-bottom: 12px;
 }
 
 .quick-option-btn {
-  background: white;       
-  border: 1px solid #ccc;
-  border-radius: 20px;     
-  padding: 9px 12px;
+  background: white;
+  border: 1px solid #DFE1E6;
+  border-radius: 12px;
+  padding: 6px 12px;
   cursor: pointer;
   text-align: center;
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   color: black;
   flex: 1;
   max-width: 120px;
   transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* 陰影 */
+  box-shadow: 0.5px 1px 4px 0px #00000040;
 }
 
 .quick-option-btn:hover {
@@ -169,20 +172,20 @@ export default {
 
 .modal-actions {
   text-align: center;
-  background: #f5f5f5;
-  padding: 15px;
+  background: transparent;
+  padding: 10px;
 }
 
 .submit-btn {
   background: white;
   color: black;
-  padding: 15px 30px;
-  border: 1px solid #ccc;
-  border-radius: 20px;     
+  padding: 4px 40px;
+  border: 1px solid #DFE1E6;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* 陰影 */
+  box-shadow: 0.5px 1px 4px 0px #00000040;
 }
 
 .submit-btn:hover {
@@ -226,40 +229,4 @@ export default {
   }
 }
 
-@media (max-width: 480px) {
-  .modal-title {
-    font-size: 1.5rem;
-  }
-
-  .modal-label {
-    font-size: 1.3rem; /* 小螢幕調整 */
-  }
-
-  .modal-textarea {
-    height: 90px;
-    font-size: 0.95rem;
-  }
-
-  .quick-option-btn {
-    font-size: 0.95rem;
-    padding: 7px 10px;
-    max-width: 100%;
-  }
-
-  .submit-btn {
-    font-size: 0.95rem;
-    padding: 10px 20px;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 </style>
