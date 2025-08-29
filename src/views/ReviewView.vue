@@ -386,7 +386,6 @@ button:hover {
   width: 200px;
 }
 .review-list {
-  max-width: 1024px;
   margin: 0 auto;
   padding: 5px 20px;
   font-family: "Noto Sans TC", sans-serif;
@@ -394,7 +393,7 @@ button:hover {
 }
 .scrollWrapper {
   overflow-x: auto; /* 可左右滑動 */
-  width: 100%;
+  width: 100%
 }
 
 .insideTable {
@@ -405,7 +404,6 @@ button:hover {
   border: 2px solid #dfe1e6;
   min-width: 960px;
   overflow: hidden;
-  min-height: 500px;
   table-layout: auto;
 }
 
