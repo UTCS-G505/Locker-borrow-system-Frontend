@@ -499,34 +499,30 @@ button {
   font-size: 14px;
   display: inline-block;
   color: black;
-  font-weight: bold;
+  font-weight: normal;
 }
 /* 借用中 - 綠色 */
 .status-borrowing {
   background-color: #DBF6F3;
   color: #0D4436;
-  border: 1px solid #0D4436;
 }
 
 /* 審核中 - 橘色 */
 .status-pending {
   background-color: #FDE7C6;
   color: #A5551F;
-  border: 1px solid #A5551F;
 }
 
 /* 駁回 - 紅色 */
 .status-rejected {
   background-color: #FFE9FB;
   color: #A22282;
-  border: 1px solid #A22282;
 }
 
 /* 已歸還 - 灰色 */
 .status-returned {
   background-color: #F2F2F2;
   color: #555;
-  border: 1px solid #999;
 }
 select {
   background-color: white;
