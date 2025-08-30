@@ -436,9 +436,9 @@ thead {
   background-color: aliceblue;
 }
 th {
-  border-bottom:none;
-  background-image: none;
-  box-shadow: 0  1px rgba(0, 0, 0, 0.1);
+  background-color: aliceblue;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-bottom:2px solid #ECE8E8;
   padding: 10px;
   text-align: center;
   font-size: 18px;
