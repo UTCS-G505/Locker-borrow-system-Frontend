@@ -500,6 +500,8 @@ button {
   display: inline-block;
   color: black;
   font-weight: normal;
+  min-width: 80px; /* 最小寬度，所有狀態一致 */
+  text-align: center;
 }
 /* 借用中 - 綠色 */
 .status-borrowing {
@@ -521,8 +523,8 @@ button {
 
 /* 已歸還 - 灰色 */
 .status-returned {
-  background-color: #F2F2F2;
-  color: #555;
+  background-color: #F3F7F9;
+  color: #5E6064;
 }
 select {
   background-color: white;
