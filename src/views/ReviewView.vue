@@ -34,7 +34,7 @@
             type="text"
             v-model="searchName"
             placeholder="搜尋"
-             class="search-input mobile-search"
+             class="mobile-search search-input"
     />
   </div>
 
@@ -280,13 +280,13 @@ function rejectApplication(app) {
 function statusColor(status) {
   switch (status) {
     case "借用中":
-      return "status-green";
+      return "status-borrowing";
     case "駁回":
-      return "status-red";
+      return "status-rejected";
     case "審核中":
-      return "status-blue";
+      return "status-pending";
     case "已歸還":
-      return "status-gray";
+      return "status-returned";
     default:
       return "";
   }
@@ -501,6 +501,33 @@ button {
   color: black;
   font-weight: bold;
 }
+/* 借用中 - 綠色 */
+.status-borrowing {
+  background-color: #DBF6F3;
+  color: #0D4436;
+  border: 1px solid #0D4436;
+}
+
+/* 審核中 - 橘色 */
+.status-pending {
+  background-color: #FDE7C6;
+  color: #A5551F;
+  border: 1px solid #A5551F;
+}
+
+/* 駁回 - 紅色 */
+.status-rejected {
+  background-color: #FFE9FB;
+  color: #A22282;
+  border: 1px solid #A22282;
+}
+
+/* 已歸還 - 灰色 */
+.status-returned {
+  background-color: #F2F2F2;
+  color: #555;
+  border: 1px solid #999;
+}
 select {
   background-color: white;
   color: black;
@@ -518,8 +545,7 @@ input[type="text"] {
   color: black;
   padding: 6px 10px;
   border-radius: 10px;
-  margin-left: 35px;
-  height:36px;
+  height: 36px;
 }
 .search-input {
   width: 200px;
@@ -551,6 +577,7 @@ input[type="text"] {
   left: 0;
   top: 0;
   cursor: pointer;
+  margin-left: 35px;
 }
 
 .custom-checkbox span {
@@ -681,13 +708,13 @@ input[type="text"] {
   justify-content: flex-start; /* 按鈕靠左 */
   gap: 10px;
 }
-.mobile-header-row > h1 {
+ .mobile-header-row h1 {
   flex-shrink: 0;
   font-size: 32px;
   margin: 0;
   color: black;
 }
-.mobile-header-row > select {
+.mobile-header-row select {
   flex-grow: 1;
   min-width: 120px;
   max-width: 200px;
@@ -695,7 +722,7 @@ input[type="text"] {
   border-radius: 14px;
   border: 1px solid black;
 }
-.mobile-header-row > button {
+.btn {
   padding: 3px 30px;
   border-radius: 12px;
   cursor: pointer;
@@ -705,14 +732,10 @@ input[type="text"] {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
   flex-shrink: 0;
+  height : 36px;
 }
-
-.dropdown {
-  flex: 1;
-  padding: 6px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+.custom-checkbox input[type="checkbox"] {
+  margin-left: 0px;
 }
 .mobile-search {
   margin-top: 10px;
@@ -724,24 +747,8 @@ input[type="text"] {
   box-sizing: border-box;
   font-size: 14px;
 }
-.dropdown2 {
-  width: auto;
-  font-family: "Noto Sans TC", sans-serif;
-  font-size: 18px;
-  font-weight: 560;
-  color: #333;
-  border: none;
-  background-color: transparent;
-  appearance: none;
-  -webkit-appearance: none;
-  text-align: center;
-  text-align-last: center;
-  display: block;
-  margin: 0 auto;
-  white-space: nowrap;
-}
 .search-input {
-  width: 90%;
+  width: 100%;
   background-image: url("data:image/svg+xml;utf8,<svg fill='gray' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M10 2a8 8 0 105.293 14.293l5.707 5.707 1.414-1.414-5.707-5.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z'/></svg>");
   background-repeat: no-repeat;
   background-position: right 8px center;
