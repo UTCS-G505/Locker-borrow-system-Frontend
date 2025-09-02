@@ -11,107 +11,118 @@
 
       <!-- 下方內容區塊 -->
       <div class="modal-body">
-        <p>申請類型：學期借用</p>
-        <p>起迄時間：2025/3/29 ~ 2025/12/6</p>
-        <p>系櫃號碼：<span class="locker-number">93</span></p>
+        <p>申請類型：{{ borrowType }}</p>
+        <p>起迄時間：{{ timeRange.start }} ~ {{ timeRange.end }}</p>
+        <p>系櫃號碼：<span class="locker-number">{{ locker?.id }}</span></p>
         <p>借用理由：</p>
         <div class="borrow-reason-container">
-          <p>不要開學阿aaaaaaaaaaa</p>
+          <p>{{ reason }}</p>
         </div>
-        <bottom class="close-bottom" @click="$emit('update:modelValue', false)">關閉</bottom>
+        <div class="buttom">
+        <bottom class="close-bottom" @click="emit('update:modelValue', false)">關閉</bottom>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { watch } from 'vue';
 console.log("ModalSuccess mounted!")
-defineProps({
-  modelValue: Boolean
+const props = defineProps({
+  modelValue: Boolean,
+  locker: Object,
+  borrowType: String,
+  timeRange: Object,
+  reason: String
 });
-defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue']);
+
+watch(() => props.modelValue, (val) => {
+  if (val) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+});
 </script>
 
 <style scoped>
 /* Modal 遮罩背景 */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: flex;            /* flex 置中 */
+  justify-content: center;  /* 水平置中 */
+  align-items: center;      /* 垂直置中 */
   z-index: 1000;
 }
 
 /* Modal 外框容器 */
 .modal {
-  position: absolute;
-  top: 70px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 400px;
-  border-radius: 12px;
-  background: #FAFAFBF2;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-  overflow: hidden;
+  width: 608px;        /* 彈窗寬度 */
+  max-width: 90%;      /* 視窗太小時自動縮小 */
+  min-height: 300px;
+  max-height: 349px;    /* 高度上限 */
+  border-radius: 16px;
+  background: rgba(250, 250, 251, 0.95);
+  padding: 24px;
+  box-shadow: 2px 4px 4px rgba(0,0,0,0.35), -1.5px -0.5px 4px rgba(0,0,0,0.25);
+  box-sizing: border-box;
   text-align: center;
-  z-index: 1001;
-  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 /* Modal 標題區塊 */
 .modal-header {
-  background: rgba(235, 247, 255, 1);
-  padding: 6px 12px;
-  font-size: 20px;
-  font-weight: bold;
-  color: #222;
-  box-shadow: 0 2px 2px 0 #DFE1E6;
-  z-index: 1;
-   border-bottom: 1px solid #DFE1E6;
+  min-height: 60px;
+  background-color: #E8F7FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -25px -24px 0 -24px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 /* Modal 內文區塊 */
 .modal-body {
-  background: #FAFAFBF2;
-  padding: 20px 16px;
-  font-size: 20px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-  font-weight: 500;
-  color: #222;
+  font-size: 18px;
+  padding: 15px 10px 0;
   line-height: 1.6;
+  color: #222;
   text-align: left;
+  font-weight: 500;
 }
 
 /* Modal 標題文字樣式 */
 .modal h2 {
-  font-size: 30px;
-  font-weight: bold;
-  color: #1A1A1A;
+  font-size: 24px;
+  font-weight: 14px;
+  color: #222;
   margin-bottom: 0;
 }
 
 .close-bottom {
-  display: flex;
-  justify-content: center; /* 水平置中 */
-  align-items: center;     /* 垂直置中 */
-  margin: 12px auto 0 auto; /* 上方20px，左右自動置中 */
-  padding: 6px 20px;
-  background-color: #fff;
-  border: 1px solid #DFE1E6;
-  border-radius: 7px;
-  font-size: 20px;
-  font-weight: 400;
   width: 100px;
-  height: 35px;
+  height: 30px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid #DFE1E6;
+  background-color: white;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0.5px 1px 4px 0px #00000040;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.buttom {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
 }
 
 .close-bottom:hover {
@@ -119,7 +130,7 @@ defineEmits(['update:modelValue']);
 }
 
 .borrow-reason-container {
-  max-height: 20vh; /* 內容區塊最大高度 */
+  height: 12vh;
   overflow-y: auto; /* 出現垂直捲軸 */
   overflow-x: hidden; /* 禁止水平捲軸 */
   width: 100%; /* 讓捲動區塊佔滿寬度 */

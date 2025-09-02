@@ -54,6 +54,13 @@
       @close="showConfirmModal = false"
       @confirm="handleConfirmBorrow"
     />
+
+    <ApplySuccessModal v-model="showSuccessModal"
+      :locker="selectedLocker"
+      :borrowType="selectedType"
+      :timeRange="timeRange"
+      :reason="borrowReason"
+      />
   </div>
 </template>
 
@@ -64,6 +71,7 @@
   import TypeSelect from '../components/TypeSelect.vue'
   import LockerStatus from '../components/LockerStatus.vue'
   import ConfirmBorrowModal from '../components/ConfirmBorrowModal.vue'
+  import ApplySuccessModal from '../components/ApplySuccessModal.vue'
 
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
@@ -72,6 +80,8 @@
   const showModal = ref(false)
   const selectedLocker = ref(null)
   const showConfirmModal = ref(false)
+  const showSuccessModal = ref(false)
+  const borrowReason = ref('')
 
   function openModal() {
     showModal.value = true
@@ -89,7 +99,9 @@
   }
   function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
-    alert(`櫃子 ${locker.name} 已確認借用，理由：${reason}`)
+    console.log('父元件收到 confirm 事件：', { locker, reason })
+    borrowReason.value = reason
+    showSuccessModal.value = true
   }
   function handleTimeRangeUpdate(range) {
     timeRange.value = range
