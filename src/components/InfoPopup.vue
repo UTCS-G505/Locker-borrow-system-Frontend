@@ -11,7 +11,7 @@ const close = () => {
   detailInfo.value = false
 }
 
-watch(checkPopup, (val) => {
+watch(InfoPopup, (val) => {
 document.body.style.overflow = val ? 'hidden' : ''
 })
 
