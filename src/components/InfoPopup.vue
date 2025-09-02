@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue';
 
 const detailInfo = ref(false)
 
@@ -10,6 +10,11 @@ const open = () => {
 const close = () => {
   detailInfo.value = false
 }
+
+watch(checkPopup, (val) => {
+document.body.style.overflow = val ? 'hidden' : ''
+})
+
 </script>
 
 <template>
@@ -24,44 +29,45 @@ const close = () => {
       <div class="info-list">
       <div class="row">
         <div class="field">
-          <span >申請人：</span>
-          <span >陳胤華</span>
+          <span class="text" >申請人：</span>
+          <span class="text" >陳胤華</span>
         </div>
         <div class="field">
-          <span >狀態：</span>
-          <span >借用中</span>
+          <span class="text" >狀態：</span>
+          <span class="text" >借用中</span>
         </div>
         <div class="field">
-          <span >借用類別：</span>
-          <span >學期借用</span>
+          <span class="text" >借用類別：</span>
+          <span class="text" >學期借用</span>
         </div>
         <div class="field">
-          <span >申請時間：</span>
-          <span >2025/6/30 9:50</span>
+          <span class="text" >申請時間：</span>
+          <span class="text" >2025/6/30 9:50</span>
         </div>
         <div class="field">
-          <span >時間起：</span>
-          <span >2024/9/1</span>
+          <span class="text" >時間起：</span>
+          <span class="text" >2024/9/1</span>
         </div>
         <div class="field">
-          <span >時間迄：</span>
-          <span >2025/6/30</span>
+          <span class="text" >時間迄：</span>
+          <span class="text" >2025/6/30</span>
+        </div>
+        <div class="field full-row">
+          <span class="text" >借用原因：</span>
+          <div class="input-box">沒有宿舍ＱＡＱ</div>
+        </div>
+        <div class="field full-row">
+          <span class="text" >駁回原因：</span>
+          <div class="input-box"></div>
+          <span class="text" ></span>
         </div>
         <div class="field">
-          <span >借用原因：</span>
-          <span >沒有宿舍 QAQ</span>
+          <span class="text" >助教簽核時間：</span>
+          <span class="text" ></span>
         </div>
         <div class="field">
-          <span >駁回原因：</span>
-          <span ></span>
-        </div>
-        <div class="field">
-          <span >助教簽核時間：</span>
-          <span ></span>
-        </div>
-        <div class="field">
-          <span >系主任簽核時間：</span>
-          <span ></span>
+          <span class="text" >系主任簽核時間：</span>
+          <span class="text" ></span>
         </div>
       </div>
       </div>
@@ -74,12 +80,17 @@ const close = () => {
 <style scoped>
 /* 按鈕 */
 .trigger {
-  padding: 8px 16px;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  padding: 2px 12px;
+  background: #F3F7F9;
+  color:#000000;
+  border: 1px solid gray;
+  border-radius: 10px;
   cursor: pointer;
+  font-size: 15px;
+
+}
+.trigger:hover{
+  background: #DBDCDD;
 }
 
 /* 覆蓋背景 */
@@ -98,11 +109,11 @@ const close = () => {
 
 /* 彈窗本體 */
 .detailInfo {
-  background-color: white;
-  width: 700px;
-  border-radius: 12px;
+  background-color: #F6F7F9F2;
+  width: 608px;
+  height: 299px;
+  border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
 }
@@ -115,6 +126,7 @@ const close = () => {
   width: 100%;
   height: 65px; 
   background-color: #EBF7FFCC;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
   z-index: 0;
 }
 
@@ -126,12 +138,12 @@ const close = () => {
 
 /* 標題 */
 .title {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 25px;
+  font-weight: 400;
   text-align: center;
   margin-bottom: 10px;
   border-radius: 12px;
-  color: black;
+  color: #1a1a1a;
 }
 
 /* 分隔線 */
@@ -157,11 +169,25 @@ const close = () => {
   display: flex;
   align-items: center;
 }
+.field.full-row{
+  grid-column: span 2;
+}
 
-/* 底部 */
-.footer {
-  text-align: center;
-  margin-top: 20px;
+.input-box {
+  flex: 1;
+  height: 22px;
+  line-height: 22px;
+  padding: 0px 8px;
+  border-radius: 6px;
+  border: none;
+  background: #fff;
+  font-size: 18px;
+  margin-left: 6px; /* 和前面文字有點間距 */
+}
+
+.text{
+  font-size: 18px;
+  color: #000000;
 }
 
 </style>
