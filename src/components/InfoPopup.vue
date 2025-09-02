@@ -118,6 +118,7 @@ document.body.style.overflow = val ? 'hidden' : ''
   overflow: hidden;
 }
 
+/* 藍藍那條外觀 */
 .detailInfo::before{
   content: "";
   position: absolute;
@@ -173,6 +174,8 @@ document.body.style.overflow = val ? 'hidden' : ''
   grid-column: span 2;
 }
 
+
+/* 駁回原因及申請原因 */
 .input-box {
   flex: 1;
   height: 22px;
@@ -184,7 +187,7 @@ document.body.style.overflow = val ? 'hidden' : ''
   font-size: 18px;
   margin-left: 6px; /* 和前面文字有點間距 */
 }
-
+/* 所有一般文字 */
 .text{
   font-size: 18px;
   color: #000000;
