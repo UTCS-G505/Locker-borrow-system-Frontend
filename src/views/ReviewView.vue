@@ -437,8 +437,7 @@ thead {
 }
 th {
   background-color: aliceblue;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border-bottom:2px solid #ECE8E8;
+  box-shadow: 0 0.5px rgba(0, 0, 0, 0.1);
   padding: 10px;
   text-align: center;
   font-size: 18px;
@@ -455,9 +454,9 @@ tr {
   background-image: linear-gradient(
     to right,
     transparent 0%,
-    transparent 10px,
-    rgba(236, 232, 232, 0.35) 10px,
-    rgba(236, 232, 232, 0.35) calc(100% - 10px),
+    transparent 0px,
+    rgba(236, 232, 232, 0.35) 0px,
+    rgba(236, 232, 232, 0.35) calc(100% - 0px),
     transparent calc(100% - 10px),
     transparent 100%
   );
