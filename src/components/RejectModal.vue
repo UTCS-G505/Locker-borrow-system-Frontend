@@ -81,42 +81,46 @@ export default {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0,0,0,0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 1000;
 }
 
 .modal-container {
-  background: #f5f5f5;
-  width: 800px;
+  background: rgba(250, 250, 251, 0.95);
+  padding: 24px;
+  border-radius: 16px;
+  width: 608px;
   max-width: 90%;
-  height: 420px;
-  max-width: 90%;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.2s ease-in-out;
+  height: 349px;
+  box-sizing: border-box;
+  box-shadow: 2px 4px 4px rgba(0,0,0,0.35),-1.5px -0.5px 4px rgba(0,0,0,0.25);
 }
 
 .modal-header {
-  background: #e6f2ff;
-  padding: 16px;
-  text-align: center;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+  min-height: 60px;
+  background-color: #E8F7FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -25px -24px 0 -24px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .modal-title {
-  font-size: 2.25rem;
+  font-size: 24px;
   margin: 0;
-  font-weight: bold;
-  color: #1A1A1A;
+  font-weight: 14px;
+  color: #222;
 }
 
 .modal-body {
   background: transparent;
-  padding: 6px 40px;
+  padding: 6px 16px;
 }
 
 /* 調整駁回原因文字 */
@@ -124,7 +128,7 @@ export default {
   display: block;
   font-weight: normal;   /* 不那麼粗 */
   margin-bottom: 4px;
-  font-size: 2rem; /* 再大一些 */
+  font-size: 20px; /* 再大一些 */
   color: black;
   padding-left: 12px;
 }
@@ -132,7 +136,7 @@ export default {
 .modal-textarea {
   width: 100%;
   height: 120px;
-  padding: 15px;
+  padding: 8px;
   resize: none;
   border: none;
   outline: none;
@@ -140,34 +144,37 @@ export default {
   margin-bottom: 12px;
   background: white;
   color: black;
-  font-size: 1.125rem;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: block;      /* 確保是獨立一行 */
+  margin: 0 auto 16px;
 }
 
 .quick-options {
   display: flex;
-  justify-content: center;
-  gap: 10.75rem;
+  justify-content: space-between;
+  gap: 0;
   margin-bottom: 12px;
 }
 
 .quick-option-btn {
   background: white;
   border: 1px solid #DFE1E6;
-  border-radius: 12px;
-  padding: 6px 12px;
+  border-radius: 10px;
+  padding: 4px 12px;
   cursor: pointer;
   text-align: center;
-  font-size: 1.25rem;
+  font-size: 16px;
   color: black;
-  flex: 1;
+  flex: none;
   max-width: 120px;
   transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0.5px 1px 4px 0px #00000040;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
 
 .quick-option-btn:hover {
-  background: #f0f0f0;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* 滑過加強陰影 */
+  background-color:   #DFE1E6;
 }
 
 .modal-actions {
@@ -177,20 +184,25 @@ export default {
 }
 
 .submit-btn {
+  width: 100px;
+  height: 30px;
   background: white;
   color: black;
-  padding: 4px 40px;
+  padding: 8px 24px;
   border: 1px solid #DFE1E6;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
-  font-size: 1.25rem;
+  font-size: 16px;
   transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0.5px 1px 4px 0px #00000040;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: normal;
 }
 
 .submit-btn:hover {
-  background: #f0f0f0;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* 滑過加強陰影 */
+  background-color:   #DFE1E6;
 }
 
 @media (max-width: 768px) {
@@ -199,33 +211,37 @@ export default {
   }
 
   .modal-title {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
 
   .modal-label {
-    font-size: 1.5rem; /* 手機版稍小 */
+    font-size: 1.25rem; /* 手機版稍小 */
   }
 
   .modal-textarea {
-    height: 100px;
-    font-size: 1rem;
-    padding: 12px;
+    height: 80px;
+    font-size: 0.9rem;
+    padding: 8px;
+    margin-bottom: 10px;
   }
 
   .quick-option-btn {
-    padding: 8px 12px;
+    padding: 2px 10px;
     font-size: 1rem;
-    max-width: 100px;
+    max-width: none;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .submit-btn {
-    padding: 12px 24px;
+    padding: 2px 24px;
     font-size: 1rem;
   }
 
   .quick-options {
     flex-direction: column;
     gap: 10px;
+    margin-bottom: -4px;
   }
 }
 
