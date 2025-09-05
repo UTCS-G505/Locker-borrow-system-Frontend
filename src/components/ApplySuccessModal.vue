@@ -146,4 +146,10 @@ watch(() => props.modelValue, (val) => {
     width: 400px;
   }
 }
+
+@media (max-width: 768px) {
+  .borrow-reason-container {
+    max-height: 8vh; /* 手機再縮小高度 */
+  }
+}
 </style>
