@@ -64,22 +64,25 @@ function toggleReturn(id){
     table那邊外層包了兩個<div>，我有嘗試過包一層會沒效果，包兩層才有，
     然後CSS設定在第二層，這部分我有先跟Allen說過，那邊有點玄(?)，歡迎電神們的討論~~
 */
+
 .scrollWrapper{
     overflow-x: auto; /* 出現橫向滾動條 */
     width: 100%; /* 確保包覆容器不會收縮 */
 }
+
 .insideTable{
     position: relative;
     border-radius: 14px; 
     overflow-y: hidden; /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
     margin: 10px auto;
     max-width: 100%; /* 保護不要暴衝超出容器 */
-    min-width: 480px; /* 不要自動變窄 (表格至少需要這麼寬) */
+    min-width: 550px; /* 不要自動變窄 (表格至少需要這麼寬) */
     width: 100%;
     z-index: 0;
 }
+
 table{
-    border-collapse: collapse; /* 讓格線合併 (不然會只有資料下方有灰線，一段一段的感覺) */
+    /*border-collapse: collapse; /* 讓格線合併 (不然會只有資料下方有灰線，一段一段的感覺) */
     border-radius: 14px;
     overflow: hidden;
     border:2px solid #dfe1e6; 
@@ -87,14 +90,18 @@ table{
     border-spacing: 0;
     width: 100%;
     background-color: white;
+    min-width: 730px;
 }
+
 .head{
     background-color: aliceblue;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* 製作下方陰影處 */
 }
+
 .head th{
     border-bottom:2px solid #ECE8E8;
 }
+
 #data{
     font-size: 25px;
     color: black;
@@ -107,9 +114,11 @@ tr td{
     font-size: 20px;
     color: black;
 }
+
 tbody tr {
     height: 45px;
 }
+
 tbody tr {
   background-image: linear-gradient(
     to right, /* 從左到右畫背景 */
@@ -124,14 +133,17 @@ tbody tr {
   background-position: bottom; /* 將背景線貼在每列的下方 */
   background-size: 100% 4px; /* 100% 的意思為寬度是整列(含前後透明區域) */
 }
+
 tbody tr:last-child {
   background-image: none; /* 如果沒有這行，會讓下面再出現一條線 */
 }
+
 td,th{
     border: none; /* 不要有預設的格線 */
     padding: 8px;
     white-space: nowrap; /* 不允許自動換行 */
 }
+
 .operateButton{
     border: 2px solid #dbdcdd;
     background-color: white;
@@ -141,30 +153,91 @@ td,th{
     cursor: pointer;
     font-size: 20px;
 }
+
 .operateButton:hover{
     background-color: #dbdcdd; /* 滑鼠放上去時會變灰色 */
 }
+
+th:nth-child(7),td:nth-child(7){
+    width: 17%; 
+    text-align: center;
+}
+
+th:nth-child(8),td:nth-child(8){
+    width: 13%;
+    text-align: center;
+}
+
 .emptyRow td {
   height: 200px; /* 製作下方空白處 */
   border: none;
   background: transparent;
 }
+
+/* 目前641-741之間還是會抖動，待處理... */
+
+
+@media (max-width: 984px) and (min-width: 641px){
+
+.operateButton{
+    padding: 2px 6px;
+}
+
+th{
+    font-size: 19px;
+}
+
+tr td{
+    font-size: 16px;
+}
+
+th:nth-child(7),td:nth-child(7){
+    width: 21%; 
+    text-align: center;
+}
+
+th:nth-child(8),td:nth-child(8){
+    width: 9%;
+    text-align: center;
+}
+
+.operateButton{
+    font-size: 15px;
+}
+
+}
+
+
 /* 手機版 */
 @media (max-width: 640px) {
 tr td{
     font-size: 15px;
 }
+
 th{
     font-size: 17px;
 }
+
 .operateButton{
     font-size: 14px;
 }
+
 .mobileHide{
     display: none; /* 手機版沒有顯示開始時間、結束時間、系櫃編號，因此使用此程式碼讓它隱藏 */
 }
+
 tbody tr {
   height: 30px; 
+}
+
+th:nth-child(7),td:nth-child(7){
+    width: 16%; 
+    text-align: center;
+}
+
+th:nth-child(8),td:nth-child(8){
+    width: 16%;
+    text-align: center;
 }
 }
 </style>
