@@ -169,8 +169,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from "vue";
-
+import { ref, reactive, computed, watch } from "vue";
 const selectedType = ref("借用");
 const searchName = ref("");
 const approvalSelections = ref([]);
@@ -329,6 +328,15 @@ function rejectMobile() {
   mobileSelections.value = [];
 }
 
+
+
+//當切換頁面時重置所有過濾器
+watch(selectedType, () => {
+  searchName.value = "";
+  borrowTypeFilter.value = "";
+  gradeFilter.value = "";
+  statusFilter.value = "";
+});
 </script>
 
 <style scoped>
