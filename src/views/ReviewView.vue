@@ -454,7 +454,9 @@ th {
   align-items: center;
   justify-content: space-between;
   position: relative;
+  vertical-align: middle;
 }
+
 thead tr {
   background-image: none !important; /* 移除背景線 */
 }
@@ -625,18 +627,17 @@ input[type="text"] {
   color: #333;
   border: none;
   background-color: transparent;
-  padding-left: 20px;
   white-space: nowrap;
-  margin: 0 auto;
+  margin: 0 ;
 
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   background:url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 6px center;
   background-size: 30px 60px;
-  padding: 6px 30px 6px 10px;
-  /* transform: translateX(-8%); */
+  padding: 8.8px 30px 6px 10px; /* 8.8px是為了對齊th裡面其他的字 */
 }
+
 .dropdown2 option {
   font-size: 14px;
   border: 1px solid #ccc;
@@ -695,8 +696,8 @@ input[type="text"] {
 /* 手機版：水平排列 */
 .mobile-header-row {
   display: flex;
-  flex-wrap: wrap;              /* 允許換行 */
-  align-items: center;          /* 垂直置中 */
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-start;  /* 初始同一行靠左 */
   gap: 10px;
 }
