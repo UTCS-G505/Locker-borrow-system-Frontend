@@ -76,13 +76,10 @@ function toggleReturn(id){
     overflow-y: hidden; /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
     margin: 10px auto;
     max-width: 100%; /* 保護不要暴衝超出容器 */
-    min-width: 550px; /* 不要自動變窄 (表格至少需要這麼寬) */
-    width: 100%;
     z-index: 0;
 }
 
 table{
-    /*border-collapse: collapse; /* 讓格線合併 (不然會只有資料下方有灰線，一段一段的感覺) */
     border-radius: 14px;
     overflow: hidden;
     border:2px solid #dfe1e6; 
@@ -107,6 +104,7 @@ table{
     color: black;
     border-spacing: 0px;
 }
+
 tr td{
     position: relative;  /* 讓偽元素定位參考 */
     text-align: center; /* 字體置中 */
@@ -174,11 +172,8 @@ th:nth-child(8),td:nth-child(8){
   background: transparent;
 }
 
-/* 目前641-741之間還是會抖動，待處理... */
-
 
 @media (max-width: 984px) and (min-width: 641px){
-
 .operateButton{
     padding: 2px 6px;
 }
@@ -239,5 +234,6 @@ th:nth-child(8),td:nth-child(8){
     width: 16%;
     text-align: center;
 }
+
 }
 </style>
