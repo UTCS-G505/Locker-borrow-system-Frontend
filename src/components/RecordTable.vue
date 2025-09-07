@@ -162,7 +162,7 @@ th:nth-child(7),td:nth-child(7){
 }
 
 th:nth-child(8),td:nth-child(8){
-    width: 13%;
+    width: 9.7%;
     text-align: center;
 }
 
