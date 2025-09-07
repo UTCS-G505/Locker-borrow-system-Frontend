@@ -1,13 +1,21 @@
 <script setup>
+import { ref } from 'vue';
 import GeneralSetting from '@/components/GeneralSetting.vue';
 import NoteBoard from '@/components/NoteBoard.vue';
+import AnnounceBoard from '@/components/AnnounceBoard.vue';
+
+const board = ref('note');
+const BoardMap = {
+  note: NoteBoard,
+  announcement: AnnounceBoard
+};
 </script>
 
 <template>
   <div id="setting-board">
-    <GeneralSetting />
+    <GeneralSetting v-model:board="board" />
     <hr>
-    <NoteBoard />
+    <component :is="BoardMap[board]" />
   </div>
 </template>
 
