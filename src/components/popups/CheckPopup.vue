@@ -2,8 +2,6 @@
 import { ref, watch } from 'vue'
 import PopupModal from './PopupModal.vue';
 
-const emit = defineEmits(['close', 'submit']);
-
 const checkPopup = ref(false)
 
 const open = () => {
