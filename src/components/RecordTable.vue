@@ -68,26 +68,27 @@ function toggleReturn(id){
 .scrollWrapper{
     overflow-x: auto; /* 出現橫向滾動條 */
     width: 100%; /* 確保包覆容器不會收縮 */
+    border-radius: 14px;
+    border:2px solid #dfe1e6; 
+    border-collapse: separate; /* 如果用collapse，圓角會被吃掉 */
 }
 
 .insideTable{
     position: relative;
-    border-radius: 14px; 
     overflow-y: hidden; /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
-    margin: 10px auto;
+    margin: 10px auto 0 auto;
     max-width: 100%; /* 保護不要暴衝超出容器 */
     z-index: 0;
+    margin-top: 0px;
 }
 
 table{
-    border-radius: 14px;
     overflow: hidden;
-    border:2px solid #dfe1e6; 
-    border-collapse: separate; /* 如果用collapse，圓角會被吃掉 */
+    border: none;
     border-spacing: 0;
     width: 100%;
     background-color: white;
-    min-width: 730px;
+    min-width: 900px;
 }
 
 .head{
@@ -187,12 +188,12 @@ tr td{
 }
 
 th:nth-child(7),td:nth-child(7){
-    width: 21%; 
+    /*width: 21%; */
     text-align: center;
 }
 
 th:nth-child(8),td:nth-child(8){
-    width: 9%;
+    /*width: 8.8%;*/
     text-align: center;
 }
 
