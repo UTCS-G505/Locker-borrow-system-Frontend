@@ -186,6 +186,10 @@ th:nth-child(2), td:nth-child(2) {
   min-width: 450px;
 }
 
+th:last-child, td:last-child {
+  min-width: 400px;
+}
+
 button {
   color: #000;
   background-color: #FFF;
