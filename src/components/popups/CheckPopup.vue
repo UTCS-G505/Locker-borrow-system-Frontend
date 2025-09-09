@@ -2,6 +2,10 @@
 import { ref, watch } from 'vue'
 import PopupModal from './PopupModal.vue';
 
+defineProps({
+  operation:String,
+})
+
 const checkPopup = ref(false)
 
 const open = () => {
@@ -24,16 +28,16 @@ document.body.style.overflow = val ? 'hidden' : ''
 
 <template>
 
-  <button class="trigger" @click="open">模擬操作確認</button>
+  <button class="trigger" @click="open">{{operation}}</button>
 
   
   <PopupModal @close="close" v-if="checkPopup">
     <template #header>
-      <h2>歸還</h2>
+      <h2>{{operation}}</h2>
     </template>
 
     <template #content>
-      <h3>確認是否歸還</h3>
+      <h3>是否確認執行此操作</h3>
     </template>
 
     <template #buttons>
