@@ -4,6 +4,7 @@
     <div class="left-group">
       <div class="label-text"><h2>請填寫申請內容</h2></div>
     </div>
+
     <!-- 借用類型與時間 -->
     <div class="left-group">
       <TypeSelect
@@ -53,7 +54,6 @@
       @close="showConfirmModal = false"
       @confirm="handleConfirmBorrow"
     />
-
     <ApplySuccessModal v-model="showSuccessModal"
       :locker="selectedLocker"
       :borrowType="selectedType"
@@ -163,7 +163,7 @@
     align-items: flex-start; /* 子元素都往左靠齊 */
     padding-top: 0;
   }
-  
+
   .left-group {
     display: flex;
     align-items: center;
@@ -172,7 +172,7 @@
     flex: 1;
     min-width: 0;
   }
-  
+
   /* 標題 */
   .label-text h2 {
     white-space: nowrap;
@@ -186,12 +186,12 @@
   .row-space-between {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;    
+    align-items: flex-start;
     justify-content: space-between;
     box-sizing: border-box;
     width: 100%; /* 撐滿，元素左對齊 */
     gap: 12px;                 /* 行間隙 */
-    
+
   }
 
   /* 右側狀態標示 */
@@ -226,7 +226,7 @@
 
     cursor: pointer;
     appearance: none;
-    
+
   }
   .control-button:focus {
     outline: none;
@@ -325,12 +325,12 @@
       padding-left: 10px; /* 往左靠一點 */
       padding-right: 10px;
     }
-    
+
     .row-space-between {
       justify-content: flex-start; /* 換行時靠左 */
       align-items: flex-start;
     }
-    
+
     .row-space-between,
     .left-group,
     .content-container {
