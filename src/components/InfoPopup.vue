@@ -59,7 +59,6 @@ document.body.style.overflow = val ? 'hidden' : ''
         <div class="field full-row">
           <span class="text" >駁回原因：</span>
           <div class="input-box"></div>
-          <span class="text" ></span>
         </div>
         <div class="field">
           <span class="text" >助教簽核時間：</span>
@@ -110,7 +109,8 @@ document.body.style.overflow = val ? 'hidden' : ''
 /* 彈窗本體 */
 .detailInfo {
   background-color: #F6F7F9F2;
-  width: 608px;
+  width: 80%;
+  max-width: 700px;
   height: auto;   
   border-radius: 16px;
   padding: 20px;
@@ -130,6 +130,7 @@ document.body.style.overflow = val ? 'hidden' : ''
   border-top-right-radius: 12px;
   box-shadow: 0px 1px 4px 0px #00000040;
   padding-top: 10px;
+  font-size: 20px;
 }
 
 
@@ -158,8 +159,7 @@ document.body.style.overflow = val ? 'hidden' : ''
 /* 駁回原因及申請原因 */
 .input-box {
   flex: 1;
-  height: 27px;
-  line-height: 27px;
+  min-height: 54px;
   padding: 0px 8px;
   border-radius: 6px;
   border: none;
@@ -171,6 +171,36 @@ document.body.style.overflow = val ? 'hidden' : ''
 .text{
   font-size: 18px;
   color: #000000;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px){
+  .text {
+    font-size: 16px;
+  }
+  .input-box{
+    font-size: 16px;
+  }
+  .row{
+    display: flex;
+    flex-direction: column; /* 垂直排列 */
+    gap: 10px; 
+    white-space: nowrap;
+  }
+  .field.full-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 靠左 */
+  }
+
+  .field.full-row .text {
+    margin-bottom: 4px; /* 文字和框框之間留點距離 */
+  }
+
+  .field.full-row .input-box {
+    margin-left: 0;   /* 移除原本的左邊距 */
+    width: 100%;      /* 讓白框框撐滿 */
+  }
 }
 
 </style>
