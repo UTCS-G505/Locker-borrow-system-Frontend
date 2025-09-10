@@ -100,7 +100,7 @@ document.body.style.overflow = val ? 'hidden' : ''
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,54 +111,34 @@ document.body.style.overflow = val ? 'hidden' : ''
 .detailInfo {
   background-color: #F6F7F9F2;
   width: 608px;
-  height: 299px;
+  height: auto;   
   border-radius: 16px;
   padding: 20px;
   position: relative;
   overflow: hidden;
 }
 
-/* 藍藍那條外觀 */
-.detailInfo::before{
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 65px; 
-  background-color: #EBF7FFCC;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
-  z-index: 0;
-}
-
-.detailInfo *{
-  position: relative;
-  z-index: 1;
-  background-color: transparent;
-}
-
 /* 標題 */
 .title {
-  font-size: 25px;
-  font-weight: 400;
-  text-align: center;
-  margin-bottom: 10px;
-  border-radius: 12px;
-  color: #1a1a1a;
+  min-height: 60px;
+  background-color: #E8F7FFCC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -25px -24px 0px -24px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  box-shadow: 0px 1px 4px 0px #00000040;
+  padding-top: 10px;
 }
 
-/* 分隔線 */
-.divider {
-  height: 1px;
-  background: #ddd;
-  margin-bottom: 16px;
-}
 
 /* 內容列 */
 .info-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding-top: 10px; 
 }
 .row {
   display: grid;
@@ -178,8 +158,8 @@ document.body.style.overflow = val ? 'hidden' : ''
 /* 駁回原因及申請原因 */
 .input-box {
   flex: 1;
-  height: 22px;
-  line-height: 22px;
+  height: 27px;
+  line-height: 27px;
   padding: 0px 8px;
   border-radius: 6px;
   border: none;
