@@ -130,7 +130,7 @@ document.body.style.overflow = val ? 'hidden' : ''
   border-top-right-radius: 12px;
   box-shadow: 0px 1px 4px 0px #00000040;
   padding-top: 10px;
-  font-size: 20px;
+  font-size: 25px;
 }
 
 
@@ -159,7 +159,7 @@ document.body.style.overflow = val ? 'hidden' : ''
 /* 駁回原因及申請原因 */
 .input-box {
   flex: 1;
-  min-height: 54px;
+  min-height: 27px;
   padding: 0px 8px;
   border-radius: 6px;
   border: none;
@@ -180,6 +180,7 @@ document.body.style.overflow = val ? 'hidden' : ''
   }
   .input-box{
     font-size: 16px;
+    min-height: 54px;
   }
   .row{
     display: flex;
