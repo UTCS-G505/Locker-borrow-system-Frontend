@@ -23,9 +23,6 @@ document.body.style.overflow = val ? 'hidden' : ''
   <div v-if="detailInfo" class="overlay" @click.self="close">
     <div class="detailInfo">
         <h2 class="title">詳細資訊</h2>
-        <div class="divider"></div>
-      
-
       <div class="info-list">
       <div class="row">
         <div class="field">
