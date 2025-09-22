@@ -151,6 +151,7 @@ td,th{
     padding: 2px 12px;
     cursor: pointer;
     font-size: 20px;
+    color:black;
 }
 
 .operateButton:hover{
