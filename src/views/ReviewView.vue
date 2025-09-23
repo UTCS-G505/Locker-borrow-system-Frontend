@@ -448,13 +448,14 @@ th {
   box-shadow: 0 0.5px rgba(0, 0, 0, 0.1);
   padding: 10px;
   text-align: center;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 560;
   white-space: nowrap;
   align-items: center;
   justify-content: space-between;
   position: relative;
   vertical-align: middle;
+  color: #000;
 }
 
 thead tr {
@@ -486,6 +487,8 @@ td {
   vertical-align: middle;
   justify-content: center;
   align-items: center;
+  font-size: 18px;
+  color: #000;
 }
 
 .info{
@@ -505,7 +508,7 @@ button {
 .status-tag {
   padding: 5px 10px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 18px;
   display: inline-block;
   color: black;
   font-weight: normal;
@@ -622,9 +625,9 @@ input[type="text"] {
 }
 .dropdown2 {
   width:auto;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 560;
-  color: #333;
+  color: #000;
   border: none;
   background-color: transparent;
   white-space: nowrap;
