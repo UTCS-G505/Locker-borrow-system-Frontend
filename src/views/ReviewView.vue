@@ -504,6 +504,7 @@ button {
   cursor: pointer;
   background-color: white;
   color: black;
+  font-size: 18px;
 }
 .status-tag {
   padding: 5px 10px;
