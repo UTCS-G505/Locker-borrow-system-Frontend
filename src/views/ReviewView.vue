@@ -487,7 +487,7 @@ td {
   vertical-align: middle;
   justify-content: center;
   align-items: center;
-  font-size: 18px;
+  font-size: 20px;
   color: #000;
 }
 
