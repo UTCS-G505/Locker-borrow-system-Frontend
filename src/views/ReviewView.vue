@@ -112,7 +112,7 @@
                 <select v-model="statusFilter" class="dropdown2">
                   <option value="">狀態</option>
                   <option value="審核中">審核中</option>
-                  <option value="駁回">駁回</option>
+                  <option value="駁回">已駁回</option>
                   <option value="借用中">借用中</option>
                   <option value="已歸還">已歸還</option>
                 </select>
@@ -196,7 +196,7 @@ const applications = reactive([
     startTime: "2025/07/23",
     endTime: "2025/07/23",
     cabinet: "35",
-    status: "駁回",
+    status: "已駁回",
   },
   {
     id: 3,
@@ -247,7 +247,7 @@ const filteredApplications = computed(() => {
     } else if (selectedType.value === "歸還") {
       return app.status === "借用中" && matchName && matchBorrowType && matchGrade && matchStatus;
     } else if (selectedType.value === "審核") {
-      return ["審核中", "駁回", "借用中", "已歸還"].includes(app.status) &&
+      return ["審核中", "已駁回", "借用中", "已歸還"].includes(app.status) &&
              matchName && matchBorrowType && matchGrade && matchStatus;
     }
     return false;
@@ -271,7 +271,7 @@ function submitApprovals() {
 // 駁回處理
 function rejectApplication(app) {
   if (app.status === "審核中") {
-    app.status = "駁回";
+    app.status = "已駁回";
   }
 }
 
@@ -280,7 +280,7 @@ function statusColor(status) {
   switch (status) {
     case "借用中":
       return "status-borrowing";
-    case "駁回":
+    case "已駁回":
       return "status-rejected";
     case "審核中":
       return "status-pending";
@@ -428,7 +428,7 @@ button:hover {
   background-color: white;
   border-radius: 14px;
   border: 2px solid #dfe1e6;
-  min-width: 960px;
+  min-width: 1152px;
   overflow: hidden;
   table-layout: auto;
 }
@@ -639,7 +639,7 @@ input[type="text"] {
   -moz-appearance: none;
   background:url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 6px center;
   background-size: 30px 60px;
-  padding: 8.8px 30px 6px 10px; /* 8.8px是為了對齊th裡面其他的字 */
+  padding: 0px 30px
 }
 
 .dropdown2 option {
