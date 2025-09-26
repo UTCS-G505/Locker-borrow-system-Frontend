@@ -69,7 +69,7 @@ function toggleReturn(id){
     overflow-x: auto; /* 出現橫向滾動條 */
     width: 100%; /* 確保包覆容器不會收縮 */
     border-radius: 14px;
-    border:2px solid #dfe1e6; 
+    border:1px solid #DFE1E6; 
     border-collapse: separate; /* 如果用collapse，圓角會被吃掉 */
 }
 
