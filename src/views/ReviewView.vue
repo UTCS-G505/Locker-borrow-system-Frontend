@@ -427,7 +427,7 @@ button:hover {
   border-spacing: 0;
   background-color: white;
   border-radius: 14px;
-  border: 2px solid #dfe1e6;
+  border: 1px solid #dfe1e6;
   min-width: 1152px;
   overflow: hidden;
   table-layout: auto;
@@ -445,7 +445,6 @@ thead {
 }
 th {
   background-color: aliceblue;
-  box-shadow: 0 0.5px rgba(0, 0, 0, 0.1);
   padding: 10px;
   text-align: center;
   font-size: 20px;
@@ -474,6 +473,7 @@ tr {
   background-repeat: no-repeat;
   background-position: bottom;
   background-size: 100% 4px;
+  box-shadow: 0 0.5px rgba(0, 0, 0, 0.1);
 }
 
 tbody tr:last-child {
