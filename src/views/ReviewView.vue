@@ -112,7 +112,7 @@
                 <select v-model="statusFilter" class="dropdown2">
                   <option value="">狀態</option>
                   <option value="審核中">審核中</option>
-                  <option value="駁回">已駁回</option>
+                  <option value="已駁回">已駁回</option>
                   <option value="借用中">借用中</option>
                   <option value="已歸還">已歸還</option>
                 </select>
@@ -322,7 +322,7 @@ function rejectMobile() {
   mobileSelections.value.forEach(id => {
     const app = applications.find(a => a.id === id);
     if (app && app.status === "審核中") {
-      app.status = "駁回";
+      app.status = "已駁回";
     }
   });
   mobileSelections.value = [];
