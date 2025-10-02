@@ -728,6 +728,7 @@ input[type="text"] {
 .mobile-header-top {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   justify-content: space-between; /* 標題與下拉左右對齊 */
   gap: 10px;
 }
@@ -745,9 +746,8 @@ input[type="text"] {
   color: black;
 }
 .mobile-header-row select {
-  /* flex-grow: 1; */
-  flex: 1 1 auto;
-  min-width: 0px;
+  flex-grow: 1;
+  min-width: 180px;
   max-width: 100%;
   width: 100%;
   padding: 6px 8px;
