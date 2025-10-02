@@ -81,7 +81,7 @@
       <div class="scrollWrapper">
         <div class="insideTable">
         <table>
-          <thead>
+          <thead class="tableHead">
             <tr>
               <th>申請人學號</th>
               <th>申請人</th>
@@ -455,25 +455,28 @@ th {
   position: relative;
   vertical-align: middle;
   color: #000;
+
 }
+
+
 
 thead tr {
   background-image: none !important; /* 移除背景線 */
 }
 tr {
   background-image: linear-gradient(
-    to right,
-    transparent 0%,
-    transparent 0px,
-    rgba(236, 232, 232, 0.35) 0px,
-    rgba(236, 232, 232, 0.35) calc(100% - 0px),
-    transparent calc(100% - 10px),
-    transparent 100%
+    to right, /* 從左到右畫背景 */
+    transparent 0%, /* 從 0% 開始是透明 */
+    transparent 10px, /* 前 10px 是透明的(也就是左邊留空隙) */
+    rgba(236, 232, 232, 0.35) 10px, /* 第 10px 開始畫淡灰色線 */
+    rgba(236, 232, 232, 0.35) calc(100% - 10px), /* 畫到右邊剩 10px 為止 */
+    transparent calc(100% - 10px), /* 最後 10px 再變回透明（也就是右邊留空隙） */
+    transparent 100%  /* 到結束的時候還是透明 */
   );
+
   background-repeat: no-repeat;
   background-position: bottom;
   background-size: 100% 4px;
-  box-shadow: 0 0.5px rgba(0, 0, 0, 0.1);
 }
 
 tbody tr:last-child {
@@ -490,6 +493,23 @@ td {
   font-size: 20px;
   color: #000;
 }
+
+.tableHead {
+  position: relative; /* 為偽元素定位 */
+  background-color: aliceblue;
+}
+
+.tableHead::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 6px;         /* 陰影高度，可調整 */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12); /* 只往下陰影 */
+  pointer-events: none;
+}
+
 
 .info{
   border: 1px solid #ccc;
@@ -725,9 +745,11 @@ input[type="text"] {
   color: black;
 }
 .mobile-header-row select {
-  flex-grow: 1;
-  min-width: 120px;
-  max-width: 200px;
+  /* flex-grow: 1; */
+  flex: 1 1 auto;
+  min-width: 0px;
+  max-width: 100%;
+  width: 100%;
   padding: 6px 8px;
   border-radius: 14px;
   border: 1px solid black;
