@@ -14,7 +14,7 @@ function toggleReturn(id){
 </script>
 
 <template>
-    <div class="allTable"> 
+    <div class="allTable">
         <div class="scrollWrapper">
             <div class="insideTable">
             <table>
@@ -43,7 +43,7 @@ function toggleReturn(id){
                         </td>
                         <td>{{item.state}}</td>
                         <td>
-                            <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operateButton">取消</button> 
+                            <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operateButton">取消</button>
                             <button v-else-if="item.state === '借用中' || item.state === '歸還中' " @click="toggleReturn(item.id)" class="operateButton">
                                 {{item.state === '借用中'?'歸還':'取消'}}
                             </button>
@@ -55,7 +55,7 @@ function toggleReturn(id){
                 </tbody>
             </table>
             </div>
-        </div> 
+        </div>
     </div>
 </template>
 
@@ -69,7 +69,7 @@ function toggleReturn(id){
     overflow-x: auto; /* 出現橫向滾動條 */
     width: 100%; /* 確保包覆容器不會收縮 */
     border-radius: 14px;
-    border:1px solid #DFE1E6; 
+    border:1px solid #DFE1E6;
     border-collapse: separate; /* 如果用collapse，圓角會被吃掉 */
 }
 
@@ -120,13 +120,13 @@ tbody tr {
 
 tbody tr {
   background-image: linear-gradient(
-    to right, /* 從左到右畫背景 */
-    transparent 0%, /* 從 0% 開始是透明 */
-    transparent 10px, /* 前 10px 是透明的(也就是左邊留空隙) */
-    rgba(236, 232, 232, 0.35) 10px, /* 第 10px 開始畫淡灰色線 */
-    rgba(236, 232, 232, 0.35) calc(100% - 10px), /* 畫到右邊剩 10px 為止 */
-    transparent calc(100% - 10px), /* 最後 10px 再變回透明（也就是右邊留空隙） */
-    transparent 100%  /* 到結束的時候還是透明 */
+    to right,
+    transparent 0%,
+    transparent 10px,
+    rgba(236, 232, 232, 0.35) 10px,
+    rgba(236, 232, 232, 0.35) calc(100% - 10px),
+    transparent calc(100% - 10px),
+    transparent 100%
   );
   background-repeat: no-repeat; /* 不要重複，不然會疊加 */
   background-position: bottom; /* 將背景線貼在每列的下方 */
@@ -159,7 +159,7 @@ td,th{
 }
 
 th:nth-child(7),td:nth-child(7){
-    width: 17%; 
+    width: 17%;
     text-align: center;
 }
 
@@ -224,11 +224,11 @@ th{
 }
 
 tbody tr {
-  height: 30px; 
+  height: 30px;
 }
 
 th:nth-child(7),td:nth-child(7){
-    width: 16%; 
+    width: 16%;
     text-align: center;
 }
 
