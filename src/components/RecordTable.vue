@@ -156,7 +156,7 @@ td, th {
 }
 
 th:nth-child(7), td:nth-child(7) {
-  width: 17%;
+  width: 17%; 
   text-align: center;
 }
 
