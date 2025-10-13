@@ -301,9 +301,10 @@ function submitReturnConfirmations() {
   });
   returnSelections.value = [];
 }
-const isMobile = ref(window.innerWidth <= 768);
+const isMobile = ref(window.innerWidth <= 768 || window.innerWidth > 1440);
 window.addEventListener("resize", () => {
-  isMobile.value = window.innerWidth <= 768;
+  const w = window.innerWidth;
+  isMobile.value = w <= 768 || w > 1440;
 });
 
 const mobileSelections = ref([]);
@@ -580,13 +581,14 @@ input[type="text"] {
   height: 36px;
 }
 .search-input {
-  width: 200px;
-  padding-right: 30px;
+  /* width: 200px; */
+  /* padding-right: 10000px; */
   background-image: url("data:image/svg+xml;utf8,<svg fill='gray' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M10 2a8 8 0 105.293 14.293l5.707 5.707 1.414-1.414-5.707-5.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z'/></svg>");
   background-repeat: no-repeat;
   background-position: right 8px center;
   background-size: 16px 16px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-left: 20px;
 }
 .search-input:hover {
   background-color: #eee;
@@ -677,7 +679,6 @@ input[type="text"] {
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   background-color: white;
-  overflow: hidden;
 }
 
 .select-wrapper .dropdown {
@@ -685,7 +686,7 @@ input[type="text"] {
   -webkit-appearance: none;
   -moz-appearance: none;
   border: 1px solid #ccc;
-  width: 120px;
+  width: 150px;
   height: 36px;
   padding: 0 30px 0 10px;
   border-radius: 12px;
@@ -708,7 +709,7 @@ input[type="text"] {
 }
 
 /* ✅ 手機版樣式 */
-@media screen and (max-width: 768px) {
+@media screen {
   .mobile-ops {
     display: flex;
     flex-direction: column;
