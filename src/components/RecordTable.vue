@@ -238,4 +238,5 @@ th:nth-child(8),td:nth-child(8){
 }
 
 }
+
 </style>
