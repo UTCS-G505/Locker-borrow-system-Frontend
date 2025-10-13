@@ -14,7 +14,7 @@ function toggleReturn(id){
 </script>
 
 <template>
-  <div class="allTable">
+  <div class="allTable"> 
     <div class="scrollWrapper">
       <div class="insideTable">
         <table>
