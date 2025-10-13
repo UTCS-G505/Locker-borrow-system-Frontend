@@ -215,7 +215,7 @@ th:nth-child(8), td:nth-child(8) {
   }
 
   tbody tr {
-    height: 30px;
+    height: 30px; 
   }
 
   th:nth-child(7), td:nth-child(7) {
