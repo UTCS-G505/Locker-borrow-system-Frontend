@@ -219,7 +219,7 @@ th:nth-child(8), td:nth-child(8) {
   }
 
   th:nth-child(7), td:nth-child(7) {
-    width: 16%;
+    width: 16%; 
     text-align: center;
   }
 
