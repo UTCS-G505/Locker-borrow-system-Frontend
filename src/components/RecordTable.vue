@@ -52,7 +52,7 @@ function toggleReturn(id){
           </tbody>
         </table>
       </div>
-    </div>
+    </div> 
   </div>
 </template>
 
