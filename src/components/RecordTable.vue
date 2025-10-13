@@ -14,46 +14,49 @@ function toggleReturn(id){
 </script>
 
 <template>
-  <div class="allTable"> 
-    <div class="scrollWrapper">
-      <div class="insideTable">
-        <table>
-          <thead class="head">
-            <tr id="data">
-              <th>申請人</th>
-              <th>借用類型</th>
-              <th class="mobileHide">開始時間</th>
-              <th class="mobileHide">結束時間</th>
-              <th class="mobileHide">系櫃編號</th>
-              <th>詳細資訊</th>
-              <th>狀態</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!--用item.id(唯一值)比較安全，index可能因為資料排序而有變動-->
-            <tr v-for="item in props.records" :key="item.id">
-              <td>{{ item.name }}</td>
-              <td>{{ item.type }}</td>
-              <td class="mobileHide">{{ item.startTime }}</td>
-              <td class="mobileHide">{{ item.endTime }}</td>
-              <td class="mobileHide">{{ item.num }}</td>
-              <td>
-                <button class="operateButton">詳細資訊</button>
-              </td>
-              <td>{{ item.state }}</td>
-              <td>
-                <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operateButton">取消</button> 
-                <button v-else-if="item.state === '借用中' || item.state === '歸還中' " @click="toggleReturn(item.id)" class="operateButton">
-                  {{ item.state === '借用中'?'歸還':'取消' }}
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div> 
-  </div>
+    <div class="allTable">
+        <div class="scrollWrapper">
+            <div class="insideTable">
+            <table>
+                <thead class="head">
+                    <tr id="data">
+                        <th>申請人</th>
+                        <th>借用類型</th>
+                        <th class="mobileHide">開始時間</th>
+                        <th class="mobileHide">結束時間</th>
+                        <th class="mobileHide">系櫃編號</th>
+                        <th>詳細資訊</th>
+                        <th>狀態</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--用item.id(唯一值)比較安全，index可能因為資料排序而有變動-->
+                    <tr v-for="item in props.records" :key="item.id">
+                        <td>{{item.name}}</td>
+                        <td>{{item.type}}</td>
+                        <td class="mobileHide">{{item.startTime}}</td>
+                        <td class="mobileHide">{{item.endTime}}</td>
+                        <td class="mobileHide">{{item.num}}</td>
+                        <td>
+                            <button class="operateButton">詳細資訊</button>
+                        </td>
+                        <td>{{item.state}}</td>
+                        <td>
+                            <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operateButton">取消</button>
+                            <button v-else-if="item.state === '借用中' || item.state === '歸還中' " @click="toggleReturn(item.id)" class="operateButton">
+                                {{item.state === '借用中'?'歸還':'取消'}}
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="emptyRow"> <!-- "emptyRow" 作用是第三筆資料輸出後，下面留的空白處-->
+                        <td colspan="8"></td> <!-- " colspan="8" "作用是要橫跨8個欄位的寬度-->
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -62,12 +65,12 @@ function toggleReturn(id){
   然後CSS設定在第二層，這部分我有先跟Allen說過，那邊有點玄(?)，歡迎電神們的討論~~
 */
 
-.scrollWrapper {
-  overflow-x: auto; /* 出現橫向滾動條 */
-  width: 100%; /* 確保包覆容器不會收縮 */
-  border-radius: 14px;
-  border:1px solid #DFE1E6; 
-  border-collapse: separate; /* 如果用collapse，圓角會被吃掉 */
+.scrollWrapper{
+    overflow-x: auto; /* 出現橫向滾動條 */
+    width: 100%; /* 確保包覆容器不會收縮 */
+    border-radius: 14px;
+    border:1px solid #DFE1E6;
+    border-collapse: separate; /* 如果用collapse，圓角會被吃掉 */
 }
 
 .insideTable {
@@ -155,9 +158,9 @@ td, th {
   background-color: #dbdcdd; /* 滑鼠放上去時會變灰色 */
 }
 
-th:nth-child(7), td:nth-child(7) {
-  width: 17%; 
-  text-align: center;
+th:nth-child(7),td:nth-child(7){
+    width: 17%;
+    text-align: center;
 }
 
 th:nth-child(8), td:nth-child(8) {
@@ -214,12 +217,12 @@ th:nth-child(8), td:nth-child(8) {
     display: none; /* 手機版沒有顯示開始時間、結束時間、系櫃編號，因此使用此程式碼讓它隱藏 */
   }
 
-  tbody tr {
-    height: 30px; 
-  }
+tbody tr {
+  height: 30px;
+}
 
-  th:nth-child(7), td:nth-child(7) {
-    width: 16%; 
+th:nth-child(7),td:nth-child(7){
+    width: 16%;
     text-align: center;
   }
 
