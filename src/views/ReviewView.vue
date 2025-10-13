@@ -407,6 +407,7 @@ button:hover {
 }
 .search-input {
   width: 200px;
+  font-size: 16px;
 }
 .review-list {
   margin: 0 auto;
@@ -689,7 +690,7 @@ input[type="text"] {
   padding: 0 30px 0 10px;
   border-radius: 12px;
   background: white;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
 }
 
