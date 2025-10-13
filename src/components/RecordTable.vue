@@ -43,7 +43,7 @@ function toggleReturn(id){
               </td>
               <td>{{ item.state }}</td>
               <td>
-                <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operateButton">取消</button>
+                <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operateButton">取消</button> 
                 <button v-else-if="item.state === '借用中' || item.state === '歸還中' " @click="toggleReturn(item.id)" class="operateButton">
                   {{ item.state === '借用中'?'歸還':'取消' }}
                 </button>
