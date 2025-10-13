@@ -1,15 +1,15 @@
 <script setup>
 /* 子元件用props接收父元件傳來的record資料，它是個Array*/
 const props = defineProps({
-    records: Array
+  records: Array
 })
 /* 讓子元件可以合法發出事件(沒有這行可能會出錯) */
 const emit = defineEmits(['cancel','return'])
 function cancel(id){
-    emit('cancel',id)
+  emit('cancel',id)
 }
 function toggleReturn(id){
-    emit('return',id)
+  emit('return',id)
 }
 </script>
 
@@ -61,8 +61,8 @@ function toggleReturn(id){
 
 <style scoped>
 /*
-    table那邊外層包了兩個<div>，我有嘗試過包一層會沒效果，包兩層才有，
-    然後CSS設定在第二層，這部分我有先跟Allen說過，那邊有點玄(?)，歡迎電神們的討論~~
+  table那邊外層包了兩個<div>，我有嘗試過包一層會沒效果，包兩層才有，
+  然後CSS設定在第二層，這部分我有先跟Allen說過，那邊有點玄(?)，歡迎電神們的討論~~
 */
 
 .scrollWrapper{
@@ -73,49 +73,49 @@ function toggleReturn(id){
     border-collapse: separate; /* 如果用collapse，圓角會被吃掉 */
 }
 
-.insideTable{
-    position: relative;
-    overflow-y: hidden; /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
-    margin: 10px auto 0 auto;
-    max-width: 100%; /* 保護不要暴衝超出容器 */
-    z-index: 0;
-    margin-top: 0px;
+.insideTable {
+  position: relative;
+  overflow-y: hidden; /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
+  margin: 10px auto 0 auto;
+  max-width: 100%; /* 保護不要暴衝超出容器 */
+  z-index: 0;
+  margin-top: 0px;
 }
 
-table{
-    overflow: hidden;
-    border: none;
-    border-spacing: 0;
-    width: 100%;
-    background-color: white;
-    min-width: 900px;
+table {
+  overflow: hidden;
+  border: none;
+  border-spacing: 0;
+  width: 100%;
+  background-color: white;
+  min-width: 900px;
 }
 
-.head{
-    background-color: aliceblue;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* 製作下方陰影處 */
+.head {
+  background-color: aliceblue;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* 製作下方陰影處 */
 }
 
-.head th{
-    border-bottom:2px solid #ECE8E8;
+.head th {
+  border-bottom:2px solid #ECE8E8;
 }
 
-#data{
-    font-size: 25px;
-    color: black;
-    border-spacing: 0px;
+#data {
+  font-size: 25px;
+  color: black;
+  border-spacing: 0px;
 }
 
-tr td{
-    position: relative;  /* 讓偽元素定位參考 */
-    text-align: center; /* 字體置中 */
-    padding-bottom: 10px;
-    font-size: 20px;
-    color: black;
+tr td {
+  position: relative;  /* 讓偽元素定位參考 */
+  text-align: center; /* 字體置中 */
+  padding-bottom: 10px;
+  font-size: 20px;
+  color: black;
 }
 
 tbody tr {
-    height: 45px;
+  height: 45px;
 }
 
 tbody tr {
@@ -137,25 +137,25 @@ tbody tr:last-child {
   background-image: none; /* 如果沒有這行，會讓下面再出現一條線 */
 }
 
-td,th{
-    border: none; /* 不要有預設的格線 */
-    padding: 8px;
-    white-space: nowrap; /* 不允許自動換行 */
+td, th {
+  border: none; /* 不要有預設的格線 */
+  padding: 8px;
+  white-space: nowrap; /* 不允許自動換行 */
 }
 
-.operateButton{
-    border: 2px solid #dbdcdd;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    padding: 2px 12px;
-    cursor: pointer;
-    font-size: 20px;
-    color:black;
+.operateButton {
+  border: 2px solid #dbdcdd;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 2px 12px;
+  cursor: pointer;
+  font-size: 20px;
+  color:black;
 }
 
-.operateButton:hover{
-    background-color: #dbdcdd; /* 滑鼠放上去時會變灰色 */
+.operateButton:hover {
+  background-color: #dbdcdd; /* 滑鼠放上去時會變灰色 */
 }
 
 th:nth-child(7),td:nth-child(7){
@@ -163,9 +163,9 @@ th:nth-child(7),td:nth-child(7){
     text-align: center;
 }
 
-th:nth-child(8),td:nth-child(8){
-    width: 9.7%;
-    text-align: center;
+th:nth-child(8), td:nth-child(8) {
+  width: 9.7%;
+  text-align: center;
 }
 
 .emptyRow td {
@@ -176,52 +176,46 @@ th:nth-child(8),td:nth-child(8){
 
 
 @media (max-width: 984px) and (min-width: 641px){
-.operateButton{
+  .operateButton {
     padding: 2px 6px;
-}
-
-th{
-    font-size: 19px;
-}
-
-tr td{
-    font-size: 16px;
-}
-
-th:nth-child(7),td:nth-child(7){
-    /*width: 21%; */
-    text-align: center;
-}
-
-th:nth-child(8),td:nth-child(8){
-    /*width: 8.8%;*/
-    text-align: center;
-}
-
-.operateButton{
     font-size: 15px;
-}
+  }
 
+  th {
+    font-size: 19px;
+  }
+
+  tr td {
+    font-size: 16px;
+  }
+
+  th:nth-child(7), td:nth-child(7) {
+    text-align: center;
+  }
+
+  th:nth-child(8), td:nth-child(8) {
+    text-align: center;
+  }
 }
 
 
 /* 手機版 */
 @media (max-width: 640px) {
-tr td{
+  tr td {
     font-size: 15px;
-}
+  }
 
-th{
+  th {
     font-size: 17px;
-}
+  }
 
-.operateButton{
+  .operateButton {
     font-size: 14px;
-}
+  }
 
-.mobileHide{
+  .mobileHide {
     display: none; /* 手機版沒有顯示開始時間、結束時間、系櫃編號，因此使用此程式碼讓它隱藏 */
-}
+  }
 
 tbody tr {
   height: 30px;
@@ -230,12 +224,11 @@ tbody tr {
 th:nth-child(7),td:nth-child(7){
     width: 16%;
     text-align: center;
-}
+  }
 
-th:nth-child(8),td:nth-child(8){
+  th:nth-child(8), td:nth-child(8) {
     width: 16%;
     text-align: center;
-}
-
+  }
 }
 </style>
