@@ -59,13 +59,8 @@
         </div>
       </div>
       <div class="right">
-        <button
-          class="topbutton"
-          v-if="selectedType === '借用'"
-          @click="submitApprovals"
-        >
-          送出
-        </button>
+        <button class="btn" @click="approveMobile"  v-if="selectedType === '借用'">通過</button>
+        <button class="btn" @click="rejectMobile"  v-if="selectedType === '借用'">駁回</button>
         <button
           class="topbutton"
           v-if="selectedType === '歸還'"
@@ -83,15 +78,14 @@
         <table>
           <thead class="tableHead">
           <tr>
-            <th v-if="isMobile && selectedType==='借用'">
-            <span
-              class="select-all-text"
-              @click="allMobileSelected = !allMobileSelected"
-            >
-              全選
-            </span>
+            <th v-if="selectedType==='借用'">
+            <label class="custom-checkbox">
+            <input type="checkbox" v-model="allMobileSelected" />
+            <span></span>
+          </label>
           </th>
 
+            <th v-if="selectedType === '歸還'">確認歸還</th>
             <th>申請人學號</th>
             <th>申請人</th>
             <th>
@@ -114,9 +108,8 @@
             <th>結束時間</th>
             <th>系櫃編號</th>
             <th>詳細資訊</th>
-            <th v-if="selectedType === '借用' && !isMobile">駁回</th>
-            <th v-if="selectedType === '借用' && !isMobile">通過</th>
-            <th v-if="selectedType === '歸還'">確認歸還</th>
+            <!-- <th v-if="selectedType === '借用' && !isMobile">駁回</th>
+            <th v-if="selectedType === '借用' && !isMobile">通過</th> -->
             <th v-if="selectedType === '審核'">
               <select v-model="statusFilter" class="dropdown2">
                 <option value="">狀態</option>
@@ -131,7 +124,7 @@
         <tbody>
           <template v-for="item in filteredApplications" :key="item.id">
             <tr>
-              <td v-if="isMobile && selectedType==='借用'">
+              <td v-if="selectedType==='借用'">
               <label class="custom-checkbox">
                 <input
                   type="checkbox"
@@ -142,6 +135,12 @@
               </label>
             </td>
 
+              <td v-if="selectedType === '歸還'">
+                <label class="custom-checkbox">
+                  <input type="checkbox" v-model="returnSelections" :value="item.id" />
+                  <span></span>
+                </label>
+              </td>
               <td>{{ item.studentId }}</td>
               <td>{{ item.name }}</td>
               <td>{{ item.grade }}</td>
@@ -150,21 +149,15 @@
               <td>{{ item.endTime }}</td>
               <td>{{ item.cabinet }}</td>
               <td><button class="info">詳細資訊</button></td>
-              <td v-if="selectedType === '借用' && !isMobile">
+              <!-- <td v-if="selectedType === '借用' && !isMobile">
                 <button class="info" @click="rejectApplication(item)">駁回</button>
-              </td>
-              <td v-if="selectedType === '借用' && !isMobile">
+              </td> -->
+              <!-- <td v-if="selectedType === '借用' ">
                 <label class="custom-checkbox">
                   <input type="checkbox" v-model="approvalSelections" :value="item.id" />
                   <span></span>
                 </label>
-              </td>
-              <td v-if="selectedType === '歸還'">
-                <label class="custom-checkbox">
-                  <input type="checkbox" v-model="returnSelections" :value="item.id" />
-                  <span></span>
-                </label>
-              </td>
+              </td> -->
               <td v-if="selectedType === '審核'">
                 <span class="status-tag" :class="statusColor(item.status)">
                   {{ item.status }}
@@ -271,22 +264,22 @@ const filteredApplications = computed(() => {
 });
 
 // 通過核准 (桌面)
-function submitApprovals() {
-  approvalSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
-    if (app && app.status === "審核中") {
-      app.status = "借用中";
-    }
-  });
-  approvalSelections.value = [];
-}
+// function submitApprovals() {
+//   approvalSelections.value.forEach((id) => {
+//     const app = applications.find((a) => a.id === id);
+//     if (app && app.status === "審核中") {
+//       app.status = "借用中";
+//     }
+//   });
+//   approvalSelections.value = [];
+// }
 
 // 駁回處理 (桌面)
-function rejectApplication(app) {
-  if (app.status === "審核中") {
-    app.status = "已駁回";
-  }
-}
+// function rejectApplication(app) {
+//   if (app.status === "審核中") {
+//     app.status = "已駁回";
+//   }
+// }
 
 function statusColor(status) {
   switch (status) {
@@ -315,10 +308,10 @@ function submitReturnConfirmations() {
 }
 
 // isMobile 判斷
-const isMobile = ref(window.innerWidth <= 768 || window.innerWidth >= 1440);
+const isMobile = ref(window.innerWidth <= 768 );
 window.addEventListener("resize", () => {
   const w = window.innerWidth;
-  isMobile.value = (w <= 768 || w >= 1440);
+  isMobile.value = (w <= 768 );
 });
 
 // 手機版勾選集合
@@ -750,53 +743,6 @@ input[type="text"] {
   font-weight: 600;
 }
 
-
-@media screen and (min-width: 1440px) {
-  .mobile-ops {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    margin:0;
-    padding: 10px;
-     padding: 0 20px;
-    border-radius: 8px;
-  }
-.mobile-header-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;  /* 初始同一行靠左 */
-  gap: 10px;
-}
-.mobile-header-top {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: space-between; /* 標題與下拉左右對齊 */
-  gap: 10px;
-}
-
-.mobile-header-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start; /* 按鈕靠左 */
-  gap: 10px;
-}
- .mobile-header-row h1 {
-  flex-shrink: 0;
-  font-size: 32px;
-  margin: 0;
-  color: black;
-}
-.mobile-header-row select {
-  flex-grow: 1;
-  min-width: 180px;
-  max-width: 100%;
-  width: 100%;
-  padding: 6px 8px;
-  border-radius: 14px;
-  border: 1px solid black;
-}
 .btn {
   padding: 3px 30px;
   border-radius: 12px;
@@ -809,26 +755,7 @@ input[type="text"] {
   flex-shrink: 0;
   height : 36px;
 }
-.custom-checkbox input[type="checkbox"] {
-  margin-left: 0px;
-}
-.mobile-search {
-  margin-top: 10px;
-  margin-left: 0;
-  padding-left: 10px;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  font-size: 14px;
-}
-.search-input {
-  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M10 2a8 8 0 105.293 14.293l5.707 5.707 1.414-1.414-5.707-5.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 16px 16px;
-}
-}
+
 
 
 /* ✅ 手機版樣式 */
