@@ -24,7 +24,7 @@
           v-if="selectedType === '歸還'"
           @click="submitReturnConfirmations"
         >
-          送出
+          通過
         </button>
     </div>
     </div>
@@ -313,10 +313,10 @@ function submitReturnConfirmations() {
 }
 
 // isMobile 判斷
-const isMobile = ref(window.innerWidth <= 844 );
+const isMobile = ref(window.innerWidth <= 864 );
 window.addEventListener("resize", () => {
   const w = window.innerWidth;
-  isMobile.value = (w <= 844 );
+  isMobile.value = (w <= 864 );
 });
 
 // 手機版勾選集合
@@ -781,7 +781,7 @@ input[type="text"] {
 
 
 /* ✅ 手機版樣式 */
-@media screen and (max-width: 845px){
+@media screen and (max-width: 865px){
   .mobile-ops {
     display: flex;
     flex-direction: column;
