@@ -66,7 +66,7 @@
           v-if="selectedType === '歸還'"
           @click="submitReturnConfirmations"
         >
-          送出
+          通過
         </button>
       </div>
     </div>
@@ -85,7 +85,12 @@
           </label>
           </th>
 
-            <th v-if="selectedType === '歸還'">確認歸還</th>
+            <th v-if="selectedType === '歸還'">
+            <label class="custom-checkbox">
+              <input type="checkbox" v-model="allReturnSelected" />
+              <span></span>
+            </label>
+          </th>
             <th>申請人學號</th>
             <th>申請人</th>
             <th>
@@ -308,10 +313,10 @@ function submitReturnConfirmations() {
 }
 
 // isMobile 判斷
-const isMobile = ref(window.innerWidth <= 768 );
+const isMobile = ref(window.innerWidth <= 844 );
 window.addEventListener("resize", () => {
   const w = window.innerWidth;
-  isMobile.value = (w <= 768 );
+  isMobile.value = (w <= 844 );
 });
 
 // 手機版勾選集合
@@ -367,6 +372,23 @@ const allMobileSelected = computed({
     }
   }
 });
+
+const allReturnSelected = computed({
+  get() {
+    const ids = filteredApplications.value.map(app => app.id);
+    if (ids.length === 0) return false;
+    return ids.every(id => returnSelections.value.includes(id));
+  },
+  set(checked) {
+    if (checked) {
+      returnSelections.value = filteredApplications.value.map(app => app.id);
+    } else {
+      const visibleIds = new Set(filteredApplications.value.map(app => app.id));
+      returnSelections.value = returnSelections.value.filter(id => !visibleIds.has(id));
+    }
+  }
+});
+
 </script>
 
 
@@ -616,7 +638,7 @@ input[type="text"] {
   background-position: right 8px center;
   background-size: 16px 16px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-left: 20px;
+  margin-left: 5px;
 }
 .search-input:hover {
   background-color: #eee;
@@ -759,7 +781,7 @@ input[type="text"] {
 
 
 /* ✅ 手機版樣式 */
-@media screen and (max-width: 769px){
+@media screen and (max-width: 845px){
   .mobile-ops {
     display: flex;
     flex-direction: column;
