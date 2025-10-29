@@ -11,6 +11,7 @@ const allRightsReserved = language === "zh-TW" || language === "zh-CN" || langua
 </script>
 
 <template>
+  <p>UTaipei CS Locker Borrow System</p>
   <p>Copyright © {{ devYear }} {{ copyrightOwner }} {{ allRightsReserved }}</p>
 </template>
 
