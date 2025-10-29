@@ -11,12 +11,17 @@ const allRightsReserved = language === "zh-TW" || language === "zh-CN" || langua
 </script>
 
 <template>
-  <p>UTaipei CS Locker Borrow System</p>
+  <p id="system-name">UTaipei CS Locker Borrow System</p>
   <p>Copyright © {{ devYear }} {{ copyrightOwner }} {{ allRightsReserved }}</p>
 </template>
 
 <style scoped>
 p {
   text-align: center;
+}
+#system-name {
+  font-size: 20px;
+  font-weight: 500;
+  color: cornflowerblue;
 }
 </style>
