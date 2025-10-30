@@ -240,7 +240,9 @@ const statusFilter = ref("");
 
 const filteredApplications = computed(() => {
   return applications.filter((app) => {
-    const matchName = app.name.includes(searchName.value);
+    const matchName =
+    app.name.includes(searchName.value) ||
+    app.studentId.includes(searchName.value);
     const matchBorrowType = borrowTypeFilter.value === "" || app.borrowType === borrowTypeFilter.value;
     const matchGrade = gradeFilter.value === "" || app.grade === gradeFilter.value;
     const matchStatus = statusFilter.value === "" || app.status === statusFilter.value;
@@ -488,23 +490,39 @@ th {
 thead tr {
   background-image: none !important; /* 移除背景線 */
 }
-tr {
+tbody tr:not(:last-child) td:first-child {
   background-image: linear-gradient(
     to right, /* 從左到右畫背景 */
     transparent 0%, /* 從 0% 開始是透明 */
     transparent 10px, /* 前 10px 是透明的(也就是左邊留空隙) */
-    rgba(236, 232, 232, 0.35) 10px, /* 第 10px 開始畫淡灰色線 */
-    rgba(236, 232, 232, 0.35) calc(100% - 10px), /* 畫到右邊剩 10px 為止 */
-    transparent calc(100% - 10px), /* 最後 10px 再變回透明（也就是右邊留空隙） */
-    transparent 100%  /* 到結束的時候還是透明 */
+    rgba(236, 232, 232, 0.35) 10px /* 第 10px 開始畫淡灰色線 */
   );
-
   background-repeat: no-repeat;
   background-position: bottom;
   background-size: 100% 4px;
 }
-
-tbody tr:last-child {
+tbody tr:not(:last-child) td:not(:last-child):not(:first-child) {
+  background-image: linear-gradient(
+    to right,
+    rgba(236, 232, 232, 0.35) 0px,
+    rgba(236, 232, 232, 0.35) 100%
+  );
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 100% 4px;
+}
+tbody tr:not(:last-child) td:last-child {
+  background-image: linear-gradient(
+    to right, /* 從左到右畫背景 */
+    rgba(236, 232, 232, 0.35) 0px, /* 第 10px 開始畫淡灰色線 */
+    rgba(236, 232, 232, 0.35) calc(100% - 10px), /* 畫到右邊剩 10px 為止 */
+    transparent calc(100% - 10px) /* 最後 10px 再變回透明（也就是右邊留空隙） */
+  );
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 100% 4px;
+}
+tbody tr:last-child td {
   background-image: none;
 }
 
