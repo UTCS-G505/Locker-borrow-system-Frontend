@@ -113,8 +113,6 @@
             <th>結束時間</th>
             <th>系櫃編號</th>
             <th>詳細資訊</th>
-            <!-- <th v-if="selectedType === '借用' && !isMobile">駁回</th>
-            <th v-if="selectedType === '借用' && !isMobile">通過</th> -->
             <th v-if="selectedType === '審核'">
               <select v-model="statusFilter" class="dropdown2">
                 <option value="">狀態</option>
@@ -154,15 +152,6 @@
               <td>{{ item.endTime }}</td>
               <td>{{ item.cabinet }}</td>
               <td><button class="info">詳細資訊</button></td>
-              <!-- <td v-if="selectedType === '借用' && !isMobile">
-                <button class="info" @click="rejectApplication(item)">駁回</button>
-              </td> -->
-              <!-- <td v-if="selectedType === '借用' ">
-                <label class="custom-checkbox">
-                  <input type="checkbox" v-model="approvalSelections" :value="item.id" />
-                  <span></span>
-                </label>
-              </td> -->
               <td v-if="selectedType === '審核'">
                 <span class="status-tag" :class="statusColor(item.status)">
                   {{ item.status }}
@@ -268,24 +257,6 @@ const filteredApplications = computed(() => {
   });
 });
 
-// 通過核准 (桌面)
-// function submitApprovals() {
-//   approvalSelections.value.forEach((id) => {
-//     const app = applications.find((a) => a.id === id);
-//     if (app && app.status === "審核中") {
-//       app.status = "借用中";
-//     }
-//   });
-//   approvalSelections.value = [];
-// }
-
-// 駁回處理 (桌面)
-// function rejectApplication(app) {
-//   if (app.status === "審核中") {
-//     app.status = "已駁回";
-//   }
-// }
-
 function statusColor(status) {
   switch (status) {
     case "借用中":
@@ -319,7 +290,6 @@ window.addEventListener("resize", () => {
   isMobile.value = (w <= 864 );
 });
 
-// 手機版勾選集合
 const mobileSelections = ref([]);
 
 // 手機版 批次通過 / 批次駁回（用 mobileSelections）
@@ -408,6 +378,7 @@ html, body {
   font-size: 30px;
   color: black;
   margin: 0;
+  margin-left: 15px;
 }
 
 .header-bar {
