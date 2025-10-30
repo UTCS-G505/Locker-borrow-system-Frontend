@@ -804,7 +804,7 @@ input[type="text"] {
 }
  .mobile-header-row h1 {
   flex-shrink: 0;
-  font-size: 32px;
+  font-size: 30px;
   margin: 0;
   color: black;
 }
@@ -849,6 +849,12 @@ input[type="text"] {
   background-position: right 8px center;
   background-size: 16px 16px;
 }
+}
+
+@media screen and (max-width: 640px) {
+  .mobile-header-row h1 {
+    font-size: 24px;
+  }
 }
 
 </style>
