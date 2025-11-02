@@ -32,22 +32,6 @@ function handleReturn(id){
   </div>
 </template>
 
-<script>
-import RejectModal from "@/components/RejectModal.vue";
-
-export default {
-  components: { RejectModal },
-  methods: {
-    openRejectModal() {
-      this.$refs.rejectModal.open(); // 呼叫子元件方法
-    },
-    handleRejectSubmit(reason) {
-      console.log("駁回原因：", reason); 
-    },
-  },
-};
-</script>
-
 <style scoped>
 
 .recordWrapper {
@@ -74,5 +58,5 @@ export default {
   }
 
 }
-  
+
 </style>
