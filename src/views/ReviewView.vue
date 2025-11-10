@@ -95,7 +95,7 @@ import ReviewList from "../components/ReviewList.vue";
 const selectedType = ref("借用");
 const searchName = ref("");
 const returnSelections = ref([]);
-const mobileSelections = ref([]); 
+const mobileSelections = ref([]);
 
 const applications = reactive([
   {
@@ -316,6 +316,17 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
   height: 36px;
+}
+
+button {
+  display: block;
+  margin: 0 auto;
+  padding: 6px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  background-color: white;
+  color: black;
+  font-size: 18px;
 }
 
 button:hover {
