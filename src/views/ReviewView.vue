@@ -1,15 +1,528 @@
 <template>
-  <div class="title">
-    <h1>審核申請頁面</h1>
-  </div>
+  <section class="upboard">
+    <div v-if="isMobile" class="mobile-ops">
+      <div class="mobile-header-row">
+        <div class="mobile-header-top">
+          <h1>審核申請</h1>
+
+          <div class="select-wrapper">
+            <select v-model="selectedType" class="dropdown">
+              <option value="借用">借用申請</option>
+              <option value="歸還">歸還申請</option>
+              <option value="審核">審核紀錄</option>
+            </select>
+          </div>
+        </div>
+        <div class="mobile-header-bottom">
+          <button class="btn" @click="approveMobile" v-if="selectedType === '借用'">
+            通過
+          </button>
+          <button class="btn" @click="rejectMobile" v-if="selectedType === '借用'">
+            駁回
+          </button>
+          <button
+            class="topbutton"
+            v-if="selectedType === '歸還'"
+            @click="submitReturnConfirmations"
+          >
+            通過
+          </button>
+        </div>
+      </div>
+
+      <input
+        type="text"
+        v-model="searchName"
+        placeholder="搜尋"
+        class="mobile-search search-input"
+      />
+    </div>
+
+    <div class="header-bar" v-else>
+      <div class="left">
+        <h1>審核申請</h1>
+        <div class="controls">
+          <div class="select-wrapper">
+            <select v-model="selectedType" class="dropdown">
+              <option value="借用">借用申請</option>
+              <option value="歸還">歸還申請</option>
+              <option value="審核">審核紀錄</option>
+            </select>
+          </div>
+          <input
+            type="text"
+            v-model="searchName"
+            placeholder="搜尋"
+            class="search-input"
+          />
+        </div>
+      </div>
+      <div class="right">
+        <button class="btn" @click="approveMobile" v-if="selectedType === '借用'">
+          通過
+        </button>
+        <button class="btn" @click="rejectMobile" v-if="selectedType === '借用'">
+          駁回
+        </button>
+        <button
+          class="topbutton"
+          v-if="selectedType === '歸還'"
+          @click="submitReturnConfirmations"
+        >
+          通過
+        </button>
+      </div>
+    </div>
+
+    <ReviewList
+      :applications="filteredApplications"
+      :selected-type="selectedType"
+      v-model:mobile-selections="mobileSelections"
+      v-model:return-selections="returnSelections"
+      v-model:grade-filter="gradeFilter"
+      v-model:borrow-type-filter="borrowTypeFilter"
+      v-model:status-filter="statusFilter"
+      @show-details="handleShowDetails"
+    />
+  </section>
 </template>
 
+<script setup>
+import { ref, reactive, computed, watch } from "vue";
+// 導入新的子組件
+import ReviewList from "../components/ReviewList.vue";
+
+const selectedType = ref("借用");
+const searchName = ref("");
+const returnSelections = ref([]);
+const mobileSelections = ref([]);
+
+const applications = reactive([
+  {
+    id: 1,
+    studentId: "U11316050",
+    name: "王小明",
+    grade: "大四",
+    borrowType: "學年借用",
+    startTime: "2024/09/01",
+    endTime: "2025/06/30",
+    cabinet: "31",
+    status: "審核中",
+  },
+  {
+    id: 2,
+    studentId: "U11316051",
+    name: "李小美",
+    grade: "大一",
+    borrowType: "臨時借用",
+    startTime: "2025/07/23",
+    endTime: "2025/07/23",
+    cabinet: "35",
+    status: "已駁回",
+  },
+  {
+    id: 3,
+    studentId: "U11316052",
+    name: "張大明",
+    grade: "大二",
+    borrowType: "學年借用",
+    startTime: "2024/09/01",
+    endTime: "2025/06/30",
+    cabinet: "36",
+    status: "借用中",
+  },
+  {
+    id: 4,
+    studentId: "U11316054",
+    name: "王中明",
+    grade: "大一",
+    borrowType: "學年借用",
+    startTime: "2024/09/01",
+    endTime: "2025/06/30",
+    cabinet: "20",
+    status: "審核中",
+  },
+  {
+    id: 5,
+    studentId: "U11316055",
+    name: "王大明",
+    grade: "大一",
+    borrowType: "臨時借用",
+    startTime: "2024/09/01",
+    endTime: "2025/06/30",
+    cabinet: "21",
+    status: "審核中",
+  },
+]);
+
+const borrowTypeFilter = ref("");
+const gradeFilter = ref("");
+const statusFilter = ref("");
+
+const filteredApplications = computed(() => {
+  return applications.filter((app) => {
+    const matchName =
+      app.name.includes(searchName.value) ||
+      app.studentId.includes(searchName.value);
+    const matchBorrowType =
+      borrowTypeFilter.value === "" || app.borrowType === borrowTypeFilter.value;
+    const matchGrade =
+      gradeFilter.value === "" || app.grade === gradeFilter.value;
+    const matchStatus =
+      statusFilter.value === "" || app.status === statusFilter.value;
+
+    if (selectedType.value === "借用") {
+      return (
+        app.status === "審核中" &&
+        matchName &&
+        matchBorrowType &&
+        matchGrade &&
+        matchStatus
+      );
+    } else if (selectedType.value === "歸還") {
+      return (
+        app.status === "借用中" &&
+        matchName &&
+        matchBorrowType &&
+        matchGrade &&
+        matchStatus
+      );
+    } else if (selectedType.value === "審核") {
+      return (
+        ["審核中", "已駁回", "借用中", "已歸還"].includes(app.status) &&
+        matchName &&
+        matchBorrowType &&
+        matchGrade &&
+        matchStatus
+      );
+    }
+    return false;
+  });
+});
+
+
+// 送出歸還
+function submitReturnConfirmations() {
+  returnSelections.value.forEach((id) => {
+    const app = applications.find((a) => a.id === id);
+    if (app && app.status === "借用中") {
+      app.status = "已歸還";
+    }
+  });
+  returnSelections.value = []; // 清空勾選
+}
+
+// isMobile 判斷 (修正了 1px 的差異，使其與 CSS 保持一致)
+const isMobile = ref(window.innerWidth <= 865);
+window.addEventListener("resize", () => {
+  const w = window.innerWidth;
+  isMobile.value = w <= 865;
+});
+
+// 手機版 批次通過 / 批次駁回
+function approveMobile() {
+  mobileSelections.value.forEach((id) => {
+    const app = applications.find((a) => a.id === id);
+    if (app && app.status === "審核中") {
+      app.status = "借用中";
+    }
+  });
+  mobileSelections.value = []; // 清空勾選
+}
+
+function rejectMobile() {
+  mobileSelections.value.forEach((id) => {
+    const app = applications.find((a) => a.id === id);
+    if (app && app.status === "審核中") {
+      app.status = "已駁回";
+    }
+  });
+  mobileSelections.value = []; // 清空勾選
+}
+
+// 處理子組件發出的 "show-details" 事件
+function handleShowDetails(item) {
+  console.log("顯示詳細資訊: ", item);
+  alert(`
+    詳細資訊:
+    申請人: ${item.name} (${item.studentId})
+    系櫃: ${item.cabinet}
+    類型: ${item.borrowType}
+    狀態: ${item.status}
+  `);
+}
+
+// 當切換頁面時重置所有過濾器與勾選
+watch(selectedType, () => {
+  searchName.value = "";
+  borrowTypeFilter.value = "";
+  gradeFilter.value = "";
+  statusFilter.value = "";
+  returnSelections.value = [];
+  mobileSelections.value = [];
+});
+
+</script>
+
 <style scoped>
-@media (min-width: 1024px) {
-  .title {
-    min-height: 100vh;
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+.upboard {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+}
+.header-bar h1 {
+  font-size: 30px;
+  color: black;
+  margin: 0;
+  margin-left: 15px;
+}
+
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 20px 0 20px;
+  margin: 0 auto;
+}
+.left {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 35px;
+  justify-content: space-between;
+  align-items: center;
+}
+.right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.topbutton {
+  display: block;
+  padding: 3px 30px;
+  border-radius: 12px;
+  cursor: pointer;
+  background-color: white;
+  color: black;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  height: 36px;
+}
+
+button {
+  display: block;
+  margin: 0 auto;
+  padding: 6px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  background-color: white;
+  color: black;
+  font-size: 18px;
+}
+
+button:hover {
+  background-color: #eee;
+}
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.controls select,
+.controls input {
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+.search-input {
+  width: 200px;
+  font-size: 16px;
+}
+
+select {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+  padding: 6px 10px;
+  border-radius: 20px;
+  max-width: 180px;
+  width: 100%;
+  min-width: 80px;
+  box-sizing: border-box;
+}
+
+input[type="text"] {
+  background-color: white;
+  color: black;
+  padding: 6px 10px;
+  border-radius: 10px;
+  height: 36px;
+}
+.search-input {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M10 2a8 8 0 105.293 14.293l5.707 5.707 1.414-1.414-5.707-5.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-left: 5px;
+}
+.search-input:hover {
+  background-color: #eee;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.select-wrapper {
+  display: inline-block;
+  position: relative;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+.select-wrapper .dropdown {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 1px solid #ccc;
+  width: 150px;
+  height: 36px;
+  padding: 0 30px 0 10px;
+  border-radius: 12px;
+  background: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.select-wrapper::after {
+  content: "▼";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: gray;
+}
+.dropdown option {
+  font-size: 14px;
+}
+
+.select-all-text {
+  cursor: pointer;
+  user-select: none;
+  color: black;
+  font-weight: 600;
+}
+
+.btn {
+  padding: 3px 30px;
+  border-radius: 12px;
+  cursor: pointer;
+  background-color: white;
+  color: black;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  height: 36px;
+}
+
+/* ✅ 手機版樣式 */
+@media screen and (max-width: 865px) {
+  .mobile-ops {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0;
+    padding: 10px;
+    padding: 0 20px;
+    border-radius: 8px;
+  }
+  /* 手機版：水平排列 */
+  .mobile-header-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start; /* 初始同一行靠左 */
+    gap: 10px;
+  }
+  .mobile-header-top {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between; /* 標題與下拉 right 對齊 */
+    gap: 10px;
+  }
+
+  .mobile-header-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* 按鈕靠左 */
+    gap: 10px;
+  }
+  .mobile-header-row h1 {
+    flex-shrink: 0;
+    font-size: 30px;
+    margin: 0;
+    color: black;
+  }
+  .mobile-header-row select {
+    flex-grow: 1;
+    min-width: 180px;
+    max-width: 100%;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 14px;
+    border: 1px solid black;
+  }
+  .btn {
+    padding: 3px 30px;
+    border-radius: 12px;
+    cursor: pointer;
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    height: 36px;
+  }
+
+  .mobile-search {
+    margin-top: 10px;
+    margin-left: 0;
+    padding-left: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+  .search-input {
+    width: 100%;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='gray' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M10 2a8 8 0 105.293 14.293l5.707 5.707 1.414-1.414-5.707-5.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px 16px;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .mobile-header-row h1 {
+    font-size: 24px;
   }
 }
 </style>
