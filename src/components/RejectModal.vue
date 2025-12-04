@@ -112,7 +112,7 @@ export default {
 }
 
 .modal-title {
-  font-size: 24px;
+  font-size: 2.25rem;
   margin: 0;
   font-weight: 14px;
   color: #222;
@@ -126,9 +126,9 @@ export default {
 /* 調整駁回原因文字 */
 .modal-label {
   display: block;
-  font-weight: normal;   /* 不那麼粗 */
-  margin-bottom: 4px;
-  font-size: 20px; /* 再大一些 */
+  font-weight: 500;   /* 不那麼粗 */
+  margin-bottom: 12px;
+  font-size: 1.75rem; /* 再大一些 */
   color: black;
   padding-left: 12px;
 }
