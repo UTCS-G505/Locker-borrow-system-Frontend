@@ -1,8 +1,8 @@
 <!-- 標題為空的確認彈窗，依照不同按鈕套用
-點擊後有close,confirm兩種形式，依照個別確認指令可串接不同邏輯 -->
+點擊後有close,confirm兩種形式，依照個別確認指令可串接不同操作 -->
 
 <script setup>
-import { ref, watch } from 'vue'
+//import { ref, watch } from 'vue'
 import PopupModal from './PopupModal.vue';
 
 defineProps({
