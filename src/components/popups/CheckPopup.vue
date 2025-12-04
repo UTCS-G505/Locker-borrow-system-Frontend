@@ -1,3 +1,6 @@
+<!-- 標題為空的確認彈窗，依照不同按鈕套用
+點擊後有close,confirm兩種形式，依照個別確認指令可串接不同邏輯 -->
+
 <script setup>
 import { ref, watch } from 'vue'
 import PopupModal from './PopupModal.vue';
@@ -6,63 +9,28 @@ defineProps({
   operation:String,
 })
 
-const checkPopup = ref(false)
-
-const open = () => {
-  checkPopup.value = true
-}
-
-const close = () => {
-  checkPopup.value = false
-}
-
-const submit = () => {
-  alert("successful")
-  checkPopup.value = false
-}
-
-watch(checkPopup, (val) => {
-document.body.style.overflow = val ? 'hidden' : ''
-})
+const emit = defineEmits(['close', 'confirm']);
 </script>
 
 <template>
-
-  <button class="trigger" @click="open">{{operation}}</button>
-
-  
-  <PopupModal @close="close" v-if="checkPopup">
+  <PopupModal @close="emit('close')">
     <template #header>
       <h2>{{operation}}</h2>
     </template>
 
     <template #content>
-      <h3>是否確認執行此操作</h3>
+      <h3>是否確認執行此操作？</h3>
     </template>
 
     <template #buttons>
-      <button class="confirm-button" @click="submit">確認</button>
-      <button class="confirm-button" @click="close">取消</button>     
+      <button class="confirm-button" @click="emit('confirm')">確認</button>
+      <button class="confirm-button" @click="emit('close')">取消</button>     
     </template>
   </PopupModal>
 
 </template>
 
 <style scoped>
-
-/* 按鈕 */
-.trigger {
-  padding: 2px 12px;
-  background: #F3F7F9;
-  color:#000000;
-  border: 1px solid gray;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 15px;
-}
-.trigger:hover{
-  background: #DBDCDD;
-}
 
 input, textarea {
   width: 100%;
