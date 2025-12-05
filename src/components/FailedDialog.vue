@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import PopupModal from './popups/PopupModal.vue'
 
 const showDialog = ref(false)
 
@@ -10,24 +11,30 @@ const open = () => {
 const close = () => {
   showDialog.value = false
 }
+
+defineExpose({
+  open
+})
 </script>
 
 <template>
-  <button class="trigger" @click="open">模擬申請失敗</button>
+  <PopupModal v-if="showDialog" @close="close">
 
-  <div v-if="showDialog" class="overlay" @click.self="close">
-    <div class="dialog">
-      <div class="dialog-header">
-        <h1 class="title">申請失敗</h1>
-      </div>
+    <template #header>
+      <h1 class="title">申請失敗</h1>
+    </template>
+    <template #content>
       <hr class="divider" />
       <p class="message">您的申請未能通過。</p>
-    </div>
-  </div>
+    </template>
+    <template #buttons>
+    </template>
+
+  </PopupModal>
 </template>
 
 <style scoped>
-.trigger { 
+.trigger {
   font-size:1.2rem;
   background: rgb(150, 183, 244); /* 淺藍色 */
   color: #000000;
@@ -37,7 +44,7 @@ const close = () => {
   cursor: pointer;
   transition: background 0.2s;
 }
-.trigger:hover { 
+.trigger:hover {
   background: #016bff;  /* 深藍色 */
 }
 
@@ -90,7 +97,7 @@ const close = () => {
 
 .message {
   flex: 1;
-  display: flex;  
+  display: flex;
   justify-content: center;
   align-items: center;
   font-size: 2rem;
