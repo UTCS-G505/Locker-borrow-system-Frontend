@@ -1,55 +1,61 @@
 <template>
-  <!-- Modal 外層遮罩，點擊此區會關閉 modal -->
-  <div v-if="modelValue" class="modal-overlay" @click.self="$emit('update:modelValue', false)">
+  <Teleport to="body">
+    <!-- Backdrop外層遮罩，點擊空白處關閉彈窗-->
+      <div  v-if="modelValue" class="modal-backdrop" @click.self="close">
+        <!-- Modal 主體容器-->
+         <div class="modal-content">
+          <!-- Header -->
+           <div class="modal-header">
+            <h2>申請成功</h2>
+           </div>
 
-    <!-- Modal 主體容器（點這裡不會觸發關閉） -->
-    <div class="modal">
-      <!-- 上方標題區塊 -->
-      <div class="modal-header">
-        <h2>申請成功</h2>
-      </div>
-
-      <!-- 下方內容區塊 -->
+      <!-- 內容區 -->
       <div class="modal-body">
         <p>申請類型：{{ borrowType }}</p>
         <p>起迄時間：{{ timeRange.start }} ~ {{ timeRange.end }}</p>
-        <p>系櫃號碼：<span class="locker-number">{{ locker?.id }}</span></p>
-        <p>借用理由：</p>
-        <div class="borrow-reason-container">
+        <p>系櫃號碼：{{ locker?.id }}</p>
+        <div class="borrow-reason">
+          <p>借用理由：</p>
           <p>{{ reason }}</p>
         </div>
-        <div class="buttom">
-        <bottom class="close-bottom" @click="emit('update:modelValue', false)">關閉</bottom>
+      </div>
+
+      <!-- 按鈕區 -->
+       <div class="modal-buttons">
+        <button class="close-button" @click="close">關閉</button>
         </div>
       </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <script setup>
-import { watch } from 'vue';
-console.log("ModalSuccess mounted!")
+import {watch} from 'vue';
+
 const props = defineProps({
   modelValue: Boolean,
   locker: Object,
   borrowType: String,
   timeRange: Object,
   reason: String
-});
-const emit = defineEmits(['update:modelValue']);
+})
 
+const emit = defineEmits(['update:modelValue'])
+
+//關閉彈窗函式
+function close(){
+  emit('update:modelValue', false)
+}
+
+//每次modelValue變化時，控制body滾動
 watch(() => props.modelValue, (val) => {
-  if (val) {
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.body.style.overflow = '';
-  }
+    document.body.style.overflow = val ? 'hidden' : ''
 });
 </script>
 
 <style scoped>
 /* Modal 遮罩背景 */
-.modal-overlay {
+.modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
@@ -60,7 +66,7 @@ watch(() => props.modelValue, (val) => {
 }
 
 /* Modal 外框容器 */
-.modal {
+.modal-content {
   width: 608px;        /* 彈窗寬度 */
   max-width: 90%;      /* 視窗太小時自動縮小 */
   min-height: 300px;
@@ -97,14 +103,14 @@ watch(() => props.modelValue, (val) => {
 }
 
 /* Modal 標題文字樣式 */
-.modal h2 {
+.modal-content h2 {
   font-size: 24px;
   font-weight: 14px;
   color: #222;
   margin-bottom: 0;
 }
 
-.close-bottom {
+.close-button {
   width: 100px;
   height: 30px;
   font-size: 16px;
@@ -119,17 +125,17 @@ watch(() => props.modelValue, (val) => {
   margin-top: 5px;
 }
 
-.buttom {
+.modal-buttons {
   display: flex;
   justify-content: center;
   margin-top: 5px;
 }
 
-.close-bottom:hover {
+.close-button:hover {
   background-color:   #DFE1E6;
 }
 
-.borrow-reason-container {
+.borrow-reason {
   height: 12vh;
   overflow-y: auto; /* 出現垂直捲軸 */
   overflow-x: hidden; /* 禁止水平捲軸 */
@@ -141,14 +147,14 @@ watch(() => props.modelValue, (val) => {
 
 /* 桌機版調整位置 */
 @media (min-width: 1024px) {
-  .modal {
+  .modal-content {
     top: 200px; /* 如果桌機的導覽列比較高可以調整這個值 */
     width: 400px;
   }
 }
 
 @media (max-width: 768px) {
-  .borrow-reason-container {
+  .borrow-reason {
     max-height: 8vh; /* 手機再縮小高度 */
   }
 }
