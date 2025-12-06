@@ -1,8 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue'
-import IconSearch from './icons/IconSearch.vue';
-import PopupNewAnnounce from './popups/PopupNewAnnounce.vue';
-import PopupEditAnnounce from './popups/PopupEditAnnounce.vue';
+import { ref, computed, onMounted } from 'vue'
+import IconSearch from '@/components/icons/IconSearch.vue';
+import PopupNewAnnounce from '@/components/popups/PopupNewAnnounce.vue';
+import PopupEditAnnounce from '@/components/popups/PopupEditAnnounce.vue';
+import { Announcement } from '@/api/main';
+import dateFormatter from '@/utils/dateFormatter';
 
 const searchValue = ref('');
 const showNewPopup = ref(false);
@@ -10,77 +12,8 @@ const showEditPopup = ref(false);
 const editAnnouncement = ref(null);
 
 // sample data
-const announcements = ref([
-  {
-    "id": 1,
-    "title": "系櫃系統維護通知",
-    "date": "2025/02/25",
-    "content": "本系統將於 7 月 21 日（週日）凌晨 1 點至 3 點進行例行維護，期間暫停所有借用操作。"
-  },
-  {
-    "id": 2,
-    "title": "112-1 學期系櫃申請開放",
-    "date": "2025/02/25",
-    "content": "系櫃申請將於 7 月 22 日早上 9 點開放，請同學至系統填寫表單並完成抽籤程序。"
-  },
-  {
-    "id": 3,
-    "title": "遺失物通知",
-    "date": "2025/02/25",
-    "content": "7 月 17 日在 B1 區櫃位發現未上鎖之櫃子，內有私人物品，請失主盡快聯繫系辦認領。"
-  },
-  {
-    "id": 4,
-    "title": "未繳系櫃保證金名單公告",
-    "date": "2025/02/25",
-    "content": "部分同學尚未繳交保證金，請於 7 月 25 日前完成繳費，否則將取消借用資格。"
-  },
-  {
-    "id": 5,
-    "title": "系櫃借用資格公告",
-    "date": "2025/02/25",
-    "content": "限本系大二以上學生申請，每人限申請一格，請勿重複登記或冒名申請。"
-  },
-  {
-    "id": 6,
-    "title": "抽籤結果公布",
-    "date": "2025/02/25",
-    "content": "本學期系櫃抽籤結果已公布，請至系統首頁查詢並於期限內完成領櫃。"
-  },
-  {
-    "id": 7,
-    "title": "系櫃使用規範提醒",
-    "date": "2025/02/25",
-    "content": "請勿在櫃內存放食物或違禁品，違者將停權並列入紀錄。"
-  },
-  {
-    "id": 8,
-    "title": "暑假系櫃暫停使用公告",
-    "date": "2025/02/25",
-    "content": "暑假期間（7/30~9/5）全系櫃將進行消毒與整理，請提前清空櫃內物品。"
-  },
-  {
-    "id": 9,
-    "title": "系櫃重設密碼功能開放",
-    "date": "2025/02/25",
-    "content": "忘記密碼的同學可透過系統首頁「重設密碼」功能進行驗證並修改。"
-  },
-  {
-    "id": 10,
-    "title": "新生系櫃申請說明會",
-    "date": "2025/09/25",
-    "content": "歡迎新生參加 7 月 23 日中午 12:10 在 D201 教室舉辦的系櫃使用說明會。"
-  }
-]);
-
-const handleNewAnnounce = (announce) => {
-  if(announce.title.length > 20){
-    alert('標題長度不可超過20字');
-    return;
-  }
-  alert(`日期：${announce.date}\n標題：${announce.title}\n內容：${announce.content}`);
-  showNewPopup.value = false;
-};
+const announcements = ref([]);
+const rules = ref('');
 
 const filteredAnnounce = computed(() => {
   return announcements.value.filter((announce) => {
@@ -101,8 +34,14 @@ const dateStringToDate = (dateString) => {
 
 const isDraft = (date) => {
   const today = new Date();
-  const announcementDate = dateStringToDate(date);
+  const announcementDate = new Date(date);
   return today < announcementDate;
+}
+
+const fetchAnnounce = async () => {
+  announcements.value = await Announcement.getAll({
+    include_inactive: true
+  });
 }
 
 const editAnnounce = (announce) => {
@@ -110,20 +49,85 @@ const editAnnounce = (announce) => {
   editAnnouncement.value = announce;
 }
 
-const handleEditAnnounce = (announce) => {
+const handleNewAnnounce = async (announce) => {
   if(announce.title.length > 20){
     alert('標題長度不可超過20字');
     return;
   }
+  //let newDate = new Date(announce.date);
+  /*let newUTCDate = Date.UTC(
+    newDate.getFullYear(),
+    newDate.getMonth(),
+    newDate.getDate(),
+    0
+  );
+  newDate = new Date(newUTCDate);*/
+  //announce.date = newDate;
+  await Announcement.postCreate(announce);
+  await fetchAnnounce();
+  showNewPopup.value = false;
+};
+
+const handleEditAnnounce = async (announce) => {
+  if(announce.title.length > 20){
+    alert('標題長度不可超過20字');
+    return;
+  }
+  
+  let updateAnnounce = {};
+  if(announce.title !== editAnnouncement.value.title){
+    updateAnnounce.title = announce.title;
+  }
+  if(announce.content !== editAnnouncement.value.content){
+    updateAnnounce.content = announce.content;
+  }
+  if(announce.date !== editAnnouncement.value.date){
+    let newDate = new Date(announce.date);/*
+    let newUTCDate = Date.UTC(
+      newDate.getFullYear(),
+      newDate.getMonth(),
+      newDate.getDate(),
+      0
+    );
+    newDate = new Date(newUTCDate);*/
+    updateAnnounce.date = newDate;
+  }
+  await Announcement.patchUpdate(announce.id, updateAnnounce);
+
   showEditPopup.value = false;
   editAnnouncement.value = null;
-  announcements.value[announce.id - 1] = announce;
-  alert(`日期：${announce.date}\n標題：${announce.title}\n內容：${announce.content}`);
+  await fetchAnnounce();
 }
 
-const deleteAnnounce = (announce) => {
-  announcements.value.pop(announcements.value.indexOf(announce));
+const deleteAnnounce = async (announce) => {
+  try {
+    await Announcement.deleteDelete(announce.id);
+    await fetchAnnounce();
+  } catch (err) {
+    console.error('刪除公告失敗', err);
+  }
 }
+
+const handleRuleUpdate = async () => {
+  try {
+    await Announcement.patchUpdate(1, {
+      content: rules.value
+    });
+    alert('更新成功');
+  } catch (err) {
+    console.error('更新公告失敗', err);
+  }
+}
+
+onMounted(async () => {
+  try {
+    await fetchAnnounce();
+    const rulesResponse = await Announcement.getGet(1);
+    rules.value = rulesResponse.content;
+  } catch (err) {
+    console.error('獲取公告失敗', err);
+  }
+})
 </script>
 
 <template>
@@ -154,7 +158,7 @@ const deleteAnnounce = (announce) => {
       </thead>
       <tbody>
         <tr v-for="announce in filteredAnnounce" :key="announce.id">
-          <td>{{ announce.date }}</td>
+          <td>{{ dateFormatter(announce.date) }}</td>
           <td>
             {{ announce.title }}
             <span class="draft" v-if="isDraft(announce.date)">(草稿)</span>
@@ -170,8 +174,8 @@ const deleteAnnounce = (announce) => {
   <hr>
   <div id="rule-board">
     <label for="rule">系櫃使用規則</label>
-    <textarea id="rule"></textarea>
-    <button type="button">儲存</button>
+    <textarea id="rule" v-model="rules"></textarea>
+    <button type="button" @click="handleRuleUpdate">儲存</button>
   </div>
 
   <PopupNewAnnounce
