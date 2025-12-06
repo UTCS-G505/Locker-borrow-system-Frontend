@@ -65,6 +65,39 @@ class Announcement {
   }
 }
 
+class User {
+  static getGet;
+
+  static getAll;
+
+  static postNote;
+}
+
+class Record {
+  static getGet;
+
+  static getList;
+
+  static getAll;
+
+  static postBorrow;
+
+  static postCancel;
+
+  static postReviewBorrow;
+
+  static postReturn;
+
+  static postReviewReturn;
+}
+
+class Locker {
+  static getAll;
+}
+
 export { 
   Announcement,
+  User,
+  Record,
+  Locker
 }
