@@ -11,6 +11,7 @@ const showMobileMenu = ref(false)
 const menuRef = ref(null)
 // 控制手機版使用者選單顯示
 const showMobileUserMenu = ref(false)
+const loggedInUser = ref(null);
 
 // 切換電腦版使用者選單
 function toggleMenu() {
@@ -45,6 +46,8 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
+
+loggedInUser.value = localStorage.getItem('uid');
 </script>
 
 <template>
@@ -67,7 +70,7 @@ onBeforeUnmount(() => {
         </div>
         <div class="user-menu" ref="menuRef">
           <button class="user-btn" @click.stop="toggleMenu">
-            u11316017
+            {{ loggedInUser }}
             <span :class="['arrow', { 'arrow-up': showMenu }]">▼</span>
           </button>
           <div v-if="showMenu" class="dropdown">
@@ -107,7 +110,7 @@ onBeforeUnmount(() => {
 
       <!-- 手機版使用者選單 -->
       <div v-if="showMobileUserMenu" class="mobile-user-menu">
-        <div class="user-name">u11316017</div>
+        <div class="user-name">{{ loggedInUser }}</div>
         <div class="logout"><a href="#">登出</a></div>
       </div>
 
