@@ -57,4 +57,17 @@ footer {
   margin: 0 auto;
   padding: 2rem;
 }
+.trigger { 
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.trigger:hover {
+  background-color: #0056b3;
+}
 </style>

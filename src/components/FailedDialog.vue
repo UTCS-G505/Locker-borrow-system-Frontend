@@ -32,6 +32,7 @@ defineExpose({
         </div>
 
         <div class="buttons">
+
         </div>
 
       </div>
@@ -39,11 +40,7 @@ defineExpose({
   </Teleport>
 </template>
 
-<style scoped>
-/* =========================================
-   1. 這裡補上 PopupModal 模板原本的 CSS
-   (原本你的 CSS 寫的是 overlay/dialog，這裡要改成對應 HTML 的名稱)
-   ========================================= */
+<style scoped> 
 
 .modal-backdrop {
   position: fixed;
@@ -88,7 +85,7 @@ defineExpose({
   justify-content: center;
   margin-top: 5px;
   min-height: 20px; /* 避免沒按鈕時下方太空 */
-} 
+}
 .title {
   font-size: 2.5rem;
   font-weight: 450;
