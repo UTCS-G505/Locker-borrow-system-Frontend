@@ -1,22 +1,18 @@
 <template>
-  <div v-if="show" class="modal-overlay" @click.self="close">
-    <div class="modal-container">
-      <!-- 上半部 -->
-      <div class="modal-header">
-        <h2 class="modal-title">駁回</h2>
-      </div>
+  <PopupModal v-if="show" @close="close">
 
-      <div class="divider"></div>
+    <template #header>
+      <h2 class="modal-title">駁回</h2>
+    </template>
 
-      <div class="modal-body">
-        <!-- 駁回原因 -->
+    <template #content>
+      <div class="modal-body-content">
         <label class="modal-label">駁回原因</label>
         <textarea
           class="modal-textarea"
           v-model="rejectReason"
         ></textarea>
 
-        <!-- 常用選項 -->
         <div class="quick-options">
           <button
             v-for="option in quickOptions"
@@ -28,53 +24,53 @@
           </button>
         </div>
       </div>
+    </template>
 
-      <div class="modal-actions">
-        <button class="submit-btn" @click="submit">送出</button>
-      </div>
-    </div>
-  </div>
+    <template #buttons>
+      <button class="submit-btn" @click="submit">送出</button>
+    </template>
+
+  </PopupModal>
 </template>
 
-<script>
-export default {
-  name: "RejectModal",
-  props: {
+<script setup>
+  import { ref } from 'vue';
+  import PopupModal from '@/components/popups/PopupModal.vue';
+  defineProps({
     quickOptions: {
       type: Array,
       default: () => ["詳細資訊1", "詳細資訊2", "詳細資訊3"],
     },
-  },
-  emits: ["submit"],
-  data() {
-    return {
-      show: false,
-      rejectReason: "",
-    };
-  },
-  methods: {
-    open() {
-      this.show = true;
-      document.body.style.overflow = "hidden";
-    },
-    close() {
-      this.rejectReason = "";
-      this.show = false;
-      document.body.style.overflow = "";
-    },
-    submit() {
-      if (!this.rejectReason.trim()) {
-        alert("請輸入駁回原因！");
-        return;
-      }
-      this.$emit("submit", this.rejectReason);
-      this.close();
-    },
-    selectOption(option) {
-      this.rejectReason = option;
-    },
-  },
+  });
+  const emit = defineEmits(['submit']);
+
+  const show = ref(false);
+  const rejectReason = ref("");
+  const open = () => {
+  show.value = true;
+  document.body.style.overflow = "hidden";
 };
+  const close = () => {
+    rejectReason.value = "";
+    show.value = false;
+    document.body.style.overflow = "";
+  };
+  const submit = () => {
+    if (!rejectReason.value.trim()) {
+      alert("請輸入駁回原因！");
+      return;
+    }
+    emit("submit", rejectReason.value);
+    close();
+  };
+
+  const selectOption = (option) => {
+    rejectReason.value = option;
+  };
+  defineExpose({
+    open
+  });
+
 </script>
 
 <style scoped>
