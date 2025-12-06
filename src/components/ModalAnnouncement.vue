@@ -1,4 +1,6 @@
 <script setup>
+import dateFormatter from '@/utils/dateFormatter';
+
 defineProps({
   announcement: Object,
 })
@@ -12,7 +14,7 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
       <div class="modal-header">
         <h2>{{ announcement.title }}</h2>
       </div>
-      <p class="date-text">發布日期：{{ announcement.date }}</p>
+      <p class="date-text">發布日期：{{ dateFormatter(announcement.date) }}</p>
       <div class="content-container">
         <p class="content-text">{{ announcement.content }}</p>
       </div>
@@ -89,6 +91,7 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
   line-height: 1.6;
   text-align: left;
   margin-bottom: 2rem;
+  white-space: pre-wrap;
 }
 
 button {
