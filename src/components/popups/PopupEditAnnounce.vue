@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
-import PopupModal from './PopupModal.vue';
+import PopupModal from '@/components/popups/PopupModal.vue';
+import dateFormatter from '@/utils/dateFormatter';
 
 const props = defineProps({
   announcement: {
@@ -10,7 +11,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['close', 'submit']);
 
-const date = ref(props.announcement.date.replaceAll('/', '-'));
+const date = ref(dateFormatter(props.announcement.date).replaceAll('/', '-'));
 const title = ref(props.announcement.title);
 const content = ref(props.announcement.content);
 
