@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue'
-import PopupModal from './popups/PopupModal.vue'
 
 const showDialog = ref(false)
 
@@ -18,69 +17,78 @@ defineExpose({
 </script>
 
 <template>
-  <PopupModal v-if="showDialog" @close="close">
+  <Teleport to="body">
+    <div v-if="showDialog" class="modal-backdrop" @click.self="close">
+      <div class="modal-content">
 
-    <template #header>
-      <h1 class="title">申請失敗</h1>
-    </template>
-    <template #content>
-      <hr class="divider" />
-      <p class="message">您的申請未能通過。</p>
-    </template>
-    <template #buttons>
-    </template>
+        <div class="modal-header">
+          <h1 class="title">申請失敗</h1>
+        </div>
 
-  </PopupModal>
+        <div class="content">
+          <div class="message-container">
+            <p class="message">您的申請未能通過。</p>
+          </div>
+        </div>
+
+        <div class="buttons">
+        </div>
+
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
-.trigger {
-  font-size:1.2rem;
-  background: rgb(150, 183, 244); /* 淺藍色 */
-  color: #000000;
-  border: none;
-  padding: 0.6rem 1.8rem; /* 本來是0.8rem 2.0rem */
-  border-radius: 0.2rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.trigger:hover {
-  background: #016bff;  /* 深藍色 */
-}
+/* =========================================
+   1. 這裡補上 PopupModal 模板原本的 CSS
+   (原本你的 CSS 寫的是 overlay/dialog，這裡要改成對應 HTML 的名稱)
+   ========================================= */
 
-.overlay {
+.modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0,0,0,0.5); /* 半透明黑底 */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 1000;
 }
 
-.dialog {
-  width: 40%;
-  height: 30%;
-  background: #f6f7f9f2;
+.modal-content {
+  background: rgba(250, 250, 251, 0.95);
+  padding: 24px;
   border-radius: 16px;
-  box-shadow:
-    2px 4px 4px rgba(0, 0, 0, 0.35),
-    -1.5px -0.5px 4px rgba(0, 0, 0, 0.25);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: hidden;
+  width: 608px;
+  max-width: 90%; /* 手機版防爆版 */
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  box-shadow: 2px 4px 4px rgba(0,0,0,0.35), -1.5px -0.5px 4px rgba(0,0,0,0.25);
 }
 
-.dialog-header {
-  width: 100%;
-  background: #EFF9FFCC;
-  padding: 10px 0;
+.modal-header {
+  min-height: 60px;
+  background-color: #E8F7FFCC; /* 淺藍色標題底 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -25px -24px 0px -24px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  box-shadow: 0px 1px 4px 0px #00000040;
+}
+
+.content {
+  padding: 15px 10px 0;
+}
+
+.buttons {
   display: flex;
   justify-content: center;
-  align-items: center;
-}
-
+  margin-top: 5px;
+  min-height: 20px; /* 避免沒按鈕時下方太空 */
+} 
 .title {
   font-size: 2.5rem;
   font-weight: 450;
@@ -88,22 +96,17 @@ defineExpose({
   margin: 0;
 }
 
-.divider {
-  width: 100%;
-  border: none;
-  border-top: 1px solid #ccc;
-  margin: 0;
-}
-
-.message {
-  flex: 1;
+.message-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 30px 0; /* 增加一點上下距離比較好看 */
+}
+
+.message {
   font-size: 2rem;
   color: #000000ff;
   text-align: center;
-  width: 100%;
   margin: 0;
 }
 </style>
