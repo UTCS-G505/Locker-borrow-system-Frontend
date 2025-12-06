@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { Announcement } from '@/api/main';
 
 defineProps({
   board: {
@@ -17,12 +18,24 @@ const endDate = `${today.getFullYear() + 1}-${String(today.getMonth() + 1).padSt
 const initialStartDate = ref(startDate);
 const initialEndDate = ref(endDate);
 
-const updateSemesterInterval = () => {
+const updateSemesterInterval = async () => {
   const start = document.getElementById('start').value;
   const end = document.getElementById('end').value;
   if(end <= start){
-    // TODO: alert popup, message:"學年結束時間應晚於學年起始時間"
+    alert("學年結束時間應晚於學年起始時間");
     return;
+  }
+
+  try {
+    await Announcement.patchUpdate(2, {
+      content: initialStartDate.value
+    });
+    await Announcement.patchUpdate(3, {
+      content: initialEndDate.value
+    });
+    alert('更新成功');
+  } catch (err) {
+    console.error('更新公告失敗', err);
   }
 };
 
@@ -34,6 +47,17 @@ const handleBorrowOverview = () => {
   console.log('handleBorrowOverview');
   // window.open('/export/overview', '_blank', 'noopener');
 };
+
+onMounted(async () => {
+  try {
+    const semesterStartResponse = await Announcement.getGet(2);
+    initialStartDate.value = semesterStartResponse.content || startDate;
+    const semesterEndResponse = await Announcement.getGet(3);
+    initialEndDate.value = semesterEndResponse.content || endDate;
+  } catch (err) {
+    console.error('獲取公告失敗', err);
+  }
+})
 </script>
 
 <template>
@@ -47,9 +71,9 @@ const handleBorrowOverview = () => {
       </div>
       <form class="semester-form" @submit.prevent="updateSemesterInterval">
         <label for="start">學年起：</label>
-        <input type="date" class="input-field" id="start" name="start" :value="initialStartDate">
+        <input type="date" class="input-field" id="start" name="start" v-model="initialStartDate">
         <label for="end">學年迄：</label>
-        <input type="date" class="input-field" id="end" name="end" :value="initialEndDate">
+        <input type="date" class="input-field" id="end" name="end" v-model="initialEndDate">
         <button type="submit">儲存</button>
       </form>
     </div>
