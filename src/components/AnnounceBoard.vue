@@ -33,8 +33,8 @@ const dateStringToDate = (dateString) => {
 }
 
 const isDraft = (date) => {
-  const today = new Date();
-  const announcementDate = new Date(date);
+  const today = new Date().setHours(0, 0, 0, 0);
+  const announcementDate = new Date(date).setHours(0, 0, 0, 0);
   return today < announcementDate;
 }
 
