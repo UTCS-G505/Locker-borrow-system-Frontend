@@ -1,7 +1,9 @@
 <script setup>
-import { RouterLink } from 'vue-router'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { RouterLink } from 'vue-router'
+import router from '@/router'
 import logo from '@/assets/logo.png'
+import { SsoAuth, SsoUser } from '@/api/sso'
 
 // 控制電腦版使用者選單顯示
 const showMenu = ref(false)
@@ -35,6 +37,16 @@ function handleClickOutside(event) {
     showMobileMenu.value = false
     showMobileUserMenu.value = false
   }
+}
+
+async function handleLogout() {
+  await SsoAuth.postLogout();
+  localStorage.removeItem('uid');
+  localStorage.removeItem('username');
+  localStorage.removeItem('role');
+  localStorage.removeItem('access_token');
+  loggedInUser.value = null;
+  router.push('/');
 }
 
 // 掛載全局點擊事件
@@ -75,7 +87,7 @@ loggedInUser.value = localStorage.getItem('uid');
           </button>
           <div v-if="showMenu" class="dropdown">
             <ul>
-              <li><a href="#">登出</a></li>
+              <li><a @click="handleLogout">登出</a></li>
             </ul>
           </div>
         </div>
@@ -111,7 +123,7 @@ loggedInUser.value = localStorage.getItem('uid');
       <!-- 手機版使用者選單 -->
       <div v-if="showMobileUserMenu" class="mobile-user-menu">
         <div class="user-name">{{ loggedInUser }}</div>
-        <div class="logout"><a href="#">登出</a></div>
+        <div class="logout"><a @click="handleLogout">登出</a></div>
       </div>
 
     </div>
