@@ -120,9 +120,6 @@ tr td {
 
 tbody tr {
   height: 45px;
-}
-
-tbody tr {
   background-image: linear-gradient(to right,
       /* 從左到右畫背景 */
       transparent 0%,
