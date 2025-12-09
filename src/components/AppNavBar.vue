@@ -269,6 +269,7 @@ onBeforeUnmount(() => {
   padding: 8px 12px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   height: 56px;
+  border-bottom: 1px solid #ddd;
 }
 
 .menu-toggle {
@@ -309,6 +310,7 @@ onBeforeUnmount(() => {
   align-items: flex-start;
   background: #EFF9FF;
   padding: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-menu a {
