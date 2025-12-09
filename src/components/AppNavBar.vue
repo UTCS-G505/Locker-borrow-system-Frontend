@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink } from 'vue-router'
 import router from '@/router'
+import { useAuthStore } from '@/stores/auth'
 import logo from '@/assets/logo.png'
 import { SsoAuth, SsoUser } from '@/api/sso'
 
@@ -14,6 +15,8 @@ const menuRef = ref(null)
 // 控制手機版使用者選單顯示
 const showMobileUserMenu = ref(false)
 const loggedInUser = ref(null);
+
+const authStore = useAuthStore();
 
 // 切換電腦版使用者選單
 function toggleMenu() {
@@ -77,8 +80,8 @@ loggedInUser.value = localStorage.getItem('uid');
           <RouterLink to="/">首頁</RouterLink>
           <RouterLink to="/apply">申請借用</RouterLink>
           <RouterLink to="/record">申請紀錄</RouterLink>
-          <RouterLink to="/review">審核申請</RouterLink>
-          <RouterLink to="/setting">系統管理</RouterLink>
+          <RouterLink to="/review" v-if="authStore.isManager">審核申請</RouterLink>
+          <RouterLink to="/setting" v-if="authStore.isManager">系統管理</RouterLink>
         </div>
         <div class="user-menu" ref="menuRef">
           <button class="user-btn" @click.stop="toggleMenu">
