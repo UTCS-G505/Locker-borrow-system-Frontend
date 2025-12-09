@@ -71,11 +71,11 @@ function toggleReturn(id){
 }
 
 .insideTable {
-  position: relative;
-  overflow-y: hidden; /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
+  overflow-y: hidden;
+  /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
   margin: 10px auto 0 auto;
-  max-width: 100%; /* 保護不要暴衝超出容器 */
-  z-index: 0;
+  max-width: 100%;
+  /* 保護不要暴衝超出容器 */
   margin-top: 0px;
 }
 
