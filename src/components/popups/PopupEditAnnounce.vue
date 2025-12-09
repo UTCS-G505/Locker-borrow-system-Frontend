@@ -48,19 +48,20 @@ function submit() {
 
       <h3>公告標題 (<span id="title-length">{{ title.length }}</span>/20)</h3>
       <input id="title" v-model="title" type="text" placeholder="請輸入公告標題（必填）" maxlength="20" />
-      
+
       <h3>公告內容</h3>
       <textarea id="content" v-model="content" rows="4" placeholder="請輸入公告內文（必填）"></textarea>
     </template>
 
     <template #buttons>
-      <button class="confirm-button" @click="submit">送出</button>        
+      <button class="confirm-button" @click="submit">送出</button>
     </template>
   </PopupModal>
 </template>
 
 <style scoped>
-input, textarea {
+input,
+textarea {
   width: 100%;
   resize: none;
   padding: 8px;
