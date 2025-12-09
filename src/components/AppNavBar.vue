@@ -193,7 +193,7 @@ onBeforeUnmount(() => {
 }
 
 .nav-links a.router-link-exact-active {
-  background-color: #a1d2ff ;
+  background-color: #a1d2ff;
   font-weight: bold;
 }
 
@@ -214,6 +214,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 4px;
+  color: #000;
 }
 
 .arrow {
@@ -271,6 +272,7 @@ onBeforeUnmount(() => {
 }
 
 .menu-toggle {
+  color: #000;
   font-size: 24px;
   background: none;
   border: none;
@@ -362,6 +364,7 @@ onBeforeUnmount(() => {
   .desktop-header {
     display: block;
   }
+
   .mobile-header {
     display: none;
   }
@@ -370,19 +373,23 @@ onBeforeUnmount(() => {
 /* 平板或大螢幕手機：增加 logo 和文字大小 */
 @media (min-width: 600px) and (max-width: 1023px) {
   .mobile-top-bar {
-    padding: 12px 20px; /* 增加 padding */
+    padding: 12px 20px;
+    /* 增加 padding */
   }
 
   .mobile-system-title {
-    font-size: 26px; /* 原本是 18px，放大 */
+    font-size: 26px;
+    /* 原本是 18px，放大 */
   }
 
   .mobile-logo {
-    height: 48px; /* 原本是 36px，放大 */
+    height: 48px;
+    /* 原本是 36px，放大 */
   }
 
   .mobile-menu a {
-    font-size: 23px; /* 原本是 18px，放大 */
+    font-size: 23px;
+    /* 原本是 18px，放大 */
   }
 
   .mobile-user-menu .user-name {
@@ -394,5 +401,3 @@ onBeforeUnmount(() => {
   }
 }
 </style>
-
-
