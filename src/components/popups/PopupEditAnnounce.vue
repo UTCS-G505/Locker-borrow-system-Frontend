@@ -30,7 +30,7 @@ function submit() {
   emit('submit', {
     id: props.announcement.id,
     title: title.value.trim(),
-    date: date.value.replaceAll('-', '/'),
+    date: date.value,
     content: content.value.trim()
   })
 };
