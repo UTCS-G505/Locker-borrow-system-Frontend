@@ -50,7 +50,7 @@ const editAnnounce = (announce) => {
 }
 
 const handleNewAnnounce = async (announce) => {
-  if(announce.title.length > 20){
+  if (announce.title.length > 20) {
     alert('標題長度不可超過20字');
     return;
   }
@@ -61,16 +61,16 @@ const handleNewAnnounce = async (announce) => {
 };
 
 const handleEditAnnounce = async (announce) => {
-  if(announce.title.length > 20){
+  if (announce.title.length > 20) {
     alert('標題長度不可超過20字');
     return;
   }
-  
+
   let updateAnnounce = {};
-  if(announce.title !== editAnnouncement.value.title){
+  if (announce.title !== editAnnouncement.value.title) {
     updateAnnounce.title = announce.title;
   }
-  if(announce.content !== editAnnouncement.value.content){
+  if (announce.content !== editAnnouncement.value.content) {
     updateAnnounce.content = announce.content;
   }
   if (announce.date !== editAnnouncement.value.date) {
@@ -117,13 +117,7 @@ onMounted(async () => {
 <template>
   <div id="control">
     <div id="search-bar">
-      <input
-        type="text"
-        id="search"
-        name="search"
-        placeholder="搜尋"
-        v-model="searchValue"
-      />
+      <input type="text" id="search" name="search" placeholder="搜尋" v-model="searchValue" />
       <label for="search">
         <IconSearch />
       </label>
@@ -162,17 +156,9 @@ onMounted(async () => {
     <button type="button" @click="handleRuleUpdate">儲存</button>
   </div>
 
-  <PopupNewAnnounce
-    v-if="showNewPopup"
-    @close="showNewPopup = false"
-    @submit="handleNewAnnounce"
-  />
-  <PopupEditAnnounce
-    v-if="showEditPopup"
-    @close="showEditPopup = false"
-    @submit="handleEditAnnounce"
-    :announcement="editAnnouncement"
-  />
+  <PopupNewAnnounce v-if="showNewPopup" @close="showNewPopup = false" @submit="handleNewAnnounce" />
+  <PopupEditAnnounce v-if="showEditPopup" @close="showEditPopup = false" @submit="handleEditAnnounce"
+    :announcement="editAnnouncement" />
 </template>
 
 <style scoped>
@@ -187,7 +173,7 @@ onMounted(async () => {
   max-width: 100%;
 }
 
-#search-bar input{
+#search-bar input {
   max-width: 100%;
   border: 2px solid #DFE1E6;
   border-radius: 10px;
@@ -231,10 +217,11 @@ thead {
 }
 
 tr {
-  border-bottom: rgba(236,232,232,.35) solid 4px;
+  border-bottom: rgba(236, 232, 232, .35) solid 4px;
 }
 
-th, td {
+th,
+td {
   padding: 0.8rem;
 }
 
@@ -246,12 +233,14 @@ th:last-child {
   border-top-right-radius: 10px;
 }
 
-th:first-child, td:first-child {
+th:first-child,
+td:first-child {
   width: 15%;
   min-width: 150px;
 }
 
-th:last-child, td:last-child {
+th:last-child,
+td:last-child {
   width: 30%;
   min-width: 300px;
 }
