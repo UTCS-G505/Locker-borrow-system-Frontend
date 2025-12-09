@@ -5,7 +5,6 @@ import router from '@/router'
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     accessToken: localStorage.getItem('access_token') || '',
-    refreshToken: localStorage.getItem('refresh_token') || '',
     user: {
       id: localStorage.getItem('uid') || '',
       role: localStorage.getItem('role') || ''
