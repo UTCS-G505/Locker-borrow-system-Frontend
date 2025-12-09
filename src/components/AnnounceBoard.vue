@@ -54,15 +54,7 @@ const handleNewAnnounce = async (announce) => {
     alert('標題長度不可超過20字');
     return;
   }
-  //let newDate = new Date(announce.date);
-  /*let newUTCDate = Date.UTC(
-    newDate.getFullYear(),
-    newDate.getMonth(),
-    newDate.getDate(),
-    0
-  );
-  newDate = new Date(newUTCDate);*/
-  //announce.date = newDate;
+
   await Announcement.postCreate(announce);
   await fetchAnnounce();
   showNewPopup.value = false;
@@ -81,16 +73,8 @@ const handleEditAnnounce = async (announce) => {
   if(announce.content !== editAnnouncement.value.content){
     updateAnnounce.content = announce.content;
   }
-  if(announce.date !== editAnnouncement.value.date){
-    let newDate = new Date(announce.date);/*
-    let newUTCDate = Date.UTC(
-      newDate.getFullYear(),
-      newDate.getMonth(),
-      newDate.getDate(),
-      0
-    );
-    newDate = new Date(newUTCDate);*/
-    updateAnnounce.date = newDate;
+  if (announce.date !== editAnnouncement.value.date) {
+    updateAnnounce.date = announce.date;
   }
   await Announcement.patchUpdate(announce.id, updateAnnounce);
 
