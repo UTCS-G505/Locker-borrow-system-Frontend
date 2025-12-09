@@ -1,3 +1,28 @@
+<template>
+  <PopupModal v-if="modelValue" @close="close">
+
+    <template #header>
+      <h2>申請成功</h2>
+    </template>
+
+    <template #content>
+      <h3>櫃子編號：{{ locker.name }}</h3>
+      <h3>借用類型：{{ borrowType }}</h3>
+      <h3>借用時間：{{ timeRange.start }} ~ {{ timeRange.end }}</h3>
+      <h3>借用理由：
+        <div class="borrow-reason">
+        <p>{{ reason }}</p>
+      </div>
+      </h3>
+    </template>
+
+    <template #buttons>
+      <button class="close-button" @click="close">關閉</button>
+    </template>
+
+  </PopupModal>
+</template>
+
 <script setup>
 import {watch} from 'vue';
 import PopupModal from '@/components/popups/PopupModal.vue'
@@ -23,33 +48,8 @@ watch(() => props.modelValue, (val) => {
 });
 </script>
 
-<template>
-  <PopupModal v-if="modelValue" @close="close">
-
-    <template #header>
-      <h2>申請成功</h2>
-    </template>
-
-    <template #content>
-      <p>申請類型：{{ borrowType }}</p>
-      <p>起迄時間：{{ timeRange.start }} ~ {{ timeRange.end }}</p>
-      <p>系櫃號碼：{{ locker?.id }}</p>
-
-      <div class="borrow-reason">
-        <p>借用理由：</p>
-        <p>{{ reason }}</p>
-      </div>
-    </template>
-
-    <template #buttons>
-      <button class="close-button" @click="close">關閉</button>
-    </template>
-
-  </PopupModal>
-</template>
-
 <style scoped>
-  
+
 .close-button {
   width: 100px;
   height: 30px;
@@ -71,12 +71,17 @@ watch(() => props.modelValue, (val) => {
 
 .borrow-reason {
   height: 12vh;
+  font-size: 14px;
+  padding: 8px;
   overflow-y: auto; /* 出現垂直捲軸 */
   overflow-x: hidden; /* 禁止水平捲軸 */
   width: 100%; /* 讓捲動區塊佔滿寬度 */
   word-wrap: break-word; /* 自動換行 */
   word-break: break-word; /* 強制換行，避免長字串溢出 */
   white-space: normal; /* 確保文字可以換行 */
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: rgba(250, 250, 251, 0.95);
 }
 
 @media (max-width: 768px) {
