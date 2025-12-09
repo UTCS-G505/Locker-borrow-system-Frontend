@@ -53,16 +53,18 @@ async function handleLogout() {
 }
 
 // 掛載全局點擊事件
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
+
+  let uid = localStorage.getItem('uid');
+  let usernameResponse = await SsoUser.getGet(uid);
+  loggedInUser.value = usernameResponse.name;
 })
 
 // 卸載事件監聽器
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
-
-loggedInUser.value = localStorage.getItem('uid');
 </script>
 
 <template>
