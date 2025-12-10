@@ -136,12 +136,12 @@
   resize: none;
   border: none;
   outline: none;
+  box-shadow: none;
   border-radius: 15px;
   margin-bottom: 12px;
   background: white;
   color: black;
   font-size: 14px;
-  border: 1px solid #ccc;
   border-radius: 8px;
   display: block;      /* 確保是獨立一行 */
   margin: 0 auto 16px;
@@ -221,12 +221,22 @@
     margin-bottom: 10px;
   }
 
+  .quick-options {
+    display: flex;
+    flex-direction: column;   /* 【關鍵】垂直排列，這就是「直接換行」 */
+    align-items: center;      /* 讓變短的按鈕在畫面正中間對齊 */
+    gap: 10px;                /* 按鈕上下的間距 */
+    margin-bottom: 15px;
+  }
+
   .quick-option-btn {
-    padding: 2px 10px;
-    font-size: 1rem;
+    width: 320px;             /* 【關鍵】設定一個固定長度，讓它變短 */
     max-width: none;
-    width: 100%;
-    box-sizing: border-box;
+    flex: none;
+
+    padding: 6px 0;           /* 上下內距 */
+    font-size: 0.9rem;
+    border-radius: 20px;      /* 圓角，變成膠囊狀比較好看 */
   }
 
   .submit-btn {
@@ -234,11 +244,7 @@
     font-size: 1rem;
   }
 
-  .quick-options {
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: -4px;
-  }
+
 }
 
 </style>
