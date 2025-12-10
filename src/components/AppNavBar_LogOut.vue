@@ -76,10 +76,8 @@ onBeforeUnmount(() => {
       <nav class="nav-bar">
         <div class="nav-links">
           <RouterLink to="/">首頁</RouterLink>
-          <RouterLink to="/apply">申請借用</RouterLink>
-          <RouterLink to="/record">申請紀錄</RouterLink>
-          <RouterLink to="/review">審核申請</RouterLink>
-          <RouterLink to="/setting">系統管理</RouterLink>
+          <div @click="showSignInPopup" class="nav-link-disabled">申請借用</div>
+          <div @click="showSignInPopup" class="nav-link-disabled">申請紀錄</div>
         </div>
         <div class="user-menu">
           <button class="user-btn" @click="showSignInPopup"> 登入 </button>
@@ -106,10 +104,8 @@ onBeforeUnmount(() => {
 
       <div v-if="showMobileMenu" class="mobile-menu">
         <RouterLink to="/" @click="toggleMobileMenu">首頁</RouterLink>
-        <RouterLink to="/apply" @click="toggleMobileMenu">申請借用</RouterLink>
-        <RouterLink to="/record" @click="toggleMobileMenu">申請借用</RouterLink>
-        <RouterLink to="/review" @click="toggleMobileMenu">審核申請</RouterLink>
-        <RouterLink to="/setting" @click="toggleMobileMenu">系統管理</RouterLink>
+          <a href="#" @click.prevent="showSignInPopup(); toggleMobileMenu()">申請借用</a>
+          <a href="#" @click.prevent="showSignInPopup(); toggleMobileMenu()">申請紀錄</a>
       </div>
       
       <div v-if="showMobileUserMenu" class="mobile-user-menu">
@@ -117,23 +113,25 @@ onBeforeUnmount(() => {
           <a href="#" @click.prevent="showSignInPopup">登入</a>
         </div>
       </div>
+    </div> 
+  </div> 
 
-    </div> </div> <Popup_SignIn v-if="isSignInPopupVisible" @close="closeSignInPopup" >
+  <Popup_SignIn v-if="isSignInPopupVisible" @close="closeSignInPopup" >
     <template #登入>
         <h1 style="margin: 0;" ><b>登入</b></h1>
     </template>
 
     <template #帳號>
-      <div style="display: flex; align-items: center; gap: 7px; width: 80%;"> 
-        <label for="account" style="width: 50px; font-size: 24px; text-align: left;">帳號</label> 
-        <input id="account" type="text" style="flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+      <div class="form-row">
+        <label for="account" class="form-label">帳號</label> 
+        <input id="account" type="text" class="form-input">
       </div>
     </template>
 
     <template #密碼>
-      <div style="display: flex; align-items: center; gap: 7px; width: 80%;">
-        <label for="password" style="width: 50px; font-size: 24px; text-align: left;">密碼</label>
-        <input id="password" type="password" style="flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+      <div class="form-row">
+        <label for="password" class="form-label">密碼</label>
+        <input id="password" type="password" class="form-input">
       </div>
     </template>
 
@@ -148,10 +146,9 @@ onBeforeUnmount(() => {
           background: rgba(235, 247, 255, 0.8);
           color: #007bff; 
           border: 1px solid #007bff; 
-          border-radius: 12px; 
-          padding: 8px 20px; 
+          border-radius: 10px; 
+          padding: 3px 20px; 
           font-size: 14px;
-          cursor: pointer;
           ">
           請使用 UTSC SSO 帳密登入
         </div>
@@ -213,6 +210,11 @@ onBeforeUnmount(() => {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
 }
 
+.nav-links {
+  display: flex;
+  align-items: center; /* 讓 nav-links 內的文字與按鈕垂直居中 */
+}
+
 .nav-links a {
   text-decoration: none;
   color: #333;
@@ -221,6 +223,22 @@ onBeforeUnmount(() => {
   margin-right: 1rem;
   border-radius: 4px;
   font-size: 25px;
+}
+
+.nav-links div { 
+  text-decoration: none;
+  color: #333;
+  padding: 12px 16px;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  border-radius: 4px;
+  font-size: 25px;
+  cursor: pointer; 
+  transition: background-color 0.3s ease; 
+}
+
+.nav-links div:hover {
+  background-color: #a1d2ff;
 }
 
 .nav-links a.router-link-exact-active {
@@ -334,6 +352,7 @@ onBeforeUnmount(() => {
   padding: 10px 0;
   text-decoration: none;
   color: #333;
+  display: block; 
 }
 
 .mobile-menu a:hover {
@@ -383,6 +402,63 @@ onBeforeUnmount(() => {
 }
 .confirm-button:hover {
   background-color: #DFE1E6;
+}
+
+/* 電腦版預設 (橫向排列) */
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 75%;      /* 維持你原本的寬度 */
+  margin: 0 auto;  /* 讓它在畫面中間 */
+}
+
+.form-label {
+  font-size: 24px;
+  text-align: left;
+  white-space: nowrap; /* 防止文字換行 */
+  width: 50px;         /* 固定 Label 寬度，避免跑版 */
+}
+
+.form-input {
+  flex-grow: 1;
+  padding: 9px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* --- 手機版 RWD 設定 --- */
+@media (max-width: 430px) { 
+  .modal-content {
+    width: 90%;
+    max-width: 90%;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .form-row {
+    flex-direction: column; 
+    align-items: flex-start; 
+    width: 85%; 
+    gap: 5px;  
+  }
+
+  .form-label {
+    width: 85%;       
+    margin-bottom: 2px;
+    font-size: 20px;   
+    text-align: left;
+  }
+
+  .form-input {
+    width: 100%;       
+  }
+
+  .content.slot-hint {
+    padding: 0;
+    margin-top: 15px;
+  }
 }
 
 
