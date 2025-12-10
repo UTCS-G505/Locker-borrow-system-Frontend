@@ -1,5 +1,5 @@
 <script setup>
-import PopupModal from '@/components/PopupModal.vue';
+import PopupModal from './popups/PopupModal.vue';
 // 當 PopupModal 發出 close 事件（點擊背景或按鈕）時，轉發給父層
 const props = defineProps({
   message: {
