@@ -82,6 +82,7 @@ watch(() => props.modelValue, (val) => {
   border-radius: 6px;
   border: 1px solid #ccc;
   background: rgba(250, 250, 251, 0.95);
+  white-space: pre-line;
 }
 
 @media (max-width: 768px) {
