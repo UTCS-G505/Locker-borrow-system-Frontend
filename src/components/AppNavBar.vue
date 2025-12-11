@@ -121,8 +121,8 @@ onBeforeUnmount(() => {
         <RouterLink to="/" @click="toggleMobileMenu">首頁</RouterLink>
         <RouterLink to="/apply" @click="toggleMobileMenu">申請借用</RouterLink>
         <RouterLink to="/record" @click="toggleMobileMenu">申請紀錄</RouterLink>
-        <RouterLink to="/review" @click="toggleMobileMenu">審核申請</RouterLink>
-        <RouterLink to="/setting" @click="toggleMobileMenu">系統管理</RouterLink>
+        <RouterLink to="/review" @click="toggleMobileMenu" v-if="authStore.isManager">審核申請</RouterLink>
+        <RouterLink to="/setting" @click="toggleMobileMenu" v-if="authStore.isManager">系統管理</RouterLink>
       </div>
 
       <!-- 手機版使用者選單 -->
