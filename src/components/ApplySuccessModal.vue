@@ -11,8 +11,8 @@
       <h3>借用時間：{{ timeRange.start }} ~ {{ timeRange.end }}</h3>
       <h3>借用理由：
         <div class="borrow-reason">
-        <p>{{ reason }}</p>
-      </div>
+          <p>{{ reason }}</p>
+        </div>
       </h3>
     </template>
 
