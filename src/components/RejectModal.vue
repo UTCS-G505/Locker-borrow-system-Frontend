@@ -225,18 +225,18 @@
     display: flex;
     flex-direction: column;   /* 【關鍵】垂直排列，這就是「直接換行」 */
     align-items: center;      /* 讓變短的按鈕在畫面正中間對齊 */
-    gap: 10px;                /* 按鈕上下的間距 */
+    gap: 12px;                /* 按鈕上下的間距 */
     margin-bottom: 15px;
   }
 
   .quick-option-btn {
-    width: 320px;             /* 【關鍵】設定一個固定長度，讓它變短 */
+    width: 250px;             /* 【關鍵】設定一個固定長度，讓它變短 */
     max-width: none;
     flex: none;
 
-    padding: 6px 0;           /* 上下內距 */
+    padding: 5px 0;           /* 上下內距 */
     font-size: 0.9rem;
-    border-radius: 20px;      /* 圓角，變成膠囊狀比較好看 */
+    border-radius: 10px;      /* 圓角，變成膠囊狀比較好看 */
   }
 
   .submit-btn {
