@@ -78,7 +78,7 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
 }
 
 .content-container {
-  padding: 1rem;
+  padding: 1rem 2rem;
   max-height: 60vh;      /* 內容區塊最大高度 */
   overflow-y: auto;      /* 出現垂直捲軸 */
   width: 100%;           /* 讓捲動區塊佔滿寬度 */
@@ -89,7 +89,7 @@ const emit = defineEmits(['close'])  // 用來通知父層關閉 Modal
   color: #000;
   font-size: 1rem;
   line-height: 1.6;
-  text-align: left;
+  text-align: justify;
   margin-bottom: 2rem;
   white-space: pre-wrap;
 }
