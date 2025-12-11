@@ -4,7 +4,7 @@
     <div class="left-group">
       <div class="label-text"><h2>請填寫申請內容</h2></div>
     </div>
-    
+
     <!-- 借用類型與時間 -->
     <div class="left-group">
       <TypeSelect
@@ -54,6 +54,12 @@
       @close="showConfirmModal = false"
       @confirm="handleConfirmBorrow"
     />
+    <ApplySuccessModal v-model="showSuccessModal"
+      :locker="selectedLocker"
+      :borrowType="selectedType"
+      :timeRange="timeRange"
+      :reason="borrowReason"
+      />
   </div>
 </template>
 
@@ -64,6 +70,7 @@
   import TypeSelect from '../components/TypeSelect.vue'
   import LockerStatus from '../components/LockerStatus.vue'
   import ConfirmBorrowModal from '../components/ConfirmBorrowModal.vue'
+  import ApplySuccessModal from '../components/ApplySuccessModal.vue'
 
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
@@ -72,6 +79,8 @@
   const showModal = ref(false)
   const selectedLocker = ref(null)
   const showConfirmModal = ref(false)
+  const showSuccessModal = ref(false)
+  const borrowReason = ref('')
 
   function openModal() {
     showModal.value = true
@@ -89,7 +98,9 @@
   }
   function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
-    alert(`櫃子 ${locker.name} 已確認借用，理由：${reason}`)
+    console.log('父元件收到 confirm 事件：', { locker, reason })
+    borrowReason.value = reason
+    showSuccessModal.value = true
   }
   function handleTimeRangeUpdate(range) {
     timeRange.value = range
@@ -152,7 +163,7 @@
     align-items: flex-start; /* 子元素都往左靠齊 */
     padding-top: 0;
   }
-  
+
   .left-group {
     display: flex;
     align-items: center;
@@ -161,7 +172,7 @@
     flex: 1;
     min-width: 0;
   }
-  
+
   /* 標題 */
   .label-text h2 {
     white-space: nowrap;
@@ -175,12 +186,12 @@
   .row-space-between {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;    
+    align-items: flex-start;
     justify-content: space-between;
     box-sizing: border-box;
     width: 100%; /* 撐滿，元素左對齊 */
     gap: 12px;                 /* 行間隙 */
-    
+
   }
 
   /* 右側狀態標示 */
@@ -215,7 +226,7 @@
 
     cursor: pointer;
     appearance: none;
-    
+
   }
   .control-button:focus {
     outline: none;
@@ -314,12 +325,12 @@
       padding-left: 10px; /* 往左靠一點 */
       padding-right: 10px;
     }
-    
+
     .row-space-between {
       justify-content: flex-start; /* 換行時靠左 */
       align-items: flex-start;
     }
-    
+
     .row-space-between,
     .left-group,
     .content-container {
