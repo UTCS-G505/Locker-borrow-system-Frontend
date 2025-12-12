@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink } from 'vue-router'
-import router from '@/router'
 import { useAuthStore } from '@/stores/auth'
 import logo from '@/assets/logo.png'
 import { SsoAuth, SsoUser } from '@/api/sso'
@@ -44,12 +43,8 @@ function handleClickOutside(event) {
 
 async function handleLogout() {
   await SsoAuth.postLogout();
-  localStorage.removeItem('uid');
-  localStorage.removeItem('username');
-  localStorage.removeItem('role');
-  localStorage.removeItem('access_token');
   loggedInUser.value = null;
-  router.push('/');
+  authStore.logout();
 }
 
 // 掛載全局點擊事件
