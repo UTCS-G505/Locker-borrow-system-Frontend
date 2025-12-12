@@ -27,7 +27,15 @@ export const useAuthStore = defineStore('auth', {
 
     async login(credentials) {
       // 假設 SSO API 有 /auth/login
-      const response = await axios.post(`${import.meta.env.VITE_SSO_API_URL}/api/v1/auth/login`, credentials)
+      const response = await axios.post(
+        `${import.meta.env.VITE_SSO_API_URL}/api/v1/auth/login`,
+        credentials,
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      )
       this.accessToken = response.data.data.access_token
       this.isAuthenticated = true
 
