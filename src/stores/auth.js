@@ -4,10 +4,10 @@ import router from '@/router'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    accessToken: localStorage.getItem('access_token') || '',
+    accessToken: '',
     user: {
-      id: localStorage.getItem('uid') || '',
-      role: localStorage.getItem('role') || ''
+      id: null,
+      role: null
     }, // 可存使用者資訊
     isAuthenticated: false,
   }),
@@ -29,13 +29,12 @@ export const useAuthStore = defineStore('auth', {
       const response = await axios.post(`${import.meta.env.VITE_SSO_API_URL}/api/v1/auth/login`, credentials)
       this.accessToken = response.data.data.access_token
       this.isAuthenticated = true
-      localStorage.setItem('access_token', this.accessToken)
 
       const payload = JSON.parse(
-        atob(localStorage.getItem('access_token').split('.')[1])
+        atob(this.accessToken.split('.')[1])
       );
-      localStorage.setItem('uid', payload.sub);
-      localStorage.setItem('role', payload.role);
+      this.user.id = payload.sub;
+      this.user.role = payload.role;
     },
 
     async refreshTokenAction() {
@@ -45,14 +44,13 @@ export const useAuthStore = defineStore('auth', {
         })
 
         this.accessToken = response.data.data.access_token
-        localStorage.setItem('access_token', this.accessToken)
         this.isAuthenticated = true
 
         const payload = JSON.parse(
-          atob(localStorage.getItem('access_token').split('.')[1])
+          atob(this.accessToken.split('.')[1])
         );
-        localStorage.setItem('uid', payload.sub);
-        localStorage.setItem('role', payload.role);
+        this.user.id = payload.sub;
+        this.user.role = payload.role;
         return this.accessToken
       } catch (err) {
         console.error('刷新 token 失敗', err)
@@ -65,8 +63,6 @@ export const useAuthStore = defineStore('auth', {
       this.accessToken = ''
       this.refreshToken = ''
       this.isAuthenticated = false
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('uid')
       this.user = null
       // 導向登入頁
       router.push({ name: 'home' })
