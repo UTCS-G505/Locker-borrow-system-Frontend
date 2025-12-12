@@ -51,9 +51,9 @@ async function handleLogout() {
 onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
 
-  let uid = localStorage.getItem('uid');
+  let uid = authStore.user?.id;
   let usernameResponse = await SsoUser.getGet(uid);
-  loggedInUser.value = usernameResponse.name;
+  loggedInUser.value = usernameResponse?.name;
 })
 
 // 卸載事件監聽器
