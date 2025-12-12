@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import router from '@/router'
+import { Role } from '@/utils/constants'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -14,8 +15,8 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     isLoggedIn: (state) => !!state.accessToken && state.isAuthenticated,
-    isManager: (state) => state.user.role === '0' || state.user.role === '1',
-    isUTCS: (state) => state.user.role !== '5' && state.user.role !== '6',
+    isManager: (state) => Role.SystemManagerRoles.includes(state.user?.role),
+    isUTCS: (state) => Role.SystemUserRoles.includes(state.user?.role),
   },
 
   actions: {
