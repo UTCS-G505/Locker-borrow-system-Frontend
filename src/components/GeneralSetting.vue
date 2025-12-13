@@ -19,9 +19,9 @@ const initialStartDate = ref(startDate);
 const initialEndDate = ref(endDate);
 
 const updateSemesterInterval = async () => {
-  if(end <= start){
   const start = initialStartDate.value;
   const end = initialEndDate.value;
+  if (end <= start) {
     alert("學年結束時間應晚於學年起始時間");
     return;
   }
@@ -151,12 +151,14 @@ onMounted(async () => {
   background-color: #DFE1E6;
 }
 
-select, button {
+select,
+button {
   cursor: pointer;
   color: #000;
 }
 
 @media screen and (min-width: 426px) {
+
   #boardselect,
   .semester-form label,
   .semester-form .input-field,
@@ -176,7 +178,7 @@ select, button {
   #general-setting div {
     display: block;
   }
-  
+
   .semester-form {
     flex-direction: column;
     align-items: start;
@@ -197,7 +199,7 @@ select, button {
     flex-direction: column;
     align-items: start;
   }
-  
+
   .export-button button {
     margin-top: 0.5rem;
     margin-left: 0;
