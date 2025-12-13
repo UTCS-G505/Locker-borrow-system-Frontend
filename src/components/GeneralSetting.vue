@@ -19,9 +19,9 @@ const initialStartDate = ref(startDate);
 const initialEndDate = ref(endDate);
 
 const updateSemesterInterval = async () => {
-  const start = document.getElementById('start').value;
-  const end = document.getElementById('end').value;
   if(end <= start){
+  const start = initialStartDate.value;
+  const end = initialEndDate.value;
     alert("學年結束時間應晚於學年起始時間");
     return;
   }
