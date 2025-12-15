@@ -9,11 +9,19 @@ const BoardMap = {
   note: NoteBoard,
   announcement: AnnounceBoard
 };
+
+if(location.hash) {
+  board.value = location.hash.slice(1);
+}
+
+const setHash = () => {
+  location.hash = `#${board.value}`
+}
 </script>
 
 <template>
   <div id="setting-board">
-    <GeneralSetting v-model:board="board" />
+    <GeneralSetting v-model:board="board" @update:board="setHash" />
     <hr>
     <component :is="BoardMap[board]" />
   </div>

@@ -60,6 +60,12 @@
       :message="failMessage"
       @close="showFailModal = false"
     />
+    <ApplySuccessModal v-model="showSuccessModal"
+      :locker="selectedLocker"
+      :borrowType="selectedType"
+      :timeRange="timeRange"
+      :reason="borrowReason"
+      />
   </div>
 </template>
 
@@ -71,6 +77,7 @@
   import LockerStatus from '../components/LockerStatus.vue'
   import ConfirmBorrowModal from '../components/ConfirmBorrowModal.vue'
   import FailModal  from '../components/FailedDialog.vue'
+  import ApplySuccessModal from '../components/ApplySuccessModal.vue'
 
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
@@ -82,6 +89,8 @@
   const showFailModal = ref(false)
 
   const failMessage = ref('操作失敗，請稍後再試')
+  const showSuccessModal = ref(false)
+  const borrowReason = ref('')
 
   function openModal() {
     showModal.value = true
@@ -110,6 +119,9 @@
       alert(`櫃子 ${locker.name} 已確認借用，理由：${reason} (申請成功)`)
       // TODO: 這裡應該替換成顯示 ApplySuccessModal 的邏輯
     }
+    console.log('父元件收到 confirm 事件：', { locker, reason })
+    borrowReason.value = reason
+    showSuccessModal.value = true
   }
 
   function handleTimeRangeUpdate(range) {
