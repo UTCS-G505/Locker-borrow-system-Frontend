@@ -102,7 +102,7 @@
     showConfirmModal.value = false
 
     if (String(locker.name) === '2') {
-      failMessage.value = `櫃子 ${locker.name} 暫停開放借用 (模擬失敗情境)`
+      failMessage.value = `您的申請未能通過`
       showFailModal.value = true // 開啟失敗彈窗
     }else{
       // 3. 成功邏輯：暫時使用 alert，等待您加入 ApplySuccessModal
