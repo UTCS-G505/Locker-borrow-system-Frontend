@@ -97,20 +97,21 @@
     selectedLocker.value = locker
     showConfirmModal.value = true
   }
+
   function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
 
-    // 假設：申請結果失敗（你之後換成 API 回傳結果即可）
-    const isSuccess = false
-
-    if (!isSuccess) {
-      failMessage.value = `櫃子 ${locker.name} 申請失敗，請稍後再試。`
-      showFailModal.value = true
-      return
+    if (String(locker.name) === '2') {
+      failMessage.value = `櫃子 ${locker.name} 暫停開放借用 (模擬失敗情境)`
+      showFailModal.value = true // 開啟失敗彈窗
+    }else{
+      // 3. 成功邏輯：暫時使用 alert，等待您加入 ApplySuccessModal
+      console.log('父元件收到 confirm 事件：', { locker, reason })
+      alert(`櫃子 ${locker.name} 已確認借用，理由：${reason} (申請成功)`)
+      // TODO: 這裡應該替換成顯示 ApplySuccessModal 的邏輯
     }
-
-    alert(`櫃子 ${locker.name} 已確認借用，理由：${reason}`)
   }
+
   function handleTimeRangeUpdate(range) {
     timeRange.value = range
     console.log('臨時借用時間範圍更新:', range)
