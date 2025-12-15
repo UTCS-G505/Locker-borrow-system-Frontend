@@ -4,17 +4,17 @@ const props = defineProps({
   records: Array
 })
 /* 讓子元件可以合法發出事件(沒有這行可能會出錯) */
-const emit = defineEmits(['cancel','return'])
-function cancel(id){
-  emit('cancel',id)
+const emit = defineEmits(['cancel', 'return'])
+function cancel(id) {
+  emit('cancel', id)
 }
-function toggleReturn(id){
-  emit('return',id)
+function toggleReturn(id) {
+  emit('return', id)
 }
 </script>
 
 <template>
-  <div class="allTable"> 
+  <div class="allTable">
     <div class="scrollWrapper">
       <div class="insideTable">
         <table>
@@ -43,16 +43,17 @@ function toggleReturn(id){
               </td>
               <td>{{ item.state }}</td>
               <td>
-                <button v-if="item.state === '審核中' " @click="cancel(item.id)"  class="operateButton">取消</button> 
-                <button v-else-if="item.state === '借用中' || item.state === '歸還中' " @click="toggleReturn(item.id)" class="operateButton">
-                  {{ item.state === '借用中'?'歸還':'取消' }}
+                <button v-if="item.state === '審核中'" @click="cancel(item.id)" class="operateButton">取消</button>
+                <button v-else-if="item.state === '借用中' || item.state === '歸還中'" @click="toggleReturn(item.id)"
+                  class="operateButton">
+                  {{ item.state === '借用中' ? '歸還' : '取消' }}
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-    </div> 
+    </div>
   </div>
 </template>
 
@@ -63,19 +64,22 @@ function toggleReturn(id){
 */
 
 .scrollWrapper {
-  overflow-x: auto; /* 出現橫向滾動條 */
-  width: 100%; /* 確保包覆容器不會收縮 */
+  overflow-x: auto;
+  /* 出現橫向滾動條 */
+  width: 100%;
+  /* 確保包覆容器不會收縮 */
   border-radius: 14px;
-  border:1px solid #DFE1E6; 
-  border-collapse: separate; /* 如果用collapse，圓角會被吃掉 */
+  border: 1px solid #DFE1E6;
+  border-collapse: separate;
+  /* 如果用collapse，圓角會被吃掉 */
 }
 
 .insideTable {
-  position: relative;
-  overflow-y: hidden; /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
+  overflow-y: hidden;
+  /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
   margin: 10px auto 0 auto;
-  max-width: 100%; /* 保護不要暴衝超出容器 */
-  z-index: 0;
+  max-width: 100%;
+  /* 保護不要暴衝超出容器 */
   margin-top: 0px;
 }
 
@@ -90,11 +94,12 @@ table {
 
 .head {
   background-color: aliceblue;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* 製作下方陰影處 */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  /* 製作下方陰影處 */
 }
 
 .head th {
-  border-bottom:2px solid #ECE8E8;
+  border-bottom: 2px solid #ECE8E8;
 }
 
 #data {
@@ -104,8 +109,10 @@ table {
 }
 
 tr td {
-  position: relative;  /* 讓偽元素定位參考 */
-  text-align: center; /* 字體置中 */
+  position: relative;
+  /* 讓偽元素定位參考 */
+  text-align: center;
+  /* 字體置中 */
   padding-bottom: 10px;
   font-size: 20px;
   color: black;
@@ -113,31 +120,41 @@ tr td {
 
 tbody tr {
   height: 45px;
-}
-
-tbody tr {
-  background-image: linear-gradient(
-    to right, /* 從左到右畫背景 */
-    transparent 0%, /* 從 0% 開始是透明 */
-    transparent 10px, /* 前 10px 是透明的(也就是左邊留空隙) */
-    rgba(236, 232, 232, 0.35) 10px, /* 第 10px 開始畫淡灰色線 */
-    rgba(236, 232, 232, 0.35) calc(100% - 10px), /* 畫到右邊剩 10px 為止 */
-    transparent calc(100% - 10px), /* 最後 10px 再變回透明（也就是右邊留空隙） */
-    transparent 100%  /* 到結束的時候還是透明 */
-  );
-  background-repeat: no-repeat; /* 不要重複，不然會疊加 */
-  background-position: bottom; /* 將背景線貼在每列的下方 */
-  background-size: 100% 4px; /* 100% 的意思為寬度是整列(含前後透明區域) */
+  background-image: linear-gradient(to right,
+      /* 從左到右畫背景 */
+      transparent 0%,
+      /* 從 0% 開始是透明 */
+      transparent 10px,
+      /* 前 10px 是透明的(也就是左邊留空隙) */
+      rgba(236, 232, 232, 0.35) 10px,
+      /* 第 10px 開始畫淡灰色線 */
+      rgba(236, 232, 232, 0.35) calc(100% - 10px),
+      /* 畫到右邊剩 10px 為止 */
+      transparent calc(100% - 10px),
+      /* 最後 10px 再變回透明（也就是右邊留空隙） */
+      transparent 100%
+      /* 到結束的時候還是透明 */
+    );
+  background-repeat: no-repeat;
+  /* 不要重複，不然會疊加 */
+  background-position: bottom;
+  /* 將背景線貼在每列的下方 */
+  background-size: 100% 4px;
+  /* 100% 的意思為寬度是整列(含前後透明區域) */
 }
 
 tbody tr:last-child {
-  background-image: none; /* 如果沒有這行，會讓下面再出現一條線 */
+  background-image: none;
+  /* 如果沒有這行，會讓下面再出現一條線 */
 }
 
-td, th {
-  border: none; /* 不要有預設的格線 */
+td,
+th {
+  border: none;
+  /* 不要有預設的格線 */
   padding: 8px;
-  white-space: nowrap; /* 不允許自動換行 */
+  white-space: nowrap;
+  /* 不允許自動換行 */
 }
 
 .operateButton {
@@ -148,31 +165,35 @@ td, th {
   padding: 2px 12px;
   cursor: pointer;
   font-size: 20px;
-  color:black;
+  color: black;
 }
 
 .operateButton:hover {
-  background-color: #dbdcdd; /* 滑鼠放上去時會變灰色 */
+  background-color: #dbdcdd;
+  /* 滑鼠放上去時會變灰色 */
 }
 
-th:nth-child(7), td:nth-child(7) {
-  width: 17%; 
+th:nth-child(7),
+td:nth-child(7) {
+  width: 17%;
   text-align: center;
 }
 
-th:nth-child(8), td:nth-child(8) {
+th:nth-child(8),
+td:nth-child(8) {
   width: 9.7%;
   text-align: center;
 }
 
 .emptyRow td {
-  height: 200px; /* 製作下方空白處 */
+  height: 200px;
+  /* 製作下方空白處 */
   border: none;
   background: transparent;
 }
 
 
-@media (max-width: 984px) and (min-width: 641px){
+@media (max-width: 984px) and (min-width: 641px) {
   .operateButton {
     padding: 2px 6px;
     font-size: 15px;
@@ -186,11 +207,13 @@ th:nth-child(8), td:nth-child(8) {
     font-size: 16px;
   }
 
-  th:nth-child(7), td:nth-child(7) {
+  th:nth-child(7),
+  td:nth-child(7) {
     text-align: center;
   }
 
-  th:nth-child(8), td:nth-child(8) {
+  th:nth-child(8),
+  td:nth-child(8) {
     text-align: center;
   }
 }
@@ -211,19 +234,22 @@ th:nth-child(8), td:nth-child(8) {
   }
 
   .mobileHide {
-    display: none; /* 手機版沒有顯示開始時間、結束時間、系櫃編號，因此使用此程式碼讓它隱藏 */
+    display: none;
+    /* 手機版沒有顯示開始時間、結束時間、系櫃編號，因此使用此程式碼讓它隱藏 */
   }
 
   tbody tr {
-    height: 30px; 
+    height: 30px;
   }
 
-  th:nth-child(7), td:nth-child(7) {
-    width: 16%; 
+  th:nth-child(7),
+  td:nth-child(7) {
+    width: 16%;
     text-align: center;
   }
 
-  th:nth-child(8), td:nth-child(8) {
+  th:nth-child(8),
+  td:nth-child(8) {
     width: 16%;
     text-align: center;
   }
