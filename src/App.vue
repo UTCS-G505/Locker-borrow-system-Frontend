@@ -26,13 +26,6 @@ header {
   padding: 0;
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
 main {
   margin: 0 auto;
   padding: 2rem;
@@ -42,5 +35,13 @@ footer {
   min-height: 10vh;
   margin: 0 auto;
   padding: 2rem;
+}
+
+@media screen and (max-width: 1023px) {
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
 }
 </style>

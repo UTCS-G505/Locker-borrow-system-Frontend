@@ -1,7 +1,9 @@
 <script setup>
-import { RouterLink } from 'vue-router'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { RouterLink } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import logo from '@/assets/logo.png'
+import { SsoAuth, SsoUser } from '@/api/sso'
 
 // 控制電腦版使用者選單顯示
 const showMenu = ref(false)
@@ -11,6 +13,9 @@ const showMobileMenu = ref(false)
 const menuRef = ref(null)
 // 控制手機版使用者選單顯示
 const showMobileUserMenu = ref(false)
+const loggedInUser = ref(null);
+
+const authStore = useAuthStore();
 
 // 切換電腦版使用者選單
 function toggleMenu() {
@@ -36,9 +41,19 @@ function handleClickOutside(event) {
   }
 }
 
+async function handleLogout() {
+  await SsoAuth.postLogout();
+  loggedInUser.value = null;
+  authStore.logout();
+}
+
 // 掛載全局點擊事件
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
+
+  let uid = authStore.user?.id;
+  let usernameResponse = await SsoUser.getGet(uid);
+  loggedInUser.value = usernameResponse?.name;
 })
 
 // 卸載事件監聽器
@@ -62,17 +77,17 @@ onBeforeUnmount(() => {
           <RouterLink to="/">首頁</RouterLink>
           <RouterLink to="/apply">申請借用</RouterLink>
           <RouterLink to="/record">申請紀錄</RouterLink>
-          <RouterLink to="/review">審核申請</RouterLink>
-          <RouterLink to="/setting">系統管理</RouterLink>
+          <RouterLink to="/review" v-if="authStore.isManager">審核申請</RouterLink>
+          <RouterLink to="/setting" v-if="authStore.isManager">系統管理</RouterLink>
         </div>
         <div class="user-menu" ref="menuRef">
           <button class="user-btn" @click.stop="toggleMenu">
-            u11316017
+            {{ loggedInUser }}
             <span :class="['arrow', { 'arrow-up': showMenu }]">▼</span>
           </button>
           <div v-if="showMenu" class="dropdown">
             <ul>
-              <li><a href="#">登出</a></li>
+              <li><a @click="handleLogout">登出</a></li>
             </ul>
           </div>
         </div>
@@ -101,14 +116,14 @@ onBeforeUnmount(() => {
         <RouterLink to="/" @click="toggleMobileMenu">首頁</RouterLink>
         <RouterLink to="/apply" @click="toggleMobileMenu">申請借用</RouterLink>
         <RouterLink to="/record" @click="toggleMobileMenu">申請紀錄</RouterLink>
-        <RouterLink to="/review" @click="toggleMobileMenu">審核申請</RouterLink>
-        <RouterLink to="/setting" @click="toggleMobileMenu">系統管理</RouterLink>
+        <RouterLink to="/review" @click="toggleMobileMenu" v-if="authStore.isManager">審核申請</RouterLink>
+        <RouterLink to="/setting" @click="toggleMobileMenu" v-if="authStore.isManager">系統管理</RouterLink>
       </div>
 
       <!-- 手機版使用者選單 -->
       <div v-if="showMobileUserMenu" class="mobile-user-menu">
-        <div class="user-name">u11316017</div>
-        <div class="logout"><a href="#">登出</a></div>
+        <div class="user-name">{{ loggedInUser }}</div>
+        <div class="logout"><a @click="handleLogout">登出</a></div>
       </div>
 
     </div>
@@ -173,7 +188,7 @@ onBeforeUnmount(() => {
 }
 
 .nav-links a.router-link-exact-active {
-  background-color: #a1d2ff ;
+  background-color: #a1d2ff;
   font-weight: bold;
 }
 
@@ -194,6 +209,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 4px;
+  color: #000;
 }
 
 .arrow {
@@ -248,9 +264,11 @@ onBeforeUnmount(() => {
   padding: 8px 12px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   height: 56px;
+  border-bottom: 1px solid #ddd;
 }
 
 .menu-toggle {
+  color: #000;
   font-size: 24px;
   background: none;
   border: none;
@@ -287,6 +305,7 @@ onBeforeUnmount(() => {
   align-items: flex-start;
   background: #EFF9FF;
   padding: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-menu a {
@@ -342,6 +361,7 @@ onBeforeUnmount(() => {
   .desktop-header {
     display: block;
   }
+
   .mobile-header {
     display: none;
   }
@@ -350,19 +370,23 @@ onBeforeUnmount(() => {
 /* 平板或大螢幕手機：增加 logo 和文字大小 */
 @media (min-width: 600px) and (max-width: 1023px) {
   .mobile-top-bar {
-    padding: 12px 20px; /* 增加 padding */
+    padding: 12px 20px;
+    /* 增加 padding */
   }
 
   .mobile-system-title {
-    font-size: 26px; /* 原本是 18px，放大 */
+    font-size: 26px;
+    /* 原本是 18px，放大 */
   }
 
   .mobile-logo {
-    height: 48px; /* 原本是 36px，放大 */
+    height: 48px;
+    /* 原本是 36px，放大 */
   }
 
   .mobile-menu a {
-    font-size: 23px; /* 原本是 18px，放大 */
+    font-size: 23px;
+    /* 原本是 18px，放大 */
   }
 
   .mobile-user-menu .user-name {
@@ -374,5 +398,3 @@ onBeforeUnmount(() => {
   }
 }
 </style>
-
-
