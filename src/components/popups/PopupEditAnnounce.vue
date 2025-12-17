@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
-import PopupModal from './PopupModal.vue';
+import PopupModal from '@/components/popups/PopupModal.vue';
+import dateFormatter from '@/utils/dateFormatter';
 
 const props = defineProps({
   announcement: {
@@ -10,7 +11,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['close', 'submit']);
 
-const date = ref(props.announcement.date.replaceAll('/', '-'));
+const date = ref(dateFormatter(props.announcement.date).replaceAll('/', '-'));
 const title = ref(props.announcement.title);
 const content = ref(props.announcement.content);
 
@@ -29,7 +30,7 @@ function submit() {
   emit('submit', {
     id: props.announcement.id,
     title: title.value.trim(),
-    date: date.value.replaceAll('-', '/'),
+    date: date.value,
     content: content.value.trim()
   })
 };
@@ -47,19 +48,20 @@ function submit() {
 
       <h3>公告標題 (<span id="title-length">{{ title.length }}</span>/20)</h3>
       <input id="title" v-model="title" type="text" placeholder="請輸入公告標題（必填）" maxlength="20" />
-      
+
       <h3>公告內容</h3>
       <textarea id="content" v-model="content" rows="4" placeholder="請輸入公告內文（必填）"></textarea>
     </template>
 
     <template #buttons>
-      <button class="confirm-button" @click="submit">送出</button>        
+      <button class="confirm-button" @click="submit">送出</button>
     </template>
   </PopupModal>
 </template>
 
 <style scoped>
-input, textarea {
+input,
+textarea {
   width: 100%;
   resize: none;
   padding: 8px;
