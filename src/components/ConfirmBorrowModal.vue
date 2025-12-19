@@ -5,7 +5,7 @@
         <div class="modal-header">
           <h2>確認借用</h2>
         </div>
-        <div class="content">          
+        <div class="content">
           <h3>櫃子編號：{{ locker.name }}</h3>
           <h3>借用類型：{{ borrowType }}</h3>
           <h3>借用時間：{{ timeRange.start }} ~ {{ timeRange.end }}</h3>
@@ -15,7 +15,7 @@
           </h3>
         </div>
         <div class="buttons">
-          <button class="confirm-button" @click="confirm">送出</button>        
+          <button class="confirm-button" @click="confirm">送出</button>
         </div>
       </div>
     </div>
@@ -144,6 +144,6 @@
   }
   .confirm-button:hover {
     background-color: #DFE1E6;
-    
+
   }
 </style>
