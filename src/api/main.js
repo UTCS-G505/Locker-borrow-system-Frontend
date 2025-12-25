@@ -84,7 +84,18 @@ class Record {
 
   static postCancel;
 
-  static postReviewBorrow;
+  static postReviewBorrow = async (recordID, status) => {
+    try {
+      const response = await apiMainV1.post(
+        "/record/reviewborrow",
+        { recordID, status }
+      );
+      return response.data.data;
+    } catch (err) {
+      console.error("審核申請失敗", err);
+      return null;
+    }
+  };
 
   static postReturn;
 
@@ -95,7 +106,7 @@ class Locker {
   static getAll;
 }
 
-export { 
+export {
   Announcement,
   User,
   Record,
