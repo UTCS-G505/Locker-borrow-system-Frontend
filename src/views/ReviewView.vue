@@ -84,18 +84,29 @@
       v-model:status-filter="statusFilter"
       @show-details="handleShowDetails"
     />
+
+    <InfoPopup
+      ref="detailModalRef"
+      title="詳細資訊"
+      :fields="modalData"
+    />
   </section>
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from "vue";
+//加入nextTick
+import { ref, reactive, computed, watch, nextTick } from "vue";
 // 導入新的子組件
 import ReviewList from "../components/ReviewList.vue";
+import InfoPopup from "@/components/popups/InfoPopup.vue";
 
 const selectedType = ref("借用");
 const searchName = ref("");
 const returnSelections = ref([]);
 const mobileSelections = ref([]);
+
+const detailModalRef = ref(null); // 用來綁定彈窗組件
+const modalData = ref([]);        // 用來存放轉換後的詳細資料
 
 const applications = reactive([
   {
@@ -243,13 +254,29 @@ function rejectMobile() {
 // 處理子組件發出的 "show-details" 事件
 function handleShowDetails(item) {
   console.log("顯示詳細資訊: ", item);
-  alert(`
-    詳細資訊:
-    申請人: ${item.name} (${item.studentId})
-    系櫃: ${item.cabinet}
-    類型: ${item.borrowType}
-    狀態: ${item.status}
-  `);
+  
+  // 這裡將 item 資料轉換成彈窗需要的 groups 格式
+  modalData.value = [
+    { label: '申請人', value: item.name },
+    { label: '學號', value: item.studentId },
+    { label: '年級', value: item.grade },
+    { label: '狀態', value: item.status },
+    { label: '借用類型', value: item.borrowType },
+    { label: '系櫃編號', value: item.cabinet },
+    { label: '開始時間', value: item.startTime },
+    { label: '結束時間', value: item.endTime },
+    // 下面是長欄位，使用 input-box 樣式
+    { label: '借用原因', value: '沒有宿舍ＱＡＱ', isFullRow: true, isBox: true },
+    // 動態判斷是否顯示駁回原因
+    ...(item.status === '已駁回' ? [{ label: '駁回原因', value: '資料不符', isFullRow: true, isBox: true }] : [])
+  ];
+
+  // 打開彈窗 (確保 DOM 更新後再執行)
+  nextTick(() => {
+    if (detailModalRef.value) {
+      detailModalRef.value.open();
+    }
+  });
 }
 
 // 當切換頁面時重置所有過濾器與勾選
