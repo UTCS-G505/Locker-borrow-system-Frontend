@@ -39,7 +39,9 @@ const record = ref([
       state:'借用中',
       // ★ 模擬情境：兩個人都簽了 -> 狀態變借用中
       assistantTime: '2025/8/1 10:00', 
-      directorTime: '2025/8/5 16:30'
+      directorTime: '2025/8/5 16:30',
+      returnApplyTime: '2025/6/30 14:00', // 模擬申請歸還時間
+      returnApproveTime: null             // 模擬還沒通過 (留白)
     }
 ])
 
@@ -84,7 +86,7 @@ function handleShowDetails(id) {
         { label: '駁回原因', value: '你明明就有', isFullRow: true, isBox: true }
     ] : []),
 
-    // ★★★ 修改這裡：直接讀取該筆資料的欄位 ★★★
+    
     // 如果 item.assistantTime 是有值的，就會顯示時間
     // 如果是空字串 ''，畫面就會留白，但保留標題
     { 
@@ -95,7 +97,20 @@ function handleShowDetails(id) {
       label: '系主任簽核時間', 
       value: item.directorTime 
     },
+
+    ...(['歸還中', '已歸還'].includes(item.state) ? [
+        { 
+          label: '申請歸還時間', 
+          value: item.returnApplyTime 
+        },
+        { 
+          label: '歸還通過時間', 
+          value: item.returnApproveTime // 如果是 null，畫面會自動留白
+        }
+    ] : []),
   ];
+
+  
 
   nextTick(() => {
     if (detailModalRef.value) {
