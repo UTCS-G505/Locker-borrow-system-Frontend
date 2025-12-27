@@ -55,19 +55,22 @@ const emit = defineEmits(['close'])
 }
 
 .close-btn {
-  background: rgb(150, 183, 244); /* 淺藍色 */
-  color: #000000;
-  border: none;
-  padding: 10px 30px;
-  border-radius: 4px; /* 微調圓角 */
-  font-size: 1rem;
+  width: 100px;
+  height: 30px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid #DFE1E6;
+  background-color: white;
   cursor: pointer;
-  transition: background 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5px;
 }
 
 .close-btn:hover {
-  background: #016bff; /* 深藍色 */
-  color: #fff;
+  background-color:   #DFE1E6;
 }
 
 </style>
