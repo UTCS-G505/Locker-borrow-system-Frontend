@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import PopupModal from './PopupModal.vue';
 
 const props = defineProps({
-  user: Object
+  user: Object,
 });
 const emit = defineEmits(['close', 'confirm']);
 

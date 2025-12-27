@@ -15,15 +15,24 @@
           </h3>
         </div>
         <div class="buttons">
-          <button class="confirm-button" @click="confirm">送出</button>
+          <button class="confirm-button" @click="openCheckPopup">送出</button>
         </div>
       </div>
     </div>
+
+    <CheckPopup 
+      v-if="showCheckPopup"
+      content="確認要送出申請嗎？"
+      @confirm="handleRealConfirm"
+      @cancel="showCheckPopup = false"
+      @close="showCheckPopup = false"
+    />
   </Teleport>
 </template>
 
 <script setup>
   import { ref, watch, onMounted } from 'vue'
+  import CheckPopup from '@/components/popups/CheckPopup.vue'
 
   const props = defineProps({
     locker: Object,
@@ -34,25 +43,36 @@
   const emit = defineEmits(['close', 'confirm'])
 
   const reason = ref('')
+  
+  const showCheckPopup = ref(false)
 
-  function confirm() {
-    // 驗證必填
+  // 點擊「送出」：先檢查有無填寫，通過則打開確認窗
+  function openCheckPopup() {
     if (!reason.value.trim()) {
       alert('請輸入借用理由')
       return
     }
+    showCheckPopup.value = true
+  }
 
+  // 在確認窗點擊「確認」：這時候才真正送出資料
+  function handleRealConfirm() {
+    // 關閉確認窗
+    showCheckPopup.value = false
+    
+    // 通知父層組件送出
     emit('confirm', {
       locker: props.locker,
       reason: reason.value.trim()
     })
   }
 
+  // 關閉整個借用視窗
   function close() {
     emit('close')
   }
 
-  // 每次 locker 改變時重設理由（並檢查借用類型）
+  // 監聽 locker 變化，重置理由
   watch(() => props.locker, () => {
     if (props.borrowType === '學年借用') {
       reason.value = '學年借用'
@@ -61,14 +81,12 @@
     }
   })
 
-  // 掛載時也做一次檢查
   onMounted(() => {
     if (props.borrowType === '學年借用') {
       reason.value = '學年借用'
     }
   })
 </script>
-
 
 <style scoped>
   .modal-backdrop {
@@ -144,6 +162,5 @@
   }
   .confirm-button:hover {
     background-color: #DFE1E6;
-
   }
 </style>
