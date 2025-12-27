@@ -2,9 +2,10 @@
 import PopupModal from './popups/PopupModal.vue';
 // 當 PopupModal 發出 close 事件（點擊背景或按鈕）時，轉發給父層
 const props = defineProps({
-  message: {
-    type: String
-    }
+  reasons: {
+    type: Array,
+    default: () => ['因為你太菜了!!!']
+  }
 });
 const emit = defineEmits(['close'])
 </script>
@@ -13,13 +14,14 @@ const emit = defineEmits(['close'])
   <PopupModal @close="emit('close')">
 
     <template #header>
-      <h2>申請失敗</h2>
+      <h2 class="title">申請失敗</h2>
     </template>
 
     <template #content>
       <div class="message-wrapper">
         <p class="message">
-          {{ props.message || '申請失敗，請稍後再試。' }}
+          送出申請時遇到以下錯誤：<br>
+          {{ props.reasons[0] }}
         </p>
       </div>
     </template>
@@ -70,7 +72,6 @@ const emit = defineEmits(['close'])
 }
 
 .close-btn:hover {
-  background-color:   #DFE1E6;
+  background-color: #DFE1E6;
 }
-
 </style>

@@ -88,7 +88,7 @@
   const showConfirmModal = ref(false)
   const showFailModal = ref(false)
 
-  const failMessage = ref('操作失敗，請稍後再試')
+  const failReasons = ref([])
   const showSuccessModal = ref(false)
   const borrowReason = ref('')
 
@@ -111,17 +111,18 @@
     showConfirmModal.value = false
 
     if (String(locker.name) === '2') {
-      failMessage.value = `您的申請未能通過`
+      failReasons.value = ['該櫃位目前正在維修中，無法借用']
       showFailModal.value = true // 開啟失敗彈窗
     }else{
+      borrowReason.value = reason
+      showSuccessModal.value = true
       // 3. 成功邏輯：暫時使用 alert，等待您加入 ApplySuccessModal
       console.log('父元件收到 confirm 事件：', { locker, reason })
       alert(`櫃子 ${locker.name} 已確認借用，理由：${reason} (申請成功)`)
       // TODO: 這裡應該替換成顯示 ApplySuccessModal 的邏輯
     }
     console.log('父元件收到 confirm 事件：', { locker, reason })
-    borrowReason.value = reason
-    showSuccessModal.value = true
+
   }
 
   function handleTimeRangeUpdate(range) {
