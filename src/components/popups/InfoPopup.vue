@@ -1,6 +1,19 @@
 <script setup>
 import { ref, watch } from 'vue';
 
+// 接收外部傳入的標題與欄位資料
+// fields 是一個陣列，每個物件包含 { label, value, isFullRow, isBox }
+defineProps({
+  title: {
+    type: String,
+    default: '詳細資訊'
+  },
+  fields: {
+    type: Array,
+    default: () => []
+  }
+});
+
 const detailInfo = ref(false)
 
 const open = () => {
@@ -11,83 +24,46 @@ const close = () => {
   detailInfo.value = false
 }
 
-watch(detailInfo , (val) => {
-document.body.style.overflow = val ? 'hidden' : ''
-})
+// 讓父組件可以呼叫 open/close
+defineExpose({ open, close });
 
+watch(detailInfo , (val) => {
+  document.body.style.overflow = val ? 'hidden' : ''
+})
 </script>
 
 <template>
-  <button class="trigger" @click="open">模擬詳細資訊</button>
-
   <div v-if="detailInfo" class="overlay" @click.self="close">
     <div class="detailInfo">
-        <h2 class="title">詳細資訊</h2>
+      <h2 class="title">{{ title }}</h2>
       <div class="info-list">
-      <div class="row">
-        <div class="field">
-          <span class="text" >申請人：</span>
-          <span class="text" >陳胤華</span>
-        </div>
-        <div class="field">
-          <span class="text" >狀態：</span>
-          <span class="text" >借用中</span>
-        </div>
-        <div class="field">
-          <span class="text" >借用類別：</span>
-          <span class="text" >學期借用</span>
-        </div>
-        <div class="field">
-          <span class="text" >申請時間：</span>
-          <span class="text" >2025/6/30 9:50</span>
-        </div>
-        <div class="field">
-          <span class="text" >時間起：</span>
-          <span class="text" >2024/9/1</span>
-        </div>
-        <div class="field">
-          <span class="text" >時間迄：</span>
-          <span class="text" >2025/6/30</span>
-        </div>
-        <div class="field full-row">
-          <span class="text" >借用原因：</span>
-          <div class="input-box">沒有宿舍ＱＡＱ</div>
-        </div>
-        <div class="field full-row">
-          <span class="text" >駁回原因：</span>
-          <div class="input-box"></div>
-        </div>
-        <div class="field">
-          <span class="text" >助教簽核時間：</span>
-          <span class="text" ></span>
-        </div>
-        <div class="field">
-          <span class="text" >系主任簽核時間：</span>
-          <span class="text" ></span>
-        </div>
-      </div>
-      </div>
+        <div class="row">
+          
+          <div 
+            v-for="(item, index) in fields" 
+            :key="index"
+            class="field"
+            :class="{ 'full-row': item.isFullRow }"
+          >
+            <span class="text">{{ item.label }}：</span>
+            
+            <div v-if="item.isBox" class="input-box">
+              {{ item.value }}
+            </div>
+            
+            <span v-else class="text">
+              {{ item.value }}
+            </span>
+          </div>
 
-      
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* 按鈕 */
-.trigger {
-  padding: 2px 12px;
-  background: #F3F7F9;
-  color:#000000;
-  border: 1px solid gray;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 15px;
-
-}
-.trigger:hover{
-  background: #DBDCDD;
-}
+/* --- 以下完全複製你提供的原始 CSS --- */
 
 /* 覆蓋背景 */
 .overlay {
@@ -108,11 +84,14 @@ document.body.style.overflow = val ? 'hidden' : ''
   background-color: #F6F7F9F2;
   width: 80%;
   max-width: 700px;
-  height: auto;   
+  height: auto;
   border-radius: 16px;
   padding: 20px;
   position: relative;
   overflow: hidden;
+  /* 為了避免內容過多切到，建議加這行，但不加也符合你原版 */
+  max-height: 90vh; 
+  overflow-y: auto;
 }
 
 /* 標題 */
@@ -136,12 +115,12 @@ document.body.style.overflow = val ? 'hidden' : ''
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-top: 10px; 
+  padding-top: 10px;
 }
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px 40px; 
+  gap: 8px 40px;
 }
 
 .row .field {
@@ -153,7 +132,7 @@ document.body.style.overflow = val ? 'hidden' : ''
 }
 
 
-/* 駁回原因及申請原因 */
+/* 駁回原因及申請原因 (白框樣式) */
 .input-box {
   flex: 1;
   min-height: 27px;
@@ -163,6 +142,8 @@ document.body.style.overflow = val ? 'hidden' : ''
   background: #fff;
   font-size: 18px;
   margin-left: 6px; /* 和前面文字有點間距 */
+  display: flex;    /* 為了垂直置中文字 */
+  align-items: center;
 }
 /* 所有一般文字 */
 .text{
@@ -182,7 +163,7 @@ document.body.style.overflow = val ? 'hidden' : ''
   .row{
     display: flex;
     flex-direction: column; /* 垂直排列 */
-    gap: 10px; 
+    gap: 10px;
     white-space: nowrap;
   }
   .field.full-row {
@@ -196,9 +177,8 @@ document.body.style.overflow = val ? 'hidden' : ''
   }
 
   .field.full-row .input-box {
-    margin-left: 0;   /* 移除原本的左邊距 */
-    width: 100%;      /* 讓白框框撐滿 */
+    margin-left: 0; /* 移除原本的左邊距 */
+    width: 100%; /* 讓白框框撐滿 */
   }
 }
-
 </style>
