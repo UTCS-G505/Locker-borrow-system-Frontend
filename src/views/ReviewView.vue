@@ -14,10 +14,10 @@
           </div>
         </div>
         <div class="mobile-header-bottom">
-          <button class="btn" @click="approveMobile" v-if="selectedType === '借用'">
+          <button class="btn" @click="openApproveModal" v-if="selectedType === '借用'">
             通過
           </button>
-          <button class="btn" @click="rejectMobile" v-if="selectedType === '借用'">
+          <button class="btn" @click="openRejectModal" v-if="selectedType === '借用'">
             駁回
           </button>
           <button
@@ -58,10 +58,10 @@
         </div>
       </div>
       <div class="right">
-        <button class="btn" @click="approveMobile" v-if="selectedType === '借用'">
+        <button class="btn" @click="openApproveModal" v-if="selectedType === '借用'">
           通過
         </button>
-        <button class="btn" @click="rejectMobile" v-if="selectedType === '借用'">
+        <button class="btn" @click="openRejectModal" v-if="selectedType === '借用'">
           駁回
         </button>
         <button
@@ -84,6 +84,20 @@
       v-model:status-filter="statusFilter"
       @show-details="handleShowDetails"
     />
+
+    <CheckPopup 
+      v-if="showApproveModal" 
+      operation="通過" 
+      @confirm="executeApprove" 
+      @close="showApproveModal = false" 
+    />
+
+    <CheckPopup 
+      v-if="showRejectModal" 
+      operation="駁回" 
+      @confirm="executeReject" 
+      @close="showRejectModal = false" 
+    />
   </section>
 </template>
 
@@ -91,11 +105,14 @@
 import { ref, reactive, computed, watch } from "vue";
 // 導入新的子組件
 import ReviewList from "../components/ReviewList.vue";
+import CheckPopup from "../components/popups/CheckPopup.vue";
 
 const selectedType = ref("借用");
 const searchName = ref("");
 const returnSelections = ref([]);
 const mobileSelections = ref([]);
+const showApproveModal = ref(false);
+const showRejectModal = ref(false);
 
 const applications = reactive([
   {
@@ -220,7 +237,17 @@ window.addEventListener("resize", () => {
 });
 
 // 手機版 批次通過 / 批次駁回
-function approveMobile() {
+function openApproveModal() {
+  // 防呆：如果沒有選取任何學生，就不開彈窗（選擇性）
+  if (mobileSelections.value.length === 0) {
+    alert("請先勾選學生");
+    return;
+  }
+  showApproveModal.value = true;
+}
+
+// 真正執行「通過」邏輯的函式 (綁定在彈窗的確認鍵)
+function executeApprove() {
   mobileSelections.value.forEach((id) => {
     const app = applications.find((a) => a.id === id);
     if (app && app.status === "審核中") {
@@ -228,9 +255,19 @@ function approveMobile() {
     }
   });
   mobileSelections.value = []; // 清空勾選
+  showApproveModal.value = false; // 執行完關閉彈窗
 }
 
-function rejectMobile() {
+function openRejectModal() {
+  if (mobileSelections.value.length === 0) {
+    alert("請先勾選學生");
+    return;
+  }
+  showRejectModal.value = true;
+}
+
+// 真正執行「駁回」邏輯的函式 (綁定在彈窗的確認鍵)
+function executeReject() {
   mobileSelections.value.forEach((id) => {
     const app = applications.find((a) => a.id === id);
     if (app && app.status === "審核中") {
@@ -238,6 +275,7 @@ function rejectMobile() {
     }
   });
   mobileSelections.value = []; // 清空勾選
+  showRejectModal.value = false; // 執行完關閉彈窗
 }
 
 // 處理子組件發出的 "show-details" 事件
