@@ -4,12 +4,18 @@ const props = defineProps({
   records: Array
 })
 /* 讓子元件可以合法發出事件(沒有這行可能會出錯) */
-const emit = defineEmits(['cancel', 'return'])
+const emit = defineEmits(['cancel', 'return', 'show-details'])
 function cancel(id) {
   emit('cancel', id)
 }
+
 function toggleReturn(id) {
   emit('return', id)
+}
+
+function showDetails(id) {
+  // 發出訊號，把 ID 傳給父組件
+  emit('show-details', id) 
 }
 </script>
 
@@ -39,7 +45,7 @@ function toggleReturn(id) {
               <td class="mobileHide">{{ item.endTime }}</td>
               <td class="mobileHide">{{ item.num }}</td>
               <td>
-                <button class="operateButton">詳細資訊</button>
+                <button class="operateButton" @click="showDetails(item.id)">詳細資訊</button>
               </td>
               <td>{{ item.state }}</td>
               <td>
