@@ -56,9 +56,9 @@
     />
 
     <FailModal
-      v-if="showFailModal"
-      :message="failMessage"
-      @close="showFailModal = false"
+    v-if="showFailModal"
+    :reasons="failReasons"
+    @close="showFailModal = false"
     />
     <ApplySuccessModal v-model="showSuccessModal"
       :locker="selectedLocker"
@@ -92,6 +92,12 @@
   const showSuccessModal = ref(false)
   const borrowReason = ref('')
 
+  const ERROR_LIBRARY = {
+  MAINTENANCE: '該櫃位目前正在維修中，無法借用',
+  SYSTEM_ERROR: '伺服器連線異常，請稍後再試',
+  MISSING_INFO: '申請資訊填寫不完整'
+  };
+
   function openModal() {
     showModal.value = true
   }
@@ -107,11 +113,12 @@
     showConfirmModal.value = true
   }
 
+
   function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
 
     if (String(locker.name) === '2') {
-      failReasons.value = ['該櫃位目前正在維修中，無法借用']
+      failReasons.value = [ERROR_LIBRARY.SYSTEM_ERROR]
       showFailModal.value = true // 開啟失敗彈窗
     }else{
       borrowReason.value = reason

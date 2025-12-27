@@ -1,10 +1,10 @@
 <script setup>
 import PopupModal from './popups/PopupModal.vue';
 // 當 PopupModal 發出 close 事件（點擊背景或按鈕）時，轉發給父層
-const props = defineProps({
+defineProps({
   reasons: {
     type: Array,
-    default: () => ['因為你太菜了!!!']
+    default: () => ['']
   }
 });
 const emit = defineEmits(['close'])
@@ -19,10 +19,12 @@ const emit = defineEmits(['close'])
 
     <template #content>
       <div class="message-wrapper">
-        <p class="message">
-          送出申請時遇到以下錯誤：<br>
-          {{ props.reasons[0] }}
-        </p>
+        <div class="message">
+          送出申請時遇到以下錯誤：
+          <div v-for="(reason, index) in reasons" :key="index">
+            {{ reason }}
+          </div>
+        </div>
       </div>
     </template>
 
