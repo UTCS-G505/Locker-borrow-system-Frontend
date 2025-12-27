@@ -12,7 +12,7 @@ import AppFooter from './components/AppFooter.vue'
   <main>
     <RouterView />
   </main>
-
+1;
   <footer>
     <AppFooter />
   </footer>
