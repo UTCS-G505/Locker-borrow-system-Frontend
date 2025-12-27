@@ -1,15 +1,67 @@
 <script setup>
-/* 子元件用props接收父元件傳來的record資料，它是個Array*/
+import { Record } from '@/api/main';
+
 const props = defineProps({
   records: Array
 })
-/* 讓子元件可以合法發出事件(沒有這行可能會出錯) */
-const emit = defineEmits(['cancel', 'return'])
-function cancel(id) {
-  emit('cancel', id)
+
+const emit = defineEmits(['cancel', 'refresh'])
+
+// --- 申請歸還 (借用中 → 歸還中) ---
+const handleReturn = async (id) => {
+  if (!confirm("確定要申請歸還嗎？")) return;
+
+  try {
+    const response = await Record.postReturn(id, true);
+
+    if (response && response.code === 0) {
+      alert(`申請成功\n${response.message}`);
+
+      // 手動更新本地狀態 (臨時用方案)
+      const item = props.records.find(r => r.id === id);
+      if (item) {
+        item.state = '歸還中';
+      }
+
+      // emit('refresh'); // 暫時不發出 refresh 事件
+    } else {
+      alert(`申請失敗\n${response?.message || '未知錯誤'}`);
+    }
+  } catch (error) {
+    console.error('申請歸還錯誤:', error);
+    alert("系統發生錯誤,請稍後再試");
+  }
 }
-function toggleReturn(id) {
-  emit('return', id)
+
+// --- 撤回歸還申請 (歸還中 → 借用中) ---
+const handleCancelReturn = async (id) => {
+  if (!confirm("確定要撤回歸還申請嗎？")) return;
+
+  try {
+    const response = await Record.postReturn(id, false);
+
+    if (response && response.code === 0) {
+      alert(`撤回成功\n${response.message}`);
+
+      // 手動更新本地狀態 (測試用方案)
+      const item = props.records.find(r => r.id === id);
+      if (item) {
+        item.state = '借用中';
+      }
+
+      // emit('refresh'); // 暫時不發出 refresh 事件
+    } else {
+      alert(`撤回失敗\n${response?.message || '未知錯誤'}`);
+    }
+  } catch (error) {
+    console.error('撤回歸還錯誤:', error);
+    alert("系統發生錯誤,請稍後再試");
+  }
+}
+
+// --- 取消借用申請 (這是另一個 API: /record/cancel) ---
+function cancelBorrow(id) {
+  emit('cancel', id)
 }
 </script>
 
@@ -31,7 +83,6 @@ function toggleReturn(id) {
             </tr>
           </thead>
           <tbody>
-            <!--用item.id(唯一值)比較安全，index可能因為資料排序而有變動-->
             <tr v-for="item in props.records" :key="item.id">
               <td>{{ item.name }}</td>
               <td>{{ item.type }}</td>
@@ -42,11 +93,33 @@ function toggleReturn(id) {
                 <button class="operateButton">詳細資訊</button>
               </td>
               <td>{{ item.state }}</td>
+
               <td>
-                <button v-if="item.state === '審核中'" @click="cancel(item.id)" class="operateButton">取消</button>
-                <button v-else-if="item.state === '借用中' || item.state === '歸還中'" @click="toggleReturn(item.id)"
-                  class="operateButton">
-                  {{ item.state === '借用中' ? '歸還' : '取消' }}
+                <!-- 審核中 → 顯示「取消」 -->
+                <button
+                  v-if="item.state === '審核中'"
+                  @click="cancelBorrow(item.id)"
+                  class="operateButton"
+                >
+                  取消
+                </button>
+
+                <!-- 借用中 → 顯示「歸還」 -->
+                <button
+                  v-else-if="item.state === '借用中'"
+                  @click="handleReturn(item.id)"
+                  class="operateButton"
+                >
+                  歸還
+                </button>
+
+                <!-- 歸還中 → 顯示「取消」 -->
+                <button
+                  v-else-if="item.state === '歸還中'"
+                  @click="handleCancelReturn(item.id)"
+                  class="operateButton"
+                >
+                  取消
                 </button>
               </td>
             </tr>
@@ -58,28 +131,18 @@ function toggleReturn(id) {
 </template>
 
 <style scoped>
-/*
-  table那邊外層包了兩個<div>，我有嘗試過包一層會沒效果，包兩層才有，
-  然後CSS設定在第二層，這部分我有先跟Allen說過，那邊有點玄(?)，歡迎電神們的討論~~
-*/
-
 .scrollWrapper {
   overflow-x: auto;
-  /* 出現橫向滾動條 */
   width: 100%;
-  /* 確保包覆容器不會收縮 */
   border-radius: 14px;
   border: 1px solid #DFE1E6;
   border-collapse: separate;
-  /* 如果用collapse，圓角會被吃掉 */
 }
 
 .insideTable {
   overflow-y: hidden;
-  /* 跟 border-radius 做搭配，讓內容不要超出圓角邊框 */
   margin: 10px auto 0 auto;
   max-width: 100%;
-  /* 保護不要暴衝超出容器 */
   margin-top: 0px;
 }
 
@@ -95,7 +158,6 @@ table {
 .head {
   background-color: aliceblue;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  /* 製作下方陰影處 */
 }
 
 .head th {
@@ -110,9 +172,7 @@ table {
 
 tr td {
   position: relative;
-  /* 讓偽元素定位參考 */
   text-align: center;
-  /* 字體置中 */
   padding-bottom: 10px;
   font-size: 20px;
   color: black;
@@ -121,40 +181,27 @@ tr td {
 tbody tr {
   height: 45px;
   background-image: linear-gradient(to right,
-      /* 從左到右畫背景 */
       transparent 0%,
-      /* 從 0% 開始是透明 */
       transparent 10px,
-      /* 前 10px 是透明的(也就是左邊留空隙) */
       rgba(236, 232, 232, 0.35) 10px,
-      /* 第 10px 開始畫淡灰色線 */
       rgba(236, 232, 232, 0.35) calc(100% - 10px),
-      /* 畫到右邊剩 10px 為止 */
       transparent calc(100% - 10px),
-      /* 最後 10px 再變回透明（也就是右邊留空隙） */
       transparent 100%
-      /* 到結束的時候還是透明 */
     );
   background-repeat: no-repeat;
-  /* 不要重複，不然會疊加 */
   background-position: bottom;
-  /* 將背景線貼在每列的下方 */
   background-size: 100% 4px;
-  /* 100% 的意思為寬度是整列(含前後透明區域) */
 }
 
 tbody tr:last-child {
   background-image: none;
-  /* 如果沒有這行，會讓下面再出現一條線 */
 }
 
 td,
 th {
   border: none;
-  /* 不要有預設的格線 */
   padding: 8px;
   white-space: nowrap;
-  /* 不允許自動換行 */
 }
 
 .operateButton {
@@ -170,7 +217,6 @@ th {
 
 .operateButton:hover {
   background-color: #dbdcdd;
-  /* 滑鼠放上去時會變灰色 */
 }
 
 th:nth-child(7),
@@ -187,11 +233,9 @@ td:nth-child(8) {
 
 .emptyRow td {
   height: 200px;
-  /* 製作下方空白處 */
   border: none;
   background: transparent;
 }
-
 
 @media (max-width: 984px) and (min-width: 641px) {
   .operateButton {
@@ -218,7 +262,6 @@ td:nth-child(8) {
   }
 }
 
-
 /* 手機版 */
 @media (max-width: 640px) {
   tr td {
@@ -235,7 +278,6 @@ td:nth-child(8) {
 
   .mobileHide {
     display: none;
-    /* 手機版沒有顯示開始時間、結束時間、系櫃編號，因此使用此程式碼讓它隱藏 */
   }
 
   tbody tr {

@@ -1,41 +1,96 @@
 <script setup>
-import { ref } from 'vue'
-import RecordTable from '../components/RecordTable.vue';
-/* 先寫死3筆資料，方便檢視 */
-const record = ref([
-    {id:1, name:'陳胤華', type:'學年借用', startTime:'2024/9/1', endTime:'2025/6/30', num:'39', state:'審核中'},
-    {id:2, name:'陳胤華', type:'學年借用', startTime:'2024/9/1', endTime:'2025/6/30', num:'39', state:'駁回'},
-    {id:3, name:'陳胤華', type:'臨時借用', startTime:'2024/9/1', endTime:'2025/6/30', num:'39', state:'借用中'}
-])
-function handleCancel(id){
+import { ref, onMounted } from 'vue'
+import { Record } from '@/api/main.js'
+import RecordTable from '../components/RecordTable.vue'
+
+// 申請紀錄資料
+const record = ref([])
+
+// 頁面載入時獲取資料
+onMounted(async () => {
+  await fetchRecords()
+})
+
+// 從後端獲取申請紀錄列表
+async function fetchRecords() {
+  try {
+    // 呼叫 API 獲取資料
+    const data = await Record.getAll?.()
+
+    if (data) {
+      record.value = data
+      console.log('獲取到的申請紀錄:', data)
+    } else {
+      console.warn('未獲取到資料,使用測試資料')
+      // 如果 API 還沒好或失敗,使用測試資料
+      record.value = [
+        {
+          id:'46950f52-d9cd-4253-8645-8228a401a9bd',
+          name:'測試用戶',
+          type:'臨時借用',
+          startTime:'2024/9/1',
+          endTime:'2025/6/30',
+          num:'39',
+          state:'借用中'
+        }
+      ]
+    }
+  } catch (error) {
+    console.error('獲取申請紀錄失敗:', error)
+    // API 失敗時使用測試資料
+    record.value = [
+      {
+        id:'46950f52-d9cd-4253-8645-8228a401a9bd',
+        name:'測試用戶',
+        type:'臨時借用',
+        startTime:'2024/9/1',
+        endTime:'2025/6/30',
+        num:'39',
+        state:'借用中'
+      }
+    ]
+  }
+}
+
+// 取消借用申請 (使用 /record/cancel API)
+function handleCancel(id) {
   const item = record.value.find(r => r.id === id)
-  if(item.state === '審核中'){
+  if (item?.state === '審核中') {
+    // TODO: 這裡之後要調用取消借用的 API
+    // await Record.postCancel?.(id)
     item.state = '取消申請'
   }
 }
-/* 此地方有跟陳胤華討論過，按下"歸還"按鈕，狀態要變為"歸還中"；按下"取消歸還"按鈕，狀態要變為"借用中" (互相轉換狀態)*/
-function handleReturn(id){
-  const item = record.value.find(r => r.id === id)
-  if(item.state === '借用中'){
-    item.state = '歸還中'
-  }else if(item.state === '歸還中'){
-    item.state = '借用中'
-  }
+
+// 處理資料刷新 (當 RecordTable 中的歸還/撤回操作成功後)
+function handleRefresh() {
+  console.log('重新獲取最新資料...')
+  fetchRecords()
 }
 </script>
 
 <template>
   <div class="recordWrapper">
     <h1 class="record">申請紀錄</h1>
-    <!--監聽名為 'cancel'及'return' 的事件-->
-    <RecordTable :records = "record" @cancel = "handleCancel" @return = "handleReturn"/>
+
+    <!-- 如果有資料才顯示表格 -->
+    <RecordTable
+      v-if="record.length > 0"
+      :records="record"
+      @cancel="handleCancel"
+      @refresh="handleRefresh"
+    />
+
+    <!-- 無資料時顯示提示 -->
+    <div v-else class="empty-state">
+      <p>目前沒有申請紀錄</p>
+    </div>
   </div>
 </template>
 
 <style scoped>
-
 .recordWrapper {
-  padding-top: 10px; /* 給點空間跟 navbar 分開 */
+  padding-top: 10px;
 }
 
 .record {
@@ -45,18 +100,27 @@ function handleReturn(id){
   margin-bottom: 0;
 }
 
-/* 手機版 */
-@media (max-width: 640px) {
-
-.recordWrapper {
-    padding-top: 30px; /* 給點空間跟導航列分開 */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 18px;
 }
 
-.record {
+/* 手機版 */
+@media (max-width: 640px) {
+  .recordWrapper {
+    padding-top: 30px;
+  }
+
+  .record {
     font-size: 24px;
     margin-left: 12px;
   }
 
+  .empty-state {
+    padding: 40px 20px;
+    font-size: 16px;
+  }
 }
-
 </style>
