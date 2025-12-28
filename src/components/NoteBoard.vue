@@ -2,10 +2,14 @@
 import { ref, computed } from 'vue'
 import IconSearch from './icons/IconSearch.vue';
 import PopupViolationNote from './popups/PopupViolationNote.vue';
+import { User } from '@/api/main';
 
 const searchValue = ref('');
 const showPopup = ref(false);
 const selectedStudent = ref(null);
+
+// Note ID
+const USER_STATE = { NONE: 0, DORM: 1, VIOLATION: 2 };
 
 // sample data
 const studentsList = ref([
@@ -54,20 +58,30 @@ const filteredStudents = computed(() => {
   });
 });
 
-const dormitoryNote = (student) => {
-  student.note = '住宿生註記';
+const dormitoryNote = async (student) => {
+  const response = await User.postNote(student.id, USER_STATE.DORM, null);
+  if(response){
+    student.note = '住宿生註記';
+  }
 };
 const violationNote = (student) => {
   selectedStudent.value = student;
   showPopup.value = true;
 };
-const handleViolationNote = (note) => {
-  selectedStudent.value.note = '違規註記';
-  alert(`學號：${note.user.id}\n姓名：${note.user.name}\n事由：${note.reason}`);
-  showPopup.value = false;
+const handleViolationNote = async ( payload ) => {
+  const { user, reason } = payload;
+  const response = await User.postNote(user.id, USER_STATE.VIOLATION, reason);
+  if(response){
+    selectedStudent.value.note = '違規註記';
+    alert(`學號：${user.id}\n姓名：${user.name}\n事由：${reason}`);
+    showPopup.value = false;
+  }
 }
-const clearNote = (student) => {
-  student.note = null;
+const clearNote = async (student) => {
+  const response = await User.postNote(student.id, USER_STATE.NONE, null);
+  if(response){
+    student.note = null;
+  }
 };
 </script>
 
