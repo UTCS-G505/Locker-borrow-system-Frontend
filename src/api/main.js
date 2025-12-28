@@ -70,7 +70,18 @@ class User {
 
   static getAll;
 
-  static postNote;
+  static errorNoteMessages = { 0: "取消註記失敗", 1: "住宿生註記失敗", 2: "違規註記失敗" };
+  static postNote = async (userId, state, reason) => {
+    try {
+      const response = await apiMainV1.post(
+        `/user/note/${ userId }`, null, { params: { state, reason } }
+      );
+      return response.data.data;
+    } catch (err) {
+      console.error(this.errorNoteMessages[state] || "未知錯誤");
+      return null;
+    }
+  }
 }
 
 class Record {
