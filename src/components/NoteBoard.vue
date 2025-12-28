@@ -60,7 +60,7 @@ const filteredStudents = computed(() => {
 
 const dormitoryNote = async (student) => {
   const response = await User.postNote(student.id, USER_STATE.DORM, null);
-  if(response){
+  if(response){ // 後端成功更新資料，前端畫面才做刷新
     student.note = '住宿生註記';
   }
 };
@@ -71,7 +71,7 @@ const violationNote = (student) => {
 const handleViolationNote = async ( payload ) => {
   const { user, reason } = payload;
   const response = await User.postNote(user.id, USER_STATE.VIOLATION, reason);
-  if(response){
+  if(response){ // 後端成功更新資料，前端畫面才做刷新
     selectedStudent.value.note = '違規註記';
     alert(`學號：${user.id}\n姓名：${user.name}\n事由：${reason}`);
     showPopup.value = false;
@@ -79,7 +79,7 @@ const handleViolationNote = async ( payload ) => {
 }
 const clearNote = async (student) => {
   const response = await User.postNote(student.id, USER_STATE.NONE, null);
-  if(response){
+  if(response){ // 後端成功更新資料，前端畫面才做刷新
     student.note = null;
   }
 };
