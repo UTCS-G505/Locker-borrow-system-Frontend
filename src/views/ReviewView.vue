@@ -114,6 +114,8 @@ const applications = reactive([
     studentId: "U11316050",
     name: "王小明",
     grade: "大四",
+    phone: "0912345678",
+    email: "wang.min@example.com",
     borrowType: "學年借用",
     startTime: "2024/09/01",
     endTime: "2025/06/30",
@@ -125,6 +127,8 @@ const applications = reactive([
     studentId: "U11316051",
     name: "李小美",
     grade: "大一",
+    phone: "0922333444",
+    email: "may.lee@example.com",
     borrowType: "臨時借用",
     startTime: "2025/07/23",
     endTime: "2025/07/23",
@@ -136,6 +140,8 @@ const applications = reactive([
     studentId: "U11316052",
     name: "張大明",
     grade: "大二",
+    phone: "0933444555",
+    email: "chang.big@example.com",
     borrowType: "學年借用",
     startTime: "2024/09/01",
     endTime: "2025/06/30",
@@ -147,6 +153,8 @@ const applications = reactive([
     studentId: "U11316054",
     name: "王中明",
     grade: "大一",
+    phone: "0944555666",
+    email: "wang.mid@example.com",
     borrowType: "學年借用",
     startTime: "2024/09/01",
     endTime: "2025/06/30",
@@ -158,6 +166,8 @@ const applications = reactive([
     studentId: "U11316055",
     name: "王大明",
     grade: "大一",
+    phone: "0955666777",
+    email: "wang.big@example.com",
     borrowType: "臨時借用",
     startTime: "2024/09/01",
     endTime: "2025/06/30",
@@ -260,9 +270,11 @@ function handleShowDetails(item) {
     { label: '申請人', value: item.name },
     { label: '學號', value: item.studentId },
     { label: '年級', value: item.grade },
+    { label: '手機號碼', value: item.phone },
+    { label: '電子郵件', value: item.email, isFullRow: true },
     { label: '狀態', value: item.status },
     { label: '借用類型', value: item.borrowType },
-    { label: '系櫃編號', value: item.cabinet },
+    { label: '系櫃編號', value: item.cabinet, isFullRow: true },
     { label: '開始時間', value: item.startTime },
     { label: '結束時間', value: item.endTime },
     // 下面是長欄位，使用 input-box 樣式
@@ -288,7 +300,6 @@ watch(selectedType, () => {
   returnSelections.value = [];
   mobileSelections.value = [];
 });
-
 </script>
 
 <style scoped>
