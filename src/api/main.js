@@ -78,7 +78,7 @@ class User {
       );
       return response.data.data;
     } catch (err) {
-      console.error(this.errorNoteMessages[state] || "未知錯誤"); // 如果state不屬於{0,1,2}，輸出“未知錯誤”
+      console.error(User.errorNoteMessages[state], err);
       return null;
     }
   }
