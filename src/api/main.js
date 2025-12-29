@@ -112,3 +112,20 @@ export {
   Record,
   Locker
 }
+
+//通過按鈕事件
+export const approveMobile = async (recordID) => {
+  await apiMainV1.post("/record/reviewborrow", {
+    recordID,
+    status: "approved"
+  });
+};
+
+//駁回按鈕事件
+export const rejectMobile = async (recordID, rejectReason) => {
+  await apiMainV1.post("/record/reviewborrow", {
+    recordID,
+    status: "rejected",
+    reason: rejectReason
+  });
+}
