@@ -72,7 +72,7 @@ function showDetail(id) {
               <td class="mobileHide">{{ item.end_date }}</td>
               <td class="mobileHide">{{ item.locker_id }}</td>
               <td>
-                <button class="operateButton" @click = "$emit('showDetail',item.id)">詳細資訊</button>
+                <button class="operateButton" @click = "showDetail(item.id)">詳細資訊</button>
               </td>
               <td>{{ formatState(item) }}</td>
               <td>
