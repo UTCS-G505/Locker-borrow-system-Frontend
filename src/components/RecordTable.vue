@@ -1,15 +1,48 @@
 <script setup>
+
+import { useAuthStore } from '@/stores/auth'; // 引入 store
+const authStore = useAuthStore(); // 初始化 store
+
 /* 子元件用props接收父元件傳來的record資料，它是個Array*/
 const props = defineProps({
   records: Array
 })
+
+// formatState 是用於顯示文字，把 null 、 true 、 false 轉變成審核中、借用中之類的中文文字
+const formatState = (item) => {
+  /*手動加入 item.state 可以讓使用者點擊按鈕後立刻看到結果。 
+    如果不加，formatState(item) 就不能執行，因為 Vue 認為資料沒變 */
+  if(item.state){
+    return item.state;
+  }
+
+  if(item.borrow_accepted === null){
+    return '審核中';
+  }
+  if(item.borrow_accepted === false){
+    return '駁回';
+  }
+  if(item.borrow_accepted === true){
+    if(item.return_accepted === false){
+      return '借用中';
+    }
+    return '已歸還';
+  }
+  return '未知狀態'
+}
+
 /* 讓子元件可以合法發出事件(沒有這行可能會出錯) */
-const emit = defineEmits(['cancel', 'return'])
+const emit = defineEmits(['cancel', 'return','showDetail'])
 function cancel(id) {
   emit('cancel', id)
 }
 function toggleReturn(id) {
   emit('return', id)
+}
+
+// 新增這個函式，讓詳細資訊按鈕觸發
+function showDetail(id) {
+  emit('showDetail', id)
 }
 </script>
 
@@ -33,20 +66,20 @@ function toggleReturn(id) {
           <tbody>
             <!--用item.id(唯一值)比較安全，index可能因為資料排序而有變動-->
             <tr v-for="item in props.records" :key="item.id">
-              <td>{{ item.name }}</td>
-              <td>{{ item.type }}</td>
-              <td class="mobileHide">{{ item.startTime }}</td>
-              <td class="mobileHide">{{ item.endTime }}</td>
-              <td class="mobileHide">{{ item.num }}</td>
+              <td>{{ authStore.user?.name || item.user_id }}</td>
+              <td>{{ item.reason }}</td>
+              <td class="mobileHide">{{ item.start_date }}</td>
+              <td class="mobileHide">{{ item.end_date }}</td>
+              <td class="mobileHide">{{ item.locker_id }}</td>
               <td>
-                <button class="operateButton">詳細資訊</button>
+                <button class="operateButton" @click = "$emit('showDetail',item.id)">詳細資訊</button>
               </td>
-              <td>{{ item.state }}</td>
+              <td>{{ formatState(item) }}</td>
               <td>
-                <button v-if="item.state === '審核中'" @click="cancel(item.id)" class="operateButton">取消</button>
-                <button v-else-if="item.state === '借用中' || item.state === '歸還中'" @click="toggleReturn(item.id)"
+                <button v-if="formatState(item) === '審核中'" @click="cancel(item.id)" class="operateButton">取消</button>
+                <button v-else-if="formatState(item) === '借用中' || formatState(item) === '歸還中'" @click="toggleReturn(item.id)"
                   class="operateButton">
-                  {{ item.state === '借用中' ? '歸還' : '取消' }}
+                  {{ formatState(item) === '借用中' ? '歸還' : '取消' }}
                 </button>
               </td>
             </tr>
