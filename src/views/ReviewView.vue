@@ -83,6 +83,11 @@
       v-model:borrow-type-filter="borrowTypeFilter"
       v-model:status-filter="statusFilter"
       @show-details="handleShowDetails"
+    ></ReviewList>
+    <RejectModal
+      ref="rejectModal"
+      :quick-options="['資料不完整','不符規定','請重新填寫']"
+      @submit="handleRejectSubmit"
     />
   </section>
 </template>
@@ -91,6 +96,36 @@
 import { ref, reactive, computed, watch } from "vue";
 // 導入新的子組件
 import ReviewList from "../components/ReviewList.vue";
+import RejectModal from "../components/RejectModal.vue";
+
+// 彈窗控制
+const rejectModal = ref(null);
+
+// 暫存被駁回的 mobile 勾選項目
+const pendingRejectIds = ref([]);
+
+function rejectMobile() {
+  if (mobileSelections.value.length === 0) {
+    alert("請先選擇至少一筆要駁回的資料");
+    return;
+  }
+
+  pendingRejectIds.value = [...mobileSelections.value];
+  rejectModal.value.open();
+}
+
+function handleRejectSubmit(reason) {
+  pendingRejectIds.value.forEach(id => {
+    const app = applications.find(a => a.id === id);
+    if (app && app.status === "審核中") {
+      app.status = "已駁回";
+      app.rejectReason = reason;
+    }
+  });
+
+  mobileSelections.value = [];
+  pendingRejectIds.value = [];
+}
 
 const selectedType = ref("借用");
 const searchName = ref("");
@@ -230,15 +265,6 @@ function approveMobile() {
   mobileSelections.value = []; // 清空勾選
 }
 
-function rejectMobile() {
-  mobileSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
-    if (app && app.status === "審核中") {
-      app.status = "已駁回";
-    }
-  });
-  mobileSelections.value = []; // 清空勾選
-}
 
 // 處理子組件發出的 "show-details" 事件
 function handleShowDetails(item) {
