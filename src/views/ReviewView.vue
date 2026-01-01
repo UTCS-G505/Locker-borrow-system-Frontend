@@ -126,15 +126,15 @@ const rejectModal = ref(null);
 // 暫存被駁回的 mobile 勾選項目
 const pendingRejectIds = ref([]);
 
-function rejectMobile() {
-  if (mobileSelections.value.length === 0) {
-    alert("請先選擇至少一筆要駁回的資料");
-    return;
-  }
+// function rejectMobile() {
+//   if (mobileSelections.value.length === 0) {
+//     alert("請先選擇至少一筆要駁回的資料");
+//     return;
+//   }
 
-  pendingRejectIds.value = [...mobileSelections.value];
-  rejectModal.value.open();
-}
+//   pendingRejectIds.value = [...mobileSelections.value];
+//   rejectModal.value.open();
+// }
 
 function handleRejectSubmit(reason) {
   pendingRejectIds.value.forEach(id => {
