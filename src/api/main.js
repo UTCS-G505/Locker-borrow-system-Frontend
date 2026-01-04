@@ -80,7 +80,16 @@ class Record {
 
   static getAll;
 
-  static postBorrow;
+  static postBorrow = async (data) => {
+    try {
+      // 呼叫後端
+      const response = await request.post('/records/borrow', data);
+      return response; 
+    } catch (err) {
+      console.error("借用申請失敗", err);
+      return null;
+    }
+  }
 
   static postCancel;
 

@@ -4,7 +4,6 @@
     <div class="left-group">
       <div class="label-text"><h2>請填寫申請內容</h2></div>
     </div>
-
     <!-- 借用類型與時間 -->
     <div class="left-group">
       <TypeSelect
@@ -39,7 +38,7 @@
     </div>
 
     <!-- 地圖彈窗 -->
-    <ModalMap v-if="showModal" @select="selectGradeFromMap" @close="closeModal" />
+    <ModalMap v-if="showMapModal" @select="selectGradeFromMap" @close="closeModal" />
 
     <div class="content-container">
       <LockerStatus :lockers="lockers" @select="handleLockerSelect" />
@@ -71,22 +70,24 @@
   import LockerStatus from '../components/LockerStatus.vue'
   import ConfirmBorrowModal from '../components/ConfirmBorrowModal.vue'
   import ApplySuccessModal from '../components/ApplySuccessModal.vue'
+  import { useAuthStore } from '@/stores/auth'
 
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
   const timeRange = ref({ start: '', end: '' })
 
-  const showModal = ref(false)
+  const showMapModal = ref(false)
   const selectedLocker = ref(null)
   const showConfirmModal = ref(false)
   const showSuccessModal = ref(false)
   const borrowReason = ref('')
+  const authStore = useAuthStore()
 
   function openModal() {
-    showModal.value = true
+    showMapModal.value = true
   }
   function closeModal() {
-    showModal.value = false
+    showMapModal.value = false
   }
   function selectGradeFromMap(grade) {
     selectedGrade.value = grade
@@ -96,12 +97,52 @@
     selectedLocker.value = locker
     showConfirmModal.value = true
   }
-  function handleConfirmBorrow({ locker, reason }) {
+
+  async function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
     console.log('父元件收到 confirm 事件：', { locker, reason })
-    borrowReason.value = reason
-    showSuccessModal.value = true
+
+    const isTemporary = selectedType.value !== '學年借用'
+    const startIso = new Date(timeRange.value.start).toISOString();
+    // 結束時間 (設為當天最後一秒)
+    let endObj = new Date(timeRange.value.end);
+    endObj.setHours(23, 59, 59, 999);
+
+    const endIso = endObj.toISOString();
+    const currentUserId = authStore.user?.id
+
+    if (!currentUserId){
+      alert("尚未登入，無法借用！")
+      return
+    }
+
+    let borrow = {
+      "user_id": currentUserId,
+      "temporary": isTemporary,
+      "start_date": startIso,
+      "end_date": endIso,
+      "locker_id": locker,
+      "reason": reason
+    }
+
+    try {
+      await Record.postBorrow(borrow)
+      // 成功後的處理
+      console.log('申請成功')
+
+      showSuccessModal.value = true // 跳出成功視窗
+      // 這裡通常會順便重新整理櫃子狀態，或是清空表單
+
+      // initializeDates(selectedType.value) ...
+
+    } catch (error) {
+      // 6. 失敗後的處理
+      console.error('申請失敗:', error)
+      alert('申請失敗，請檢查網路或稍後再試。')
+
+    }
   }
+
   function handleTimeRangeUpdate(range) {
     timeRange.value = range
     console.log('臨時借用時間範圍更新:', range)
@@ -191,7 +232,6 @@
     box-sizing: border-box;
     width: 100%; /* 撐滿，元素左對齊 */
     gap: 12px;                 /* 行間隙 */
-
   }
 
   /* 右側狀態標示 */
@@ -284,8 +324,7 @@
     }
   }
 
-    /* 手機版 */
-
+    /* 手機版 */    
   @media (max-width: 767px) {
     .row-space-between {
       flex-direction: column;
@@ -297,14 +336,6 @@
       font-size: 20px;
       white-space: normal;
       margin-right: 0;
-    }
-    /*.view-button {
-      font-size: 14px;
-      padding: 6px 14px;
-    }*/
-    .status-legend {
-      font-size: 16px;
-      margin-left: 20px;
     }
 
      /* 下方一排：狀態標示 */
