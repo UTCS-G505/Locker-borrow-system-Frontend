@@ -80,7 +80,10 @@ class Record {
 
   static getAll;
 
-  static postBorrow;
+  static postBorrow = async (data) => {
+    const response = await apiMainV1.post('/record/borrow', data);
+    return response.data;
+  }
 
   static postCancel;
 
