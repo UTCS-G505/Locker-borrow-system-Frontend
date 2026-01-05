@@ -3,10 +3,13 @@ import { ref, computed } from 'vue'
 import IconSearch from './icons/IconSearch.vue';
 import PopupViolationNote from './popups/PopupViolationNote.vue';
 import { User } from '@/api/main';
+import CheckPopup from './popups/CheckPopup.vue';
 
 const searchValue = ref('');
 const showPopup = ref(false);
+const showPopupCheck=ref(false);
 const selectedStudent = ref(null);
+const title = ref('');
 
 // Note ID
 const USER_STATE = { NONE: 0, DORM: 1, VIOLATION: 2 };
@@ -63,7 +66,16 @@ const dormitoryNote = async (student) => {
   if(response){ // 後端成功更新資料，前端畫面才做刷新
     student.note = '住宿生註記';
   }
+const dormitoryNote = (student) => {
+  title.value='住宿生註記';
+  selectedStudent.value = student;
+  showPopupCheck.value=true;
 };
+const handleDormitoryNote = () => {
+  selectedStudent.value.note = '住宿生註記';
+  title.value = '';
+  showPopupCheck.value = false;
+}
 const violationNote = (student) => {
   selectedStudent.value = student;
   showPopup.value = true;
@@ -82,7 +94,21 @@ const clearNote = async (student) => {
   if(response){ // 後端成功更新資料，前端畫面才做刷新
     student.note = null;
   }
+const clearNote=(student)=>{
+  selectedStudent.value = student;
+  title.value='取消註記'
+  showPopupCheck.value=true;
+}
+const handleClearNote = () => {
+  selectedStudent.value.note = null;
+  title.value=''
+  showPopupCheck.value=false;
 };
+
+const confirmWhat =()=>{
+  if(title.value==='住宿生註記') handleDormitoryNote();
+  else if(title.value==='取消註記') handleClearNote();
+}
 </script>
 
 <template>
@@ -132,7 +158,16 @@ const clearNote = async (student) => {
     @close="showPopup = false"
     @confirm="handleViolationNote"
   />
+
+  <CheckPopup
+    v-if="showPopupCheck"
+    :operation="title"
+    @close="showPopupCheck = false"
+    @confirm="confirmWhat"
+  />
 </template>
+
+
 
 <style scoped>
 #search-bar {
