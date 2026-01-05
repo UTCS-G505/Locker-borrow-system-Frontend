@@ -61,21 +61,20 @@ const filteredStudents = computed(() => {
   });
 });
 
-const dormitoryNote = async (student) => {
-  const response = await User.postNote(student.id, USER_STATE.DORM, null);
-  if(response){ // 後端成功更新資料，前端畫面才做刷新
-    student.note = '住宿生註記';
-  }
 const dormitoryNote = (student) => {
-  title.value='住宿生註記';
+  title.value = '住宿生註記';
   selectedStudent.value = student;
-  showPopupCheck.value=true;
+  showPopupCheck.value = true;
 };
-const handleDormitoryNote = () => {
-  selectedStudent.value.note = '住宿生註記';
-  title.value = '';
-  showPopupCheck.value = false;
+const handleDormitoryNote = async () => {
+  const response = await User.postNote(selectedStudent.value.id, USER_STATE.DORM, null);
+  if(response){ // 後端成功更新資料，前端畫面才做刷新
+    selectedStudent.value.note = '住宿生註記';
+    title.value = '';
+    showPopupCheck.value = false;
+  }
 }
+
 const violationNote = (student) => {
   selectedStudent.value = student;
   showPopup.value = true;
@@ -89,20 +88,19 @@ const handleViolationNote = async ( payload ) => {
     showPopup.value = false;
   }
 }
-const clearNote = async (student) => {
-  const response = await User.postNote(student.id, USER_STATE.NONE, null);
-  if(response){ // 後端成功更新資料，前端畫面才做刷新
-    student.note = null;
-  }
-const clearNote=(student)=>{
+
+const clearNote = (student) =>{
   selectedStudent.value = student;
-  title.value='取消註記'
-  showPopupCheck.value=true;
+  title.value = '取消註記'
+  showPopupCheck.value = true;
 }
-const handleClearNote = () => {
-  selectedStudent.value.note = null;
-  title.value=''
-  showPopupCheck.value=false;
+const handleClearNote = async () => {
+  const response = await User.postNote(selectedStudent.value.id, USER_STATE.NONE, null);
+  if(response){ // 後端成功更新資料，前端畫面才做刷新
+    selectedStudent.value.note = null;
+    title.value = ''
+    showPopupCheck.value = false;
+  }
 };
 
 const confirmWhat =()=>{
