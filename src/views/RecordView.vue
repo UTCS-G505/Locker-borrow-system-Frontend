@@ -4,6 +4,8 @@ import { ref,nextTick } from 'vue'
 import RecordTable from '../components/RecordTable.vue';
 import InfoPopup from '@/components/popups/InfoPopup.vue';
 /* 修改模擬資料，加入簽核時間欄位 */
+import CheckPopup from '../components/popups/CheckPopup.vue';
+/* 先寫死3筆資料，方便檢視 */
 const record = ref([
     {
       id:1, 
@@ -48,21 +50,59 @@ const record = ref([
 // 彈窗相關變數
 const detailModalRef = ref(null);
 const modalData = ref([]);
+const showCancelModal = ref(false);       // 取消申請 (審核中 -> 取消)
+const showReturnModal = ref(false);       // 歸還 (借用中 -> 歸還中)
+const showCancelReturnModal = ref(false); // 取消歸還 (歸還中 -> 借用中)
+const currentId = ref(null);        // 記錄目前操作的是哪一筆 ID
 
 function handleCancel(id){
   const item = record.value.find(r => r.id === id)
-  if(item.state === '審核中'){
-    item.state = '取消申請'
+  // 只有審核中才需要跳窗
+  if(item && item.state === '審核中'){
+    currentId.value = id;
+    showCancelModal.value = true;
   }
 }
-/* 此地方有跟陳胤華討論過，按下"歸還"按鈕，狀態要變為"歸還中"；按下"取消歸還"按鈕，狀態要變為"借用中" (互相轉換狀態)*/
+
+//區分狀況，借用中才跳窗
+function confirmCancel(){
+  const item = record.value.find(r => r.id === currentId.value)
+  if(item && item.state === '審核中'){
+    item.state = '取消申請'
+  }
+  showCancelModal.value = false; // 關閉彈窗
+}
+
 function handleReturn(id){
   const item = record.value.find(r => r.id === id)
+  
+  // 記錄現在操作哪一筆
+  currentId.value = id;
+
   if(item.state === '借用中'){
-    item.state = '歸還中'
-  }else if(item.state === '歸還中'){
-    item.state = '借用中'
+    // 如果是借用中 -> 要變成歸還中 -> 開啟「歸還」彈窗
+    showReturnModal.value = true;
+  } else if(item.state === '歸還中'){
+    // 如果是歸還中 -> 要變回借用中 -> 開啟「取消歸還」彈窗
+    showCancelReturnModal.value = true;
   }
+}
+
+//新增 confirmReturn：確認後執行歸還 (原本的邏輯移到這)
+function confirmReturn(){
+  const item = record.value.find(r => r.id === currentId.value)
+  if(item && item.state === '借用中'){
+    item.state = '歸還中'
+  }
+  showReturnModal.value = false; // 關閉彈窗
+}
+
+function confirmCancelReturn(){
+  const item = record.value.find(r => r.id === currentId.value)
+  if(item && item.state === '歸還中'){
+    item.state = '借用中'; // 變回借用狀態
+  }
+  showCancelReturnModal.value = false;
 }
 
 function handleShowDetails(id) { 
@@ -135,6 +175,27 @@ function handleShowDetails(id) {
       ref="detailModalRef"
       title="詳細資訊"
       :fields="modalData"
+    <RecordTable :records = "record" @cancel = "handleCancel" @return = "handleReturn"/>
+
+    <CheckPopup 
+      v-if="showCancelModal" 
+      operation="取消申請" 
+      @confirm="confirmCancel" 
+      @close="showCancelModal = false" 
+    />
+
+    <CheckPopup 
+      v-if="showReturnModal" 
+      operation="歸還" 
+      @confirm="confirmReturn" 
+      @close="showReturnModal = false" 
+    />
+
+    <CheckPopup 
+      v-if="showCancelReturnModal" 
+      operation="取消歸還" 
+      @confirm="confirmCancelReturn" 
+      @close="showReturnModal = false" 
     />
   </div>
 </template>
