@@ -83,10 +83,11 @@
       v-model:borrow-type-filter="borrowTypeFilter"
       v-model:status-filter="statusFilter"
       @show-details="handleShowDetails"
-    ></ReviewList>
+    />
+
     <RejectModal
       ref="rejectModal"
-      :quick-options="['資料不完整','不符規定','請重新填寫']"
+      :quick-options="rejectOptions"
       @submit="handleRejectSubmit"
     />
 
@@ -105,6 +106,9 @@ import { ref, reactive, computed, watch, nextTick } from "vue";
 import ReviewList from "../components/ReviewList.vue";
 import InfoPopup from "@/components/popups/InfoPopup.vue";
 import RejectModal from "../components/RejectModal.vue";
+
+// 定義駁回選項常數，避免在 template 中出現解析錯誤
+const rejectOptions = ['資料不完整', '不符規定', '請重新填寫'];
 
 // 彈窗控制
 const rejectModal = ref(null);
@@ -268,7 +272,7 @@ function submitReturnConfirmations() {
   returnSelections.value = []; // 清空勾選
 }
 
-// isMobile 判斷 (修正了 1px 的差異，使其與 CSS 保持一致)
+// isMobile 判斷
 const isMobile = ref(window.innerWidth <= 865);
 window.addEventListener("resize", () => {
   const w = window.innerWidth;
@@ -329,7 +333,7 @@ watch(selectedType, () => {
 </script>
 
 <style scoped>
-
+/* 樣式保持不變 */
 html,
 body {
   margin: 0;
