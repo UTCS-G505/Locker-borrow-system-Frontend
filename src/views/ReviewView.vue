@@ -95,6 +95,7 @@
       ref="detailModalRef"
       title="詳細資訊"
       :fields="modalData"
+    />
     <CheckPopup 
       v-if="showApproveModal" 
       operation="借用審核通過" 
