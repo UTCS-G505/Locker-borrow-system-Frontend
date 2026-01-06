@@ -63,8 +63,6 @@ watch(detailInfo , (val) => {
 </template>
 
 <style scoped>
-/* --- 以下完全複製你提供的原始 CSS --- */
-
 /* 覆蓋背景 */
 .overlay {
   position: fixed;
@@ -83,40 +81,51 @@ watch(detailInfo , (val) => {
 .detailInfo {
   background-color: #F6F7F9F2;
   width: 80%;
-  max-width: 700px;
-  height: auto;
+  max-width: 688px; 
+  /* 設定最大高度，讓滑桿有機會出現 */
+  max-height: 80vh; 
   border-radius: 16px;
-  padding: 20px;
+  /* 移除原本的 padding，改由子元素控制，以便標題置頂 */
+  padding: 0; 
   position: relative;
   overflow: hidden;
-  /* 為了避免內容過多切到，建議加這行，但不加也符合你原版 */
-  max-height: 90vh; 
-  overflow-y: auto;
+  
+  /* 使用 Flex 佈局讓標題固定，內容伸縮 */
+  display: flex;
+  flex-direction: column;
 }
 
-/* 標題 */
+/* 標題 (固定在頂部) */
 .title {
   min-height: 60px;
   background-color: #E8F7FFCC;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: -25px -24px 0px -24px;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  /* 移除原本的 margin，改用 padding */
+  margin: 0;
+  padding: 10px;
+  /* 確保只有上方有圓角 */
+  border-top-left-radius: 16px; 
+  border-top-right-radius: 16px;
   box-shadow: 0px 1px 4px 0px #00000040;
-  padding-top: 10px;
   font-size: 25px;
+  flex-shrink: 0; /* 防止標題被壓縮 */
+  z-index: 1; /* 確保陰影壓在內容上 */
 }
 
-
-/* 內容列 */
+/* 內容區塊 (可捲動區域) */
 .info-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-top: 10px;
+  /* 內距移到這裡 */
+  padding: 20px 24px; 
+  /* 這裡設定捲動 */
+  overflow-y: auto; 
+  flex-grow: 1; /* 佔滿剩餘空間 */
 }
+
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -131,7 +140,6 @@ watch(detailInfo , (val) => {
   grid-column: span 2;
 }
 
-
 /* 駁回原因及申請原因 (白框樣式) */
 .input-box {
   flex: 1;
@@ -141,10 +149,11 @@ watch(detailInfo , (val) => {
   border: none;
   background: #fff;
   font-size: 18px;
-  margin-left: 6px; /* 和前面文字有點間距 */
-  display: flex;    /* 為了垂直置中文字 */
+  margin-left: 6px;
+  display: flex;
   align-items: center;
 }
+
 /* 所有一般文字 */
 .text{
   font-size: 18px;
@@ -162,23 +171,23 @@ watch(detailInfo , (val) => {
   }
   .row{
     display: flex;
-    flex-direction: column; /* 垂直排列 */
+    flex-direction: column;
     gap: 10px;
     white-space: nowrap;
   }
   .field.full-row {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* 靠左 */
+    align-items: flex-start;
   }
 
   .field.full-row .text {
-    margin-bottom: 4px; /* 文字和框框之間留點距離 */
+    margin-bottom: 4px;
   }
 
   .field.full-row .input-box {
-    margin-left: 0; /* 移除原本的左邊距 */
-    width: 100%; /* 讓白框框撐滿 */
+    margin-left: 0;
+    width: 100%;
   }
 }
 </style>
