@@ -80,6 +80,7 @@
   import { useAuthStore } from '@/stores/auth'
   import { Record } from '@/api/main'
 
+
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
   const timeRange = ref({ start: '', end: '' })
@@ -128,6 +129,7 @@ async function handleConfirmBorrow({ locker, reason }) {
     endObj.setHours(23, 59, 59, 999);
 
     const endIso = endObj.toISOString();
+
     const currentUserId = authStore.user?.id
 
     if (!currentUserId) {
@@ -135,6 +137,7 @@ async function handleConfirmBorrow({ locker, reason }) {
       return
     }
 
+    //打包 API 需要的資料
     let borrow = {
       "user_id": currentUserId,
       "temporary": isTemporary,
@@ -150,20 +153,17 @@ async function handleConfirmBorrow({ locker, reason }) {
       console.log('申請成功')
 
       showSuccessModal.value = true // 跳出成功視窗
-      // 這裡通常會順便重新整理櫃子狀態，或是清空表單
-
-      // initializeDates(selectedType.value) ...
-
     } catch (error) {
       // 失敗後的處理
       console.error('申請失敗:', error)
       const errorMsg = error.response?.data?.message || error.message || ERROR_LIBRARY.SYSTEM_ERROR;
 
-      // 設定錯誤訊息陣列 (因為 FailedDialog 接收的是 Array)
+      // 錯誤訊息陣列
       failReasons.value = [errorMsg]
       
       // 開啟失敗彈窗
       showFailModal.value = true
+
     }
   }
 
