@@ -80,16 +80,19 @@ class Record {
 
   static getAll;
 
-  static postBorrow = async (data) => {
+// 修正後的 Stashed 版本 (假設 ID 要放在 URL 裡)
+  static postBorrow = async (announcementId, borrow) => {
     try {
-      // 呼叫後端
-      const response = await request.post('/records/borrow', data);
-      return response; 
+      const response = await apiMainV1.patch(
+        `/announcement/record/borrow/${announcementId}`, // <--- 這裡可能需要加上 ID？
+        borrow
+      );
+      return response;
     } catch (err) {
       console.error("借用申請失敗", err);
       return null;
     }
-  }
+  };
 
   static postCancel;
 

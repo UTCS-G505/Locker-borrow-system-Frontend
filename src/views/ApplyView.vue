@@ -72,6 +72,9 @@
   import ApplySuccessModal from '../components/ApplySuccessModal.vue'
   import { useAuthStore } from '@/stores/auth'
 
+  import { Record } from '@/api/main'
+
+
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
   const timeRange = ref({ start: '', end: '' })
@@ -97,21 +100,21 @@
     selectedLocker.value = locker
     showConfirmModal.value = true
   }
-
   async function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
     console.log('父元件收到 confirm 事件：', { locker, reason })
 
     const isTemporary = selectedType.value !== '學年借用'
     const startIso = new Date(timeRange.value.start).toISOString();
+    
     // 結束時間 (設為當天最後一秒)
     let endObj = new Date(timeRange.value.end);
     endObj.setHours(23, 59, 59, 999);
-
     const endIso = endObj.toISOString();
+
     const currentUserId = authStore.user?.id
 
-    if (!currentUserId){
+    if (!currentUserId) {
       alert("尚未登入，無法借用！")
       return
     }
@@ -132,14 +135,12 @@
 
       showSuccessModal.value = true // 跳出成功視窗
       // 這裡通常會順便重新整理櫃子狀態，或是清空表單
-
       // initializeDates(selectedType.value) ...
 
     } catch (error) {
       // 6. 失敗後的處理
       console.error('申請失敗:', error)
       alert('申請失敗，請檢查網路或稍後再試。')
-
     }
   }
 
