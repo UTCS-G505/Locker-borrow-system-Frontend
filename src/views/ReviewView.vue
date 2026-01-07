@@ -14,16 +14,16 @@
           </div>
         </div>
         <div class="mobile-header-bottom">
-          <button class="btn" @click="approveMobile" v-if="selectedType === '借用'">
+          <button class="btn" @click="openApproveModal" v-if="selectedType === '借用'">
             通過
           </button>
-          <button class="btn" @click="rejectMobile" v-if="selectedType === '借用'">
+          <button class="btn" @click="openRejectModal" v-if="selectedType === '借用'">
             駁回
           </button>
           <button
             class="topbutton"
             v-if="selectedType === '歸還'"
-            @click="submitReturnConfirmations"
+            @click="openReturnModal"
           >
             通過
           </button>
@@ -58,16 +58,16 @@
         </div>
       </div>
       <div class="right">
-        <button class="btn" @click="approveMobile" v-if="selectedType === '借用'">
+        <button class="btn" @click="openApproveModal" v-if="selectedType === '借用'">
           通過
         </button>
-        <button class="btn" @click="rejectMobile" v-if="selectedType === '借用'">
+        <button class="btn" @click="openRejectModal" v-if="selectedType === '借用'">
           駁回
         </button>
         <button
           class="topbutton"
           v-if="selectedType === '歸還'"
-          @click="submitReturnConfirmations"
+          @click="openReturnModal"
         >
           通過
         </button>
@@ -83,6 +83,32 @@
       v-model:borrow-type-filter="borrowTypeFilter"
       v-model:status-filter="statusFilter"
       @show-details="handleShowDetails"
+    ></ReviewList>
+    <RejectModal
+      ref="rejectModal"
+      :quick-options="['資料不完整','不符規定','請重新填寫']"
+      @submit="handleRejectSubmit"
+    />
+
+    <CheckPopup 
+      v-if="showApproveModal" 
+      operation="借用審核通過" 
+      @confirm="executeApprove" 
+      @close="showApproveModal = false" 
+    />
+
+    <CheckPopup 
+      v-if="showRejectModal" 
+      operation="借用審核駁回" 
+      @confirm="executeReject" 
+      @close="showRejectModal = false" 
+    />
+
+    <CheckPopup 
+      v-if="showReturnModal" 
+      operation="歸還通過" 
+      @confirm="executeReturn" 
+      @close="showReturnModal = false" 
     />
   </section>
 </template>
@@ -91,6 +117,37 @@
 import { ref, reactive, computed, watch } from "vue";
 // 導入新的子組件
 import ReviewList from "../components/ReviewList.vue";
+import CheckPopup from "../components/popups/CheckPopup.vue";
+import RejectModal from "../components/RejectModal.vue";
+
+// 彈窗控制
+const rejectModal = ref(null);
+
+// 暫存被駁回的 mobile 勾選項目
+const pendingRejectIds = ref([]);
+
+// function rejectMobile() {
+//   if (mobileSelections.value.length === 0) {
+//     alert("請先選擇至少一筆要駁回的資料");
+//     return;
+//   }
+
+//   pendingRejectIds.value = [...mobileSelections.value];
+//   rejectModal.value.open();
+// }
+
+function handleRejectSubmit(reason) {
+  pendingRejectIds.value.forEach(id => {
+    const app = applications.find(a => a.id === id);
+    if (app && app.status === "審核中") {
+      app.status = "已駁回";
+      app.rejectReason = reason;
+    }
+  });
+
+  mobileSelections.value = [];
+  pendingRejectIds.value = [];
+}
 
 const selectedType = ref("借用");
 const searchName = ref("");
@@ -201,15 +258,28 @@ const filteredApplications = computed(() => {
 });
 
 
-// 送出歸還
-function submitReturnConfirmations() {
+// 歸還「通過」操作確認
+const showReturnModal = ref(false);
+
+//打開歸還彈窗的函式
+function openReturnModal() {
+  if (returnSelections.value.length === 0) {
+    alert("請先勾選學生");
+    return;
+  }
+  showReturnModal.value = true;
+}
+// 真正執行「通過」邏輯的函式 
+function executeReturn() {
   returnSelections.value.forEach((id) => {
     const app = applications.find((a) => a.id === id);
+    // 邏輯：如果是借用中，改成已歸還
     if (app && app.status === "借用中") {
       app.status = "已歸還";
     }
   });
   returnSelections.value = []; // 清空勾選
+  showReturnModal.value = false; // 關閉彈窗
 }
 
 // isMobile 判斷 (修正了 1px 的差異，使其與 CSS 保持一致)
@@ -219,8 +289,18 @@ window.addEventListener("resize", () => {
   isMobile.value = w <= 865;
 });
 
-// 手機版 批次通過 / 批次駁回
-function approveMobile() {
+// 申請「通過」操作確認
+const showApproveModal = ref(false);
+function openApproveModal() {
+  if (mobileSelections.value.length === 0) {
+    alert("請先勾選學生");
+    return;
+  }
+  showApproveModal.value = true;
+}
+
+// 真正執行「通過」邏輯的函式 
+function executeApprove() {
   mobileSelections.value.forEach((id) => {
     const app = applications.find((a) => a.id === id);
     if (app && app.status === "審核中") {
@@ -228,9 +308,21 @@ function approveMobile() {
     }
   });
   mobileSelections.value = []; // 清空勾選
+  showApproveModal.value = false; // 執行完關閉彈窗
 }
 
-function rejectMobile() {
+//申請「駁回」操作確認
+const showRejectModal = ref(false);
+function openRejectModal() {
+  if (mobileSelections.value.length === 0) {
+    alert("請先勾選學生");
+    return;
+  }
+  showRejectModal.value = true;
+}
+
+// 真正執行「駁回」邏輯的函式 
+function executeReject() {
   mobileSelections.value.forEach((id) => {
     const app = applications.find((a) => a.id === id);
     if (app && app.status === "審核中") {
@@ -238,7 +330,12 @@ function rejectMobile() {
     }
   });
   mobileSelections.value = []; // 清空勾選
+  showRejectModal.value = false; // 執行完關閉彈窗
 }
+
+
+
+
 
 // 處理子組件發出的 "show-details" 事件
 function handleShowDetails(item) {
