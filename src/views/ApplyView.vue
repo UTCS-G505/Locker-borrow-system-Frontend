@@ -80,9 +80,6 @@
   import { useAuthStore } from '@/stores/auth'
   import { Record } from '@/api/main'
 
-  import { Record } from '@/api/main'
-
-
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
   const timeRange = ref({ start: '', end: '' })
@@ -119,7 +116,6 @@
   }
 
 async function handleConfirmBorrow({ locker, reason }) {
-  async function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
     console.log('父元件收到 confirm 事件：', { locker, reason })
 
@@ -127,12 +123,11 @@ async function handleConfirmBorrow({ locker, reason }) {
 
     const isTemporary = selectedType.value !== '學年借用'
     const startIso = new Date(timeRange.value.start).toISOString();
-    
     // 結束時間 (設為當天最後一秒)
     let endObj = new Date(timeRange.value.end);
     endObj.setHours(23, 59, 59, 999);
-    const endIso = endObj.toISOString();
 
+    const endIso = endObj.toISOString();
     const currentUserId = authStore.user?.id
 
     if (!currentUserId) {
@@ -156,12 +151,12 @@ async function handleConfirmBorrow({ locker, reason }) {
 
       showSuccessModal.value = true // 跳出成功視窗
       // 這裡通常會順便重新整理櫃子狀態，或是清空表單
+
       // initializeDates(selectedType.value) ...
 
     } catch (error) {
       // 失敗後的處理
       console.error('申請失敗:', error)
-<<<<<<< HEAD
       const errorMsg = error.response?.data?.message || error.message || ERROR_LIBRARY.SYSTEM_ERROR;
 
       // 設定錯誤訊息陣列 (因為 FailedDialog 接收的是 Array)
@@ -169,9 +164,6 @@ async function handleConfirmBorrow({ locker, reason }) {
       
       // 開啟失敗彈窗
       showFailModal.value = true
-=======
-      alert('申請失敗，請檢查網路或稍後再試。')
->>>>>>> 1079b01 (fix: merge conflicts)
     }
   }
 
