@@ -15,7 +15,7 @@ const record = ref([
       num: '39', 
       state: '審核中',
       // ★ 模擬情境：助教已經簽了，但主任還沒簽 -> 所以還卡在審核中
-      assistantTime: '2025/7/1 14:00', 
+      assistantTime: '2025/7/1', 
       directorTime: '' 
     },
     {
@@ -27,7 +27,7 @@ const record = ref([
       num: '39', 
       state: '駁回',
       // ★ 模擬情境：可能助教就直接駁回了
-      assistantTime: '2025/7/2 09:00', 
+      assistantTime: '2025/7/2', 
       directorTime: ''
     },
     {
@@ -39,9 +39,9 @@ const record = ref([
       num: '39', 
       state: '借用中',
       // ★ 模擬情境：兩個人都簽了 -> 狀態變借用中
-      assistantTime: '2025/8/1 10:00', 
-      directorTime: '2025/8/5 16:30',
-      returnApplyTime: '2025/6/30 14:00', // 模擬申請歸還時間
+      assistantTime: '2025/8/1', 
+      directorTime: '2025/8/5',
+      returnApplyTime: '2025/6/30', // 模擬申請歸還時間
       returnApproveTime: null             // 模擬還沒通過 (留白)
     }
 ])
@@ -74,39 +74,40 @@ function handleShowDetails(id) {
   console.log("查看詳細資訊:", item);
 
   modalData.value = [
-    { label: '申請人', value: item.name },
-    { label: '借用類別', value: item.type },
-    { label: '狀態', value: item.state },
-    { label: '申請時間', value: '2025/6/30 9:50' }, 
-    { label: '時間起', value: item.startTime },
-    { label: '時間迄', value: item.endTime },
+    { label: '姓名', value: item.name },
+    { label: '借用類型', value: item.type },
+    // 圖片要求將起訖時間合併顯示
+    { label: '借用時間起/迄', value: `${item.startTime} ~ ${item.endTime}` },
+    { label: '借用系櫃編號', value: item.num },
     
-    { label: '借用原因', value: '沒有宿舍QAQ', isFullRow: true, isBox: true },
+    { label: '借用理由', value: '沒有宿舍QAQ', isFullRow: true, isBox: true },
     
-    // 駁回原因
-    ...(item.state === '駁回' ? [
-        { label: '駁回原因', value: '你明明就有', isFullRow: true, isBox: true }
-    ] : []),
+    { label: '申請借用時間', value: '2025/6/30' },
     
-    // 簽核時間
-    { 
-      label: '系助教簽核時間', 
-      value: item.assistantTime 
+    { label: '系辦審核時間', 
+      value: item.directorTime || item.assistantTime 
     },
-    { 
-      label: '系主任簽核時間', 
-      value: item.directorTime 
-    },
+    
+    { label: '系辦審核結果', value: item.state },
 
-    // 歸還相關時間
+    // 駁回理由 (依狀態顯示)
+    ...(item.state === '駁回' ? [
+        { label: '駁回理由', value: '你明明就有', isFullRow: true, isBox: true }
+    ] : []),
+
+    // --- 歸還資訊 (僅在歸還相關狀態顯示) ---
     ...(['歸還中', '已歸還'].includes(item.state) ? [
         { 
           label: '申請歸還時間', 
           value: item.returnApplyTime 
         },
         { 
-          label: '歸還通過時間', 
+          label: '系辦審核時間', // 這裡指的是歸還的審核時間
           value: item.returnApproveTime 
+        },
+        { 
+          label: '系辦審核結果', 
+          value: item.state === '已歸還' ? '通過' : '審核中' 
         }
     ] : []),
   ];

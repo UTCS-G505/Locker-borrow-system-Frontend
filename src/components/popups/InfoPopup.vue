@@ -36,7 +36,7 @@ watch(detailInfo , (val) => {
   <div v-if="detailInfo" class="overlay" @click.self="close">
     <div class="detailInfo">
       <h2 class="title">{{ title }}</h2>
-      <div class="info-list">
+      <div class="scroll-container">
         <div class="row">
           
           <div 
@@ -85,7 +85,6 @@ watch(detailInfo , (val) => {
   /* 設定最大高度，讓滑桿有機會出現 */
   max-height: 80vh; 
   border-radius: 16px;
-  /* 移除原本的 padding，改由子元素控制，以便標題置頂 */
   padding: 0; 
   position: relative;
   overflow: hidden;
@@ -102,7 +101,6 @@ watch(detailInfo , (val) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 移除原本的 margin，改用 padding */
   margin: 0;
   padding: 10px;
   /* 確保只有上方有圓角 */
@@ -114,22 +112,20 @@ watch(detailInfo , (val) => {
   z-index: 1; /* 確保陰影壓在內容上 */
 }
 
-/* 內容區塊 (可捲動區域) */
-.info-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  /* 內距移到這裡 */
-  padding: 20px 24px; 
-  /* 這裡設定捲動 */
-  overflow-y: auto; 
-  flex-grow: 1; /* 佔滿剩餘空間 */
+.scroll-container{
+  flex: 1;
+  /* ★修改1：改成 auto，讓垂直和水平卷軸都能自動出現 */
+  overflow: auto; 
+  padding: 20px 40px;
 }
+
 
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px 40px;
+  gap: 8px 10px;
+  /*強制內容至少 550px 寬，當外框縮小到比這窄時，就會出現橫向卷軸 */
+  min-width: 550px;
 }
 
 .row .field {
@@ -174,6 +170,8 @@ watch(detailInfo , (val) => {
     flex-direction: column;
     gap: 10px;
     white-space: nowrap;
+    /* ★修改3：手機版移除最小寬度限制，讓它可以適應小螢幕變成直排 */
+    min-width: auto;
   }
   .field.full-row {
     display: flex;

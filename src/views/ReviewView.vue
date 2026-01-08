@@ -366,22 +366,47 @@ function handleShowDetails(item) {
   console.log("顯示詳細資訊: ", item);
   
   // 這裡將 item 資料轉換成彈窗需要的 groups 格式
-  modalData.value = [
-    { label: '申請人', value: item.name },
-    { label: '學號', value: item.studentId },
+modalData.value = [
+    // --- 申請者資訊 ---
+    { label: '姓名', value: item.name },
     { label: '年級', value: item.grade },
-    { label: '手機號碼', value: item.phone },
-    { label: '電子郵件', value: item.email, isFullRow: true },
-    { label: '狀態', value: item.status },
+    { label: '主要電子郵件', value: item.email, isFullRow: true },
+    { label: '連絡電話', value: item.phone },
+
+    // --- 借用資訊 ---
     { label: '借用類型', value: item.borrowType },
-    { label: '系櫃編號', value: item.cabinet, isFullRow: true },
-    { label: '開始時間', value: item.startTime },
-    { label: '結束時間', value: item.endTime },
-    // 下面是長欄位，使用 input-box 樣式
-    { label: '借用原因', value: '沒有宿舍ＱＡＱ', isFullRow: true, isBox: true },
-    // 動態判斷是否顯示駁回原因
-    ...(item.status === '已駁回' ? [{ label: '駁回原因', value: '資料不符', isFullRow: true, isBox: true }] : [])
-  ];
+    // 合併起訖時間，因為較長建議給整行，或視情況拿掉 isFullRow
+    { label: '借用時間起/迄', value: `${item.startTime} ~ ${item.endTime}`, isFullRow: true },
+    { label: '借用系櫃編號', value: item.cabinet },
+    
+    { label: '借用理由', value: '沒有宿舍ＱＡＱ', isFullRow: true, isBox: true },
+    
+    // 以下補足截圖要求的欄位 (若 item 裡還沒這欄位，暫時用 item.applyTime 代替或寫死)
+    { label: '申請借用時間', value: '2025/06/30' }, 
+    { label: '系辦審核時間', value: item.approveTime || '' }, // 假設你有審核時間變數
+    { label: '系辦審核結果', value: item.status },
+
+    // 駁回理由
+    ...(item.status === '已駁回' ? [
+        { label: '駁回理由', value: '資料不符', isFullRow: true, isBox: true }
+    ] : []),
+
+    // --- 歸還資訊 (邏輯與之前相同，視狀態顯示) ---
+    ...(['歸還中', '已歸還'].includes(item.status) ? [
+        { 
+          label: '申請歸還時間', 
+          value: item.returnApplyTime 
+        },
+        { 
+          label: '系辦審核時間', 
+          value: item.returnApproveTime 
+        },
+        { 
+          label: '系辦審核結果', 
+          value: item.status === '已歸還' ? '通過' : '審核中' 
+        }
+    ] : [])
+];
 
   // 打開彈窗 (確保 DOM 更新後再執行)
   nextTick(() => {
