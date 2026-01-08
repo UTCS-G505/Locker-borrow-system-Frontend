@@ -74,42 +74,38 @@ function handleShowDetails(id) {
   console.log("查看詳細資訊:", item);
 
   modalData.value = [
+    // --- 第一列 ---
     { label: '姓名', value: item.name },
     { label: '借用類型', value: item.type },
-    // 圖片要求將起訖時間合併顯示
-    { label: '借用時間起/迄', value: `${item.startTime} ~ ${item.endTime}` },
-    { label: '借用系櫃編號', value: item.num },
-    
-    { label: '借用理由', value: '沒有宿舍QAQ', isFullRow: true, isBox: true },
-    
-    { label: '申請借用時間', value: '2025/6/30' },
-    
-    { label: '系辦審核時間', 
-      value: item.directorTime || item.assistantTime 
-    },
-    
+
+    // --- 第二列：拆分借用時間 (圖片要求) ---
+    { label: '借用時間(起)', value: item.startTime },
+    { label: '借用時間(迄)', value: item.endTime },
+
+    // --- 第三列：系櫃編號 & 申請時間 (圖片要求排在一起) ---
+    { label: '借用系櫃編號', value: item.num }, // 若你的變數是 cabinet 請改成 item.cabinet
+    { label: '申請借用時間', value: '2025/6/30' }, 
+
+    // --- 第四列：借用理由 (長欄位) ---
+    { label: '借用理由', value: '沒有宿舍QAQ沒有宿舍QAQ沒有宿舍QAQ沒有宿舍QAQ沒有宿舍QAQ', isFullRow: true, isBox: true },
+
+    // --- 第五列：審核資訊 ---
+    // 左邊：審核時間
+    { label: '系辦審核時間', value: item.directorTime || item.assistantTime || '2025/8/5' }, 
+    // 右邊：審核結果
     { label: '系辦審核結果', value: item.state },
 
-    // 駁回理由 (依狀態顯示)
+    // --- 駁回原因 (如果有) ---
     ...(item.state === '駁回' ? [
-        { label: '駁回理由', value: '你明明就有', isFullRow: true, isBox: true }
+        { label: '駁回理由', value: '你明明就有！！！！！！！！！！！！！！！！！！！！！！', isFullRow: true, isBox: true }
     ] : []),
 
-    // --- 歸還資訊 (僅在歸還相關狀態顯示) ---
+    // --- 歸還資訊 ---
     ...(['歸還中', '已歸還'].includes(item.state) ? [
-        { 
-          label: '申請歸還時間', 
-          value: item.returnApplyTime 
-        },
-        { 
-          label: '系辦審核時間', // 這裡指的是歸還的審核時間
-          value: item.returnApproveTime 
-        },
-        { 
-          label: '系辦審核結果', 
-          value: item.state === '已歸還' ? '通過' : '審核中' 
-        }
-    ] : []),
+        { label: '申請歸還時間', value: item.returnApplyTime },
+        { label: '系辦審核時間', value: item.returnApproveTime || '' }, // 歸還的審核時間
+        // 若需要顯示歸還結果，可加在這裡
+    ] : [])
   ];
 
   nextTick(() => {

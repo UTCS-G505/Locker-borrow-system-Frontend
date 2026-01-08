@@ -148,6 +148,12 @@ watch(detailInfo , (val) => {
   margin-left: 6px;
   display: flex;
   align-items: center;
+
+  white-space: normal;       /* 允許換行 */
+  word-break: break-all;     
+  overflow-wrap: break-word; /* 支援單字換行 */
+  height: auto;              /* 高度設為自動，隨內容撐開 */
+  line-height: 1.5;
 }
 
 /* 所有一般文字 */
