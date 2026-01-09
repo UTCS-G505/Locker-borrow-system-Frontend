@@ -114,7 +114,7 @@ watch(detailInfo , (val) => {
 
 .scroll-container{
   flex: 1;
-  /* ★修改1：改成 auto，讓垂直和水平卷軸都能自動出現 */
+  /* 改成 auto，讓垂直和水平卷軸都能自動出現 */
   overflow: auto; 
   padding: 20px 40px;
 }
@@ -123,7 +123,7 @@ watch(detailInfo , (val) => {
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px 10px;
+  gap: 15px 20px;/* 微調 */
   /*強制內容至少 550px 寬，當外框縮小到比這窄時，就會出現橫向卷軸 */
   min-width: 550px;
 }
@@ -149,7 +149,8 @@ watch(detailInfo , (val) => {
   display: flex;
   align-items: center;
 
-  white-space: normal;       /* 允許換行 */
+  white-space: pre-wrap;       /* 允許換行 */
+  box-sizing: border-box;
   word-break: break-all;     
   overflow-wrap: break-word; /* 支援單字換行 */
   height: auto;              /* 高度設為自動，隨內容撐開 */
@@ -164,21 +165,42 @@ watch(detailInfo , (val) => {
 }
 
 @media (max-width: 640px){
+  .detailInfo {
+    width: 90% !important; 
+  }
+  .scroll-container {
+    padding: 20px; /* 縮小內距，增加可視空間 */
+  }
+
   .text {
     font-size: 16px;
   }
   .input-box{
     font-size: 16px;
-    min-height: 54px;
+    min-height: 40px;
+    margin-left: 0;   
+    margin-top: 5px;
+    
+    width: 100% !important; 
+    flex: none;
+
+    /* 停用 flex 伸縮，改用 width 控制 */
   }
   .row{
     display: flex;
     flex-direction: column;
     gap: 10px;
-    white-space: nowrap;
-    /* ★修改3：手機版移除最小寬度限制，讓它可以適應小螢幕變成直排 */
+    white-space: normal; /*可以換行*/
+    /*手機版移除最小寬度限制，讓它可以適應小螢幕變成直排 */
     min-width: auto;
   }
+
+  .field {
+    display: flex;
+    flex-wrap: wrap; /* 允許標題和內容換行 */
+    width: 100%;
+  }
+
   .field.full-row {
     display: flex;
     flex-direction: column;
