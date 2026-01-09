@@ -2,7 +2,7 @@
 import { RouterLink } from 'vue-router'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import logo from '@/assets/logo.png'
-import Popup_SignIn from '../components/popups/Popup_SignIn.vue'
+import PopupSignIn from './popups/PopupSignIn.vue'
 
 // 控制手機版主選單顯示
 const showMobileMenu = ref(false)
@@ -13,22 +13,22 @@ const showMobileUserMenu = ref(false)
 // 控制登入彈窗顯示的響應式狀態
 const isSignInPopupVisible = ref(false)
 
-// 手機使用者選單區域的 DOM 引用 (處理頭像/選單的點擊)
+// 手機使用者選單區域的 DOM 引用
 const mobileMenuRef = ref(null) 
-// 手機漢堡選單區域的 DOM 引用 (處理漢堡選單的點擊)
+// 手機漢堡選單區域的 DOM 引用
 const mobileHamburgerRef = ref(null)
 
 // 顯示登入彈窗的函數 
 function showSignInPopup() {
   isSignInPopupVisible.value = true; 
-  // 為了避免點擊圖示後同時關閉選單，先確保選單關閉
   showMobileUserMenu.value = false; 
 }
+
 // 關閉登入彈窗的函數
 function closeSignInPopup() {
   isSignInPopupVisible.value = false;
 }
-
+ 
 // 切換手機版主選單
 function toggleMobileMenu() {
   showMobileMenu.value = !showMobileMenu.value
@@ -116,50 +116,7 @@ onBeforeUnmount(() => {
     </div> 
   </div> 
 
-  <Popup_SignIn v-if="isSignInPopupVisible" @close="closeSignInPopup" >
-    <template #登入>
-        <h1 style="margin: 0;" ><b>登入</b></h1>
-    </template>
-
-    <template #帳號>
-      <div class="form-row">
-        <label for="account" class="form-label">帳號</label> 
-        <input id="account" type="text" class="form-input">
-      </div>
-    </template>
-
-    <template #密碼>
-      <div class="form-row">
-        <label for="password" class="form-label">密碼</label>
-        <input id="password" type="password" class="form-input">
-      </div>
-    </template>
-
-    <template #提示>
-      <div style="
-        margin-top: 1px; 
-        margin-bottom: 5px;
-        text-align: center; 
-        width: 75%;
-        ">
-        <div style="
-          background: rgba(235, 247, 255, 0.8);
-          color: #007bff; 
-          border: 1px solid #007bff; 
-          border-radius: 10px; 
-          padding: 3px 20px; 
-          font-size: 14px;
-          ">
-          請使用 UTSC SSO 帳密登入
-        </div>
-      </div>
-    </template>
-    
-    <template #送出>
-      <button class="confirm-button" @click="closeSignInPopup">送出</button>        
-    </template>
-
-  </Popup_SignIn>
+  <PopupSignIn v-if="isSignInPopupVisible" @close="closeSignInPopup" />
 
 </template>
 
@@ -171,7 +128,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
 }
 
-/* 電腦版樣式 */
+/* --- 電腦版樣式 --- */
 .desktop-header {
   display: none;
 }
@@ -185,7 +142,7 @@ onBeforeUnmount(() => {
 }
 
 .logo {
-  height: 80px;
+  height: 80px; 
 }
 
 .logo-link {
@@ -197,7 +154,7 @@ onBeforeUnmount(() => {
 }
 
 .system-title {
-  font-size: 32px;
+  font-size: 32px; 
   font-weight: bold;
 }
 
@@ -206,35 +163,43 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   background: rgba(235, 247, 255, 0.8);
-  padding: 1rem 24px;
+  padding: 8px 24px; 
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
 }
 
 .nav-links {
   display: flex;
-  align-items: center; /* 讓 nav-links 內的文字與按鈕垂直居中 */
+  align-items: center;
 }
 
 .nav-links a {
   text-decoration: none;
   color: #333;
-  padding: 12px 16px;
+  padding: 8px 16px; 
   margin-left: 1rem;
   margin-right: 1rem;
   border-radius: 4px;
-  font-size: 25px;
+  font-size: 25px;   
+
+  display: inline-flex;  
+  align-items: center;   
+  line-height: 1.5;
 }
 
 .nav-links div { 
   text-decoration: none;
   color: #333;
-  padding: 12px 16px;
+  padding: 8px 16px; 
   margin-left: 1rem;
   margin-right: 1rem;
   border-radius: 4px;
-  font-size: 25px;
+  font-size: 25px;   
   cursor: pointer; 
   transition: background-color 0.3s ease; 
+
+  display: inline-flex;  
+  align-items: center;   
+  line-height: 1.5;
 }
 
 .nav-links div:hover {
@@ -258,7 +223,7 @@ onBeforeUnmount(() => {
 .user-btn {
   background: none;
   border: none;
-  font-size: 25px;
+  font-size: 25px; 
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -267,14 +232,12 @@ onBeforeUnmount(() => {
 }
 
 .desktop-header .user-menu .user-btn {
-  /* 與 .nav-links a 相同的 padding: 12px 16px; 確保高度一致 */
-  padding: 12px 16px;
-  /* 與 .nav-links a 相同的 margin: 1rem; 確保間距一致 */
-  margin-left: 1rem;
-  margin-right: 1rem;
+  padding: 8px 16px; 
+  margin-left: 0.8rem;
+  margin-right: 0.8rem;
+  line-height: 1.5; 
 }
 
-/*電腦版登入按鈕的 hover 效果*/
 .desktop-header .user-menu .user-btn:hover {
   background-color: #a1d2ff;
   border-radius: 4px;
@@ -388,80 +351,6 @@ onBeforeUnmount(() => {
   background: #f0f0f0;
 }
 
-.confirm-button {
-  width: 70px;
-  height: 27px;
-  color: black;
-  background-color: white;
-  border-radius: 10px;
-  border: 1px solid #DFE1E6;
-  font-size: 15px;
-  cursor: pointer;
-  user-select: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-}
-.confirm-button:hover {
-  background-color: #DFE1E6;
-}
-
-/* 電腦版預設 (橫向排列) */
-.form-row {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  width: 75%;      /* 維持你原本的寬度 */
-  margin: 0 auto;  /* 讓它在畫面中間 */
-}
-
-.form-label {
-  font-size: 24px;
-  text-align: left;
-  white-space: nowrap; /* 防止文字換行 */
-  width: 50px;         /* 固定 Label 寬度，避免跑版 */
-}
-
-.form-input {
-  flex-grow: 1;
-  padding: 9px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
-}
-
-/* --- 手機版 RWD 設定 --- */
-@media (max-width: 430px) { 
-  .modal-content {
-    width: 90%;
-    max-width: 90%;
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-
-  .form-row {
-    flex-direction: column; 
-    align-items: flex-start; 
-    width: 85%; 
-    gap: 5px;  
-  }
-
-  .form-label {
-    width: 85%;       
-    margin-bottom: 2px;
-    font-size: 20px;   
-    text-align: left;
-  }
-
-  .form-input {
-    width: 100%;       
-  }
-
-  .content.slot-hint {
-    padding: 0;
-    margin-top: 15px;
-  }
-}
-
-
 /* RWD切換 */
 @media (min-width: 1024px) {
   .desktop-header {
@@ -475,19 +364,19 @@ onBeforeUnmount(() => {
 /* 平板或大螢幕手機：增加 logo 和文字大小 */
 @media (min-width: 600px) and (max-width: 1023px) {
   .mobile-top-bar {
-    padding: 12px 20px; /* 增加 padding */
+    padding: 12px 20px; 
   }
 
   .mobile-system-title {
-    font-size: 26px; /* 原本是 18px，放大 */
+    font-size: 26px; 
   }
 
   .mobile-logo {
-    height: 48px; /* 原本是 36px，放大 */
+    height: 48px; 
   }
 
   .mobile-menu a {
-    font-size: 23px; /* 原本是 18px，放大 */
+    font-size: 23px; 
   }
 
   .mobile-user-menu .user-name {
