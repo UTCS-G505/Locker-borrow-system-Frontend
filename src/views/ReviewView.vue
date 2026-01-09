@@ -83,13 +83,19 @@
       v-model:borrow-type-filter="borrowTypeFilter"
       v-model:status-filter="statusFilter"
       @show-details="handleShowDetails"
-    ></ReviewList>
+    />
+
     <RejectModal
       ref="rejectModal"
-      :quick-options="['資料不完整','不符規定','請重新填寫']"
+      :quick-options="rejectOptions"
       @submit="handleRejectSubmit"
     />
 
+    <InfoPopup
+      ref="detailModalRef"
+      title="詳細資訊"
+      :fields="modalData"
+    />
     <CheckPopup 
       v-if="showApproveModal" 
       operation="借用審核通過" 
@@ -114,11 +120,16 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from "vue";
+//加入nextTick
+import { ref, reactive, computed, watch, nextTick } from "vue";
 // 導入新的子組件
 import ReviewList from "../components/ReviewList.vue";
+import InfoPopup from "@/components/popups/InfoPopup.vue";
 import CheckPopup from "../components/popups/CheckPopup.vue";
 import RejectModal from "../components/RejectModal.vue";
+
+// 定義駁回選項常數，避免在 template 中出現解析錯誤
+const rejectOptions = ['資料不完整', '不符規定', '請重新填寫'];
 
 // 彈窗控制
 const rejectModal = ref(null);
@@ -154,12 +165,17 @@ const searchName = ref("");
 const returnSelections = ref([]);
 const mobileSelections = ref([]);
 
+const detailModalRef = ref(null); // 用來綁定彈窗組件
+const modalData = ref([]);        // 用來存放轉換後的詳細資料
+
 const applications = reactive([
   {
     id: 1,
     studentId: "U11316050",
     name: "王小明",
     grade: "大四",
+    phone: "0912345678",
+    email: "wang.min@example.com",
     borrowType: "學年借用",
     startTime: "2024/09/01",
     endTime: "2025/06/30",
@@ -171,6 +187,8 @@ const applications = reactive([
     studentId: "U11316051",
     name: "李小美",
     grade: "大一",
+    phone: "0922333444",
+    email: "may.lee@example.com",
     borrowType: "臨時借用",
     startTime: "2025/07/23",
     endTime: "2025/07/23",
@@ -182,6 +200,8 @@ const applications = reactive([
     studentId: "U11316052",
     name: "張大明",
     grade: "大二",
+    phone: "0933444555",
+    email: "chang.big@example.com",
     borrowType: "學年借用",
     startTime: "2024/09/01",
     endTime: "2025/06/30",
@@ -193,6 +213,8 @@ const applications = reactive([
     studentId: "U11316054",
     name: "王中明",
     grade: "大一",
+    phone: "0944555666",
+    email: "wang.mid@example.com",
     borrowType: "學年借用",
     startTime: "2024/09/01",
     endTime: "2025/06/30",
@@ -204,6 +226,8 @@ const applications = reactive([
     studentId: "U11316055",
     name: "王大明",
     grade: "大一",
+    phone: "0955666777",
+    email: "wang.big@example.com",
     borrowType: "臨時借用",
     startTime: "2024/09/01",
     endTime: "2025/06/30",
@@ -282,7 +306,7 @@ function executeReturn() {
   showReturnModal.value = false; // 關閉彈窗
 }
 
-// isMobile 判斷 (修正了 1px 的差異，使其與 CSS 保持一致)
+// isMobile 判斷
 const isMobile = ref(window.innerWidth <= 865);
 window.addEventListener("resize", () => {
   const w = window.innerWidth;
@@ -340,13 +364,56 @@ function executeReject() {
 // 處理子組件發出的 "show-details" 事件
 function handleShowDetails(item) {
   console.log("顯示詳細資訊: ", item);
-  alert(`
-    詳細資訊:
-    申請人: ${item.name} (${item.studentId})
-    系櫃: ${item.cabinet}
-    類型: ${item.borrowType}
-    狀態: ${item.status}
-  `);
+  
+  // 這裡將 item 資料轉換成彈窗需要的 groups 格式
+modalData.value = [
+    // --- 申請者資訊 ---
+    { label: '姓名', value: item.name },
+    { label: '年級', value: item.grade },
+    { label: '主要電子郵件', value: item.email, isFullRow: true },
+    { label: '連絡電話', value: item.phone },
+
+    // --- 借用資訊 ---
+    { label: '借用類型', value: item.borrowType },
+    // 合併起訖時間，因為較長建議給整行，或視情況拿掉 isFullRow
+    { label: '借用時間起/迄', value: `${item.startTime} ~ ${item.endTime}`, isFullRow: true },
+    { label: '借用系櫃編號', value: item.cabinet },
+    
+    { label: '借用理由', value: '沒有宿舍ＱＡＱ', isFullRow: true, isBox: true },
+    
+    // 以下補足截圖要求的欄位 (若 item 裡還沒這欄位，暫時用 item.applyTime 代替或寫死)
+    { label: '申請借用時間', value: '2025/06/30' }, 
+    { label: '系辦審核時間', value: item.approveTime || '' }, // 假設你有審核時間變數
+    { label: '系辦審核結果', value: item.status },
+
+    // 駁回理由
+    ...(item.status === '已駁回' ? [
+        { label: '駁回理由', value: '資料不符', isFullRow: true, isBox: true }
+    ] : []),
+
+    // --- 歸還資訊 (邏輯與之前相同，視狀態顯示) ---
+    ...(['歸還中', '已歸還'].includes(item.status) ? [
+        { 
+          label: '申請歸還時間', 
+          value: item.returnApplyTime 
+        },
+        { 
+          label: '系辦審核時間', 
+          value: item.returnApproveTime 
+        },
+        { 
+          label: '系辦審核結果', 
+          value: item.status === '已歸還' ? '通過' : '審核中' 
+        }
+    ] : [])
+];
+
+  // 打開彈窗 (確保 DOM 更新後再執行)
+  nextTick(() => {
+    if (detailModalRef.value) {
+      detailModalRef.value.open();
+    }
+  });
 }
 
 // 當切換頁面時重置所有過濾器與勾選
@@ -358,11 +425,10 @@ watch(selectedType, () => {
   returnSelections.value = [];
   mobileSelections.value = [];
 });
-
 </script>
 
 <style scoped>
-
+/* 樣式保持不變 */
 html,
 body {
   margin: 0;
