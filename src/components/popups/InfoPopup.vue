@@ -149,7 +149,7 @@ watch(detailInfo , (val) => {
   display: flex;
   align-items: center;
 
-  white-space: pre-wrap;       /* 允許換行 */
+  white-space: pre-wrap;     /* 允許換行 */
   box-sizing: border-box;
   word-break: break-all;     
   overflow-wrap: break-word; /* 支援單字換行 */
@@ -161,7 +161,7 @@ watch(detailInfo , (val) => {
 .text{
   font-size: 18px;
   color: #000000;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 @media (max-width: 640px){
@@ -183,6 +183,7 @@ watch(detailInfo , (val) => {
     
     width: 100% !important; 
     flex: none;
+    display: block;
 
     /* 停用 flex 伸縮，改用 width 控制 */
   }
