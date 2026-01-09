@@ -50,6 +50,7 @@
 
 <script setup>
   import { ref, watch, computed, onMounted } from 'vue'
+  import { Announcement } from '@/api/main'
 
   const props = defineProps({
     modelValue: {
@@ -71,10 +72,12 @@
     return startDate.value > today ? startDate.value : today
   })
 
-  function initializeDates(type) {
+  async function initializeDates(type) {
     if (type === '學年借用') {
-      startDate.value = '2025-09-01'
-      endDate.value = '2026-06-30'
+      const startDateRes = await Announcement.getGet(2)
+      startDate.value = startDateRes.content
+      const endDateRes = await Announcement.getGet(3)
+      endDate.value = endDateRes.content
     } else {
       const tomorrow = new Date(Date.now() + 86400000)
       startDate.value = today
