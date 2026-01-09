@@ -4,7 +4,7 @@
     <div class="left-group">
       <div class="label-text"><h2>請填寫申請內容</h2></div>
     </div>
-    
+
     <!-- 借用類型與時間 -->
     <div class="left-group">
       <TypeSelect
@@ -54,6 +54,18 @@
       @close="showConfirmModal = false"
       @confirm="handleConfirmBorrow"
     />
+
+    <FailModal
+    v-if="showFailModal"
+    :reasons="failReasons"
+    @close="showFailModal = false"
+    />
+    <ApplySuccessModal v-model="showSuccessModal"
+      :locker="selectedLocker"
+      :borrowType="selectedType"
+      :timeRange="timeRange"
+      :reason="borrowReason"
+      />
   </div>
 </template>
 
@@ -64,6 +76,8 @@
   import TypeSelect from '../components/TypeSelect.vue'
   import LockerStatus from '../components/LockerStatus.vue'
   import ConfirmBorrowModal from '../components/ConfirmBorrowModal.vue'
+  import FailModal  from '../components/FailedDialog.vue'
+  import ApplySuccessModal from '../components/ApplySuccessModal.vue'
 
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
@@ -72,6 +86,17 @@
   const showModal = ref(false)
   const selectedLocker = ref(null)
   const showConfirmModal = ref(false)
+  const showFailModal = ref(false)
+
+  const failReasons = ref([])
+  const showSuccessModal = ref(false)
+  const borrowReason = ref('')
+
+  const ERROR_LIBRARY = {
+  MAINTENANCE: '該櫃位目前正在維修中，無法借用',
+  SYSTEM_ERROR: '伺服器連線異常，請稍後再試',
+  MISSING_INFO: '申請資訊填寫不完整'
+  };
 
   function openModal() {
     showModal.value = true
@@ -87,10 +112,26 @@
     selectedLocker.value = locker
     showConfirmModal.value = true
   }
+
+
   function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
-    alert(`櫃子 ${locker.name} 已確認借用，理由：${reason}`)
+
+    if (String(locker.name) === '2') {
+      failReasons.value = [ERROR_LIBRARY.SYSTEM_ERROR]
+      showFailModal.value = true // 開啟失敗彈窗
+    }else{
+      borrowReason.value = reason
+      showSuccessModal.value = true
+      // 3. 成功邏輯：暫時使用 alert，等待您加入 ApplySuccessModal
+      console.log('父元件收到 confirm 事件：', { locker, reason })
+      alert(`櫃子 ${locker.name} 已確認借用，理由：${reason} (申請成功)`)
+      // TODO: 這裡應該替換成顯示 ApplySuccessModal 的邏輯
+    }
+    console.log('父元件收到 confirm 事件：', { locker, reason })
+
   }
+
   function handleTimeRangeUpdate(range) {
     timeRange.value = range
     console.log('臨時借用時間範圍更新:', range)
@@ -152,7 +193,7 @@
     align-items: flex-start; /* 子元素都往左靠齊 */
     padding-top: 0;
   }
-  
+
   .left-group {
     display: flex;
     align-items: center;
@@ -161,7 +202,7 @@
     flex: 1;
     min-width: 0;
   }
-  
+
   /* 標題 */
   .label-text h2 {
     white-space: nowrap;
@@ -175,12 +216,12 @@
   .row-space-between {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;    
+    align-items: flex-start;
     justify-content: space-between;
     box-sizing: border-box;
     width: 100%; /* 撐滿，元素左對齊 */
     gap: 12px;                 /* 行間隙 */
-    
+
   }
 
   /* 右側狀態標示 */
@@ -215,7 +256,7 @@
 
     cursor: pointer;
     appearance: none;
-    
+
   }
   .control-button:focus {
     outline: none;
@@ -314,12 +355,12 @@
       padding-left: 10px; /* 往左靠一點 */
       padding-right: 10px;
     }
-    
+
     .row-space-between {
       justify-content: flex-start; /* 換行時靠左 */
       align-items: flex-start;
     }
-    
+
     .row-space-between,
     .left-group,
     .content-container {
