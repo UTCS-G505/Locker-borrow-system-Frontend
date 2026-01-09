@@ -114,7 +114,8 @@ function handleSubmit() {
 
 .hint-group {
   margin-top: -5px; 
-  width: 280px;
+  width: 100%;
+  max-width: 280px;
   display: flex;
   justify-content: center;
 }
