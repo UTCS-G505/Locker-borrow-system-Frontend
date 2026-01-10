@@ -1,12 +1,12 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import AppNavBar from './components/AppNavBar.vue';
+import AppNavBar_LogOut from './components/AppNavBar_LogOut.vue';
 import AppFooter from './components/AppFooter.vue'
 </script>
 
 <template>
   <header>
-    <AppNavBar />
+    <AppNavBar_LogOut />
   </header>
 
   <main>
