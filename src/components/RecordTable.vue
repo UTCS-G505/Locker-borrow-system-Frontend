@@ -1,8 +1,5 @@
 <script setup>
 
-import { useAuthStore } from '@/stores/auth'; // 引入 store
-const authStore = useAuthStore(); // 初始化 store
-
 /* 子元件用props接收父元件傳來的record資料，它是個Array*/
 const props = defineProps({
   records: Array
@@ -56,7 +53,6 @@ function showDetails(id) {
         <table>
           <thead class="head">
             <tr id="data">
-              <th>申請人</th>
               <th>借用類型</th>
               <th class="mobileHide">開始時間</th>
               <th class="mobileHide">結束時間</th>
@@ -69,7 +65,6 @@ function showDetails(id) {
           <tbody>
             <!--用item.id(唯一值)比較安全，index可能因為資料排序而有變動-->
             <tr v-for="item in props.records" :key="item.id">
-              <td>{{ authStore.user?.name || item.user_id }}</td>
               <td>{{ item.reason }}</td>
               <td class="mobileHide">{{ item.start_date }}</td>
               <td class="mobileHide">{{ item.end_date }}</td>
@@ -209,14 +204,14 @@ th {
   /* 滑鼠放上去時會變灰色 */
 }
 
-th:nth-child(7),
-td:nth-child(7) {
+th:nth-child(6),
+td:nth-child(6) {
   width: 17%;
   text-align: center;
 }
 
-th:nth-child(8),
-td:nth-child(8) {
+th:nth-child(7),
+td:nth-child(7) {
   width: 9.7%;
   text-align: center;
 }
@@ -243,13 +238,13 @@ td:nth-child(8) {
     font-size: 16px;
   }
 
-  th:nth-child(7),
-  td:nth-child(7) {
+  th:nth-child(6),
+  td:nth-child(6) {
     text-align: center;
   }
 
-  th:nth-child(8),
-  td:nth-child(8) {
+  th:nth-child(7),
+  td:nth-child(7) {
     text-align: center;
   }
 }
