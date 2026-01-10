@@ -32,17 +32,20 @@ const formatState = (item) => {
 }
 
 /* 讓子元件可以合法發出事件(沒有這行可能會出錯) */
-const emit = defineEmits(['cancel', 'return','showDetail'])
+
+const emit = defineEmits(['cancel', 'return', 'show-details'])
 function cancel(id) {
   emit('cancel', id)
 }
+
 function toggleReturn(id) {
   emit('return', id)
 }
 
-// 新增這個函式，讓詳細資訊按鈕觸發
-function showDetail(id) {
-  emit('showDetail', id)
+
+function showDetails(id) {
+  // 發出訊號，把 ID 傳給父組件
+  emit('show-details', id) 
 }
 </script>
 
@@ -72,7 +75,7 @@ function showDetail(id) {
               <td class="mobileHide">{{ item.end_date }}</td>
               <td class="mobileHide">{{ item.locker_id }}</td>
               <td>
-                <button class="operateButton" @click = "showDetail(item.id)">詳細資訊</button>
+                <button class="operateButton" @click="showDetails(item.id)">詳細資訊</button>
               </td>
               <td>{{ formatState(item) }}</td>
               <td>
