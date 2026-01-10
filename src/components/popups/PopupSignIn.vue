@@ -37,7 +37,7 @@ async function handleSubmit() {
   }
 
   // 有錯就停止
-  if (!isValid) return 
+  if (!isValid) return
 
   // --- 驗證通過後的邏輯 ---
   console.log('送出成功', account.value, password.value)
@@ -46,7 +46,7 @@ async function handleSubmit() {
     password: password.value
   })
   // 這裡之後可以接 API
-  
+
   // 關閉彈窗
   close()
 }
@@ -56,48 +56,38 @@ async function handleSubmit() {
   <PopupModal @close="close">
 
     <template #header>
-        <h1 style="margin: 0;" ><b>登入</b></h1>
+      <h1 style="margin: 0;"><b>登入</b></h1>
     </template>
 
     <template #content>
       <div class="signin-layout">
-        
+
         <div class="input-group">
           <div class="form-row">
-            <label for="account" class="form-label">帳號</label> 
-            <input 
-              id="account" 
-              type="text" 
-              class="form-input" 
-              v-model="account"
-              :class="{ 'input-error': isAccountError }"
-            >
+            <label for="account" class="form-label">帳號</label>
+            <input id="account" type="text" class="form-input" v-model="account"
+              :class="{ 'input-error': isAccountError }">
           </div>
         </div>
 
         <div class="input-group">
           <div class="form-row">
             <label for="password" class="form-label">密碼</label>
-            <input 
-              id="password" 
-              type="password" 
-              class="form-input" 
-              v-model="password"
-              :class="{ 'input-error': isPasswordError }"
-            >
+            <input id="password" type="password" class="form-input" v-model="password"
+              :class="{ 'input-error': isPasswordError }">
           </div>
         </div>
 
         <div class="hint-group">
           <div class="hint-box">
-             請使用 UTSC SSO 帳密登入
+            請使用 UTSC SSO 帳密登入
           </div>
         </div>
       </div>
     </template>
 
     <template #buttons>
-      <button class="confirm-button" @click="handleSubmit">送出</button>        
+      <button class="confirm-button" @click="handleSubmit">送出</button>
     </template>
 
   </PopupModal>
@@ -109,18 +99,18 @@ async function handleSubmit() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px; 
+  gap: 20px;
   padding: 7px 0;
 }
 
 .input-group {
-  width: 70%; 
+  width: 70%;
   display: flex;
   justify-content: center;
 }
 
 .hint-group {
-  margin-top: -5px; 
+  margin-top: -5px;
   width: 100%;
   max-width: 280px;
   display: flex;
@@ -129,13 +119,13 @@ async function handleSubmit() {
 
 .hint-box {
   background: rgba(235, 247, 255, 0.8);
-  color: #007bff; 
-  border: 1px solid #007bff; 
-  border-radius: 10px; 
-  padding: 3px 20px; 
+  color: #007bff;
+  border: 1px solid #007bff;
+  border-radius: 10px;
+  padding: 3px 20px;
   font-size: 14px;
   text-align: center;
-  width: 100%; 
+  width: 100%;
 
 }
 
@@ -144,7 +134,7 @@ async function handleSubmit() {
   display: flex;
   align-items: center;
   gap: 7px;
-  width: 75%;      
+  width: 75%;
   margin: 0 auto;
 }
 
@@ -152,7 +142,7 @@ async function handleSubmit() {
   font-size: 24px;
   text-align: left;
   white-space: nowrap;
-  width: 50px;    
+  width: 50px;
 }
 
 .form-input {
@@ -168,7 +158,7 @@ async function handleSubmit() {
   width: 90px !important;
   height: 30px !important;
   font-size: 16px !important;
-  
+
   color: black;
   background-color: white;
   border-radius: 10px;
@@ -176,7 +166,7 @@ async function handleSubmit() {
   cursor: pointer;
   user-select: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -189,39 +179,40 @@ async function handleSubmit() {
 /* --- 錯誤紅框樣式 --- */
 .form-input.input-error {
   border: 1px solid #e36365 !important;
-  background-color: #f5eeee; 
+  background-color: #f5eeee;
 }
+
 .form-input.input-error::placeholder {
   color: #ffccc7;
 }
 
 /* --- 手機版 RWD 設定 --- */
-@media (max-width: 580px) { 
-  
+@media (max-width: 580px) {
+
   /* Modal Content 是子元件的，必須保留 :deep */
   :deep(.modal-content) {
-    width: 90% !important;       
-    max-width: 400px !important; 
+    width: 90% !important;
+    max-width: 400px !important;
     padding-left: 15px;
     padding-right: 15px;
   }
-  
+
   .form-row {
-    flex-direction: column; 
-    align-items: flex-start; 
-    width: 100%;    
-    gap: 5px;  
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 5px;
   }
 
   .form-label {
-    width: 100%;       
+    width: 100%;
     margin-bottom: 2px;
-    font-size: 20px;   
+    font-size: 20px;
     text-align: left;
   }
 
   .form-input {
-    width: 100%;       
+    width: 100%;
   }
 }
 </style>

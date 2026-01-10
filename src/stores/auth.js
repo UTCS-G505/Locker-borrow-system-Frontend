@@ -49,9 +49,11 @@ export const useAuthStore = defineStore('auth', {
 
     async refreshTokenAction() {
       try {
-        const response = await axios.post(`${import.meta.env.VITE_SSO_API_URL}/api/v1/auth/refresh`, null, {
-          withCredentials: true,
-        })
+        const response = await axios.post(
+          `${import.meta.env.VITE_SSO_API_URL}/api/v1/auth/refresh`,
+          null,
+          { withCredentials: true }
+        )
 
         this.accessToken = response.data.data.access_token
         this.isAuthenticated = true

@@ -14,21 +14,21 @@ const showMobileUserMenu = ref(false)
 const isSignInPopupVisible = ref(false)
 
 // 手機使用者選單區域的 DOM 引用
-const mobileMenuRef = ref(null) 
+const mobileMenuRef = ref(null)
 // 手機漢堡選單區域的 DOM 引用
 const mobileHamburgerRef = ref(null)
 
 // 顯示登入彈窗的函數 
 function showSignInPopup() {
-  isSignInPopupVisible.value = true; 
-  showMobileUserMenu.value = false; 
+  isSignInPopupVisible.value = true;
+  showMobileUserMenu.value = false;
 }
 
 // 關閉登入彈窗的函數
 function closeSignInPopup() {
   isSignInPopupVisible.value = false;
 }
- 
+
 // 切換手機版主選單
 function toggleMobileMenu() {
   showMobileMenu.value = !showMobileMenu.value
@@ -37,7 +37,7 @@ function toggleMobileMenu() {
 
 function toggleMobileUserMenu() {
   showMobileUserMenu.value = !showMobileUserMenu.value
-  showMobileMenu.value = false 
+  showMobileMenu.value = false
 }
 
 function handleClickOutside(event) {
@@ -45,7 +45,7 @@ function handleClickOutside(event) {
   if (mobileHamburgerRef.value && !mobileHamburgerRef.value.contains(event.target)) {
     showMobileMenu.value = false;
   }
-  
+
   //檢查點擊是否在 mobileMenuRef (頭像/選單區域) 之外
   if (mobileMenuRef.value && !mobileMenuRef.value.contains(event.target)) {
     showMobileUserMenu.value = false;
@@ -65,7 +65,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="app-navbar">
-    
+
     <div class="desktop-header">
       <div class="top-bar">
         <RouterLink to="/" class="logo-link">
@@ -104,17 +104,17 @@ onBeforeUnmount(() => {
 
       <div v-if="showMobileMenu" class="mobile-menu">
         <RouterLink to="/" @click="toggleMobileMenu">首頁</RouterLink>
-          <a href="#" @click.prevent="showSignInPopup(); toggleMobileMenu()">申請借用</a>
-          <a href="#" @click.prevent="showSignInPopup(); toggleMobileMenu()">申請紀錄</a>
+        <a href="#" @click.prevent="showSignInPopup(); toggleMobileMenu()">申請借用</a>
+        <a href="#" @click.prevent="showSignInPopup(); toggleMobileMenu()">申請紀錄</a>
       </div>
-      
+
       <div v-if="showMobileUserMenu" class="mobile-user-menu">
         <div class="logout">
           <a href="#" @click.prevent="showSignInPopup">登入</a>
         </div>
       </div>
-    </div> 
-  </div> 
+    </div>
+  </div>
 
   <PopupSignIn v-if="isSignInPopupVisible" @close="closeSignInPopup" />
 
@@ -142,7 +142,7 @@ onBeforeUnmount(() => {
 }
 
 .logo {
-  height: 80px; 
+  height: 80px;
 }
 
 .logo-link {
@@ -154,7 +154,7 @@ onBeforeUnmount(() => {
 }
 
 .system-title {
-  font-size: 32px; 
+  font-size: 32px;
   font-weight: bold;
 }
 
@@ -163,7 +163,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   background: rgba(235, 247, 255, 0.8);
-  padding: 8px 24px; 
+  padding: 8px 24px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
 }
 
@@ -175,30 +175,30 @@ onBeforeUnmount(() => {
 .nav-links a {
   text-decoration: none;
   color: #333;
-  padding: 8px 16px; 
+  padding: 8px 16px;
   margin-left: 1rem;
   margin-right: 1rem;
   border-radius: 4px;
-  font-size: 25px;   
+  font-size: 25px;
 
-  display: inline-flex;  
-  align-items: center;   
+  display: inline-flex;
+  align-items: center;
   line-height: 1.5;
 }
 
-.nav-links div { 
+.nav-links div {
   text-decoration: none;
   color: #333;
-  padding: 8px 16px; 
+  padding: 8px 16px;
   margin-left: 1rem;
   margin-right: 1rem;
   border-radius: 4px;
-  font-size: 25px;   
-  cursor: pointer; 
-  transition: background-color 0.3s ease; 
+  font-size: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 
-  display: inline-flex;  
-  align-items: center;   
+  display: inline-flex;
+  align-items: center;
   line-height: 1.5;
 }
 
@@ -207,7 +207,7 @@ onBeforeUnmount(() => {
 }
 
 .nav-links a.router-link-exact-active {
-  background-color: #a1d2ff ;
+  background-color: #a1d2ff;
   font-weight: bold;
 }
 
@@ -223,7 +223,7 @@ onBeforeUnmount(() => {
 .user-btn {
   background: none;
   border: none;
-  font-size: 25px; 
+  font-size: 25px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -232,10 +232,10 @@ onBeforeUnmount(() => {
 }
 
 .desktop-header .user-menu .user-btn {
-  padding: 8px 16px; 
+  padding: 8px 16px;
   margin-left: 0.8rem;
   margin-right: 0.8rem;
-  line-height: 1.5; 
+  line-height: 1.5;
 }
 
 .desktop-header .user-menu .user-btn:hover {
@@ -289,7 +289,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%; 
+  height: 100%;
   padding: 0 8px;
   cursor: pointer;
 }
@@ -315,7 +315,7 @@ onBeforeUnmount(() => {
   padding: 10px 0;
   text-decoration: none;
   color: #333;
-  display: block; 
+  display: block;
 }
 
 .mobile-menu a:hover {
@@ -330,7 +330,8 @@ onBeforeUnmount(() => {
   border: 1px solid #ddd;
   border-radius: 6px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  width: 100px; /* 只需要顯示「登入」 */
+  width: 100px;
+  /* 只需要顯示「登入」 */
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -343,7 +344,8 @@ onBeforeUnmount(() => {
   color: #333;
   display: block;
   text-align: center;
-  padding: 8px 12px; /* 調整 padding */
+  padding: 8px 12px;
+  /* 調整 padding */
   border-radius: 6px;
 }
 
@@ -356,6 +358,7 @@ onBeforeUnmount(() => {
   .desktop-header {
     display: block;
   }
+
   .mobile-header {
     display: none;
   }
@@ -364,19 +367,19 @@ onBeforeUnmount(() => {
 /* 平板或大螢幕手機：增加 logo 和文字大小 */
 @media (min-width: 600px) and (max-width: 1023px) {
   .mobile-top-bar {
-    padding: 12px 20px; 
+    padding: 12px 20px;
   }
 
   .mobile-system-title {
-    font-size: 26px; 
+    font-size: 26px;
   }
 
   .mobile-logo {
-    height: 48px; 
+    height: 48px;
   }
 
   .mobile-menu a {
-    font-size: 23px; 
+    font-size: 23px;
   }
 
   .mobile-user-menu .user-name {
