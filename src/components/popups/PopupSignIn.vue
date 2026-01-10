@@ -1,8 +1,11 @@
 <script setup>
 import { defineEmits, ref } from 'vue';
-import PopupModal from './PopupModal.vue'; 
+import PopupModal from './PopupModal.vue';
+import { useAuthStore } from '@/stores/auth';
 
 const emit = defineEmits(['close']);
+
+const authStore = useAuthStore();
 
 // --- 定義內部變數 ---
 const account = ref('')
@@ -15,7 +18,7 @@ function close() {
 }
 
 // --- 處理送出邏輯 ---
-function handleSubmit() {
+async function handleSubmit() {
   // 重置錯誤狀態
   isAccountError.value = false
   isPasswordError.value = false
@@ -38,6 +41,10 @@ function handleSubmit() {
 
   // --- 驗證通過後的邏輯 ---
   console.log('送出成功', account.value, password.value)
+  await authStore.login({
+    username: account.value,
+    password: password.value
+  })
   // 這裡之後可以接 API
   
   // 關閉彈窗
