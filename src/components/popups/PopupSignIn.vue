@@ -53,8 +53,8 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <PopupModal @close="close" width="400px">
-    
+  <PopupModal @close="close">
+
     <template #header>
         <h1 style="margin: 0;" ><b>登入</b></h1>
     </template>
