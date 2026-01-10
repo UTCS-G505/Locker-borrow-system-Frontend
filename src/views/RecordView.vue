@@ -50,7 +50,7 @@ function handleCancel(id){
 function handleReturn(id) {
   const item = record.value.find(r => r.id === id)
 
-  if(item.borrow_accepted === true && item.return_accepted === false){
+  if(item.borrow_accepted === true && item.return_accepted !== true){
     if(item.state === '歸還中'){
       item.state = '' // 清空手動狀態，讓它變回"借用中"
     }else{
@@ -73,7 +73,15 @@ const handleShowDetails = async (id) =>{
     }else if(item.borrow_accepted === false){
       statusText = '駁回';
     }else if(item.borrow_accepted === true){
-      statusText = '借用中';
+      if(item.return_available === false){
+        statusText = '借用中';
+      } else if(item.return_available === true && !item.return_accepted_date){
+        statusText = '歸還中';
+      } else if(item.return_available === true && item.return_accepted_date && item.return_accepted === true){
+        statusText = '已歸還';
+      } else {
+        statusText = '狀態異常'; // 防呆用
+      }
     }
   }
 
@@ -97,7 +105,7 @@ const handleShowDetails = async (id) =>{
     ] : []),
 
     // 歸還資訊
-    ...(['歸還中', '已歸還'].includes(item.state) ? [
+    ...(['歸還中', '已歸還'].includes(statusText) ? [
         { label: '申請歸還時間', value: formatDateTime(item.return_available_date) || '' },
         { label: '系辦審核時間', value: formatDateTime(item.return_accepted_date) || '' }, // 歸還的審核時間
     ] : [])

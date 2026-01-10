@@ -20,10 +20,15 @@ const formatState = (item) => {
     return '駁回';
   }
   if(item.borrow_accepted === true){
-    if(item.return_accepted === false){
+    if(item.return_available === false){
       return '借用中';
     }
-    return '已歸還';
+    if(item.return_available === true && !item.return_accepted_date){
+      return '歸還中';
+    }
+    if(item.return_available === true && item.return_accepted_date && item.return_accepted === true){
+      return '已歸還';
+    }
   }
   return '未知狀態'
 }
