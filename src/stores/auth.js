@@ -33,7 +33,8 @@ export const useAuthStore = defineStore('auth', {
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
-          }
+          },
+          withCredentials: true
         }
       )
       this.accessToken = response.data.data.access_token
