@@ -28,6 +28,12 @@ const formatState = (item) => {
   return '未知狀態'
 }
 
+const formatDate = (dateStr) => {
+  if(!dateStr) return '';
+
+  return dateStr.split('T')[0];
+}
+
 /* 讓子元件可以合法發出事件(沒有這行可能會出錯) */
 
 const emit = defineEmits(['cancel', 'return', 'show-details'])
@@ -66,8 +72,8 @@ function showDetails(id) {
             <!--用item.id(唯一值)比較安全，index可能因為資料排序而有變動-->
             <tr v-for="item in props.records" :key="item.id">
               <td>{{ item.temporary ? '臨時借用' : '學年借用' }}</td>
-              <td class="mobileHide">{{ item.start_date }}</td>
-              <td class="mobileHide">{{ item.end_date }}</td>
+              <td class="mobileHide">{{ formatDate(item.start_date) }}</td>
+              <td class="mobileHide">{{ formatDate(item.end_date) }}</td>
               <td class="mobileHide">{{ item.locker_id }}</td>
               <td>
                 <button class="operateButton" @click="showDetails(item.id)">詳細資訊</button>

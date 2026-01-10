@@ -14,6 +14,18 @@ const record = ref([]);
 const detailModalRef = ref(null);
 const modalData = ref([]);
 
+const formatDate = (dateStr) => {
+  if(!dateStr) return '';
+
+  return dateStr.split('T')[0];
+}
+
+const formatDateTime = (dateStr) => {
+  if(!dateStr) return '';
+
+  return dateStr.replace('T',' ');
+}
+
 onMounted(async () =>{
   try{
     const currentUserId = authStore.user?.id;
@@ -68,15 +80,15 @@ const handleShowDetails = async (id) =>{
   modalData.value = [
     { label: '借用類型', value: item.temporary ? '臨時借用' : '學年借用'},
 
-    { label: '借用時間(起)', value: item.start_date },
-    { label: '借用時間(迄)', value: item.end_date },
+    { label: '借用時間(起)', value: formatDate(item.start_date) },
+    { label: '借用時間(迄)', value: formatDate(item.end_date) },
 
     { label: '借用系櫃編號', value: item.locker_id },
-    { label: '申請借用時間', value: item.apply_date }, 
+    { label: '申請借用時間', value: formatDateTime(item.apply_date) }, 
 
     { label: '借用理由', value: item.reason, isFullRow: true, isBox: true },
 
-    { label: '系辦審核時間', value: item.review_date || '' }, 
+    { label: '系辦審核時間', value: formatDateTime(item.review_date) || '' }, 
     { label: '系辦審核結果', value: statusText },
 
     // 駁回原因 (如果有)
@@ -86,8 +98,8 @@ const handleShowDetails = async (id) =>{
 
     // 歸還資訊
     ...(['歸還中', '已歸還'].includes(item.state) ? [
-        { label: '申請歸還時間', value: item.return_available_date || '' },
-        { label: '系辦審核時間', value: item.return_accepted_date || '' }, // 歸還的審核時間
+        { label: '申請歸還時間', value: formatDateTime(item.return_available_date) || '' },
+        { label: '系辦審核時間', value: formatDateTime(item.return_accepted_date) || '' }, // 歸還的審核時間
     ] : [])
   ];
 
