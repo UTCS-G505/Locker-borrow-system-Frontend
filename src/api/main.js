@@ -92,7 +92,16 @@ class Record {
 }
 
 class Locker {
-  static getAll;
+  static getAll = async (params) => {
+    try {
+      const response = await apiMainV1.get("/locker/all",{ params });
+      return response.data.data;
+
+    } catch (err) {
+      console.error("獲取櫃子狀態列表失敗", err);
+      return [];  // 發生錯誤回傳空陣列
+    }
+  };
 }
 
 export { 
