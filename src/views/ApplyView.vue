@@ -116,7 +116,7 @@
     showConfirmModal.value = true
   }
 
-async function handleConfirmBorrow({ locker, reason }) {
+  async function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
     console.log('父元件收到 confirm 事件：', { locker, reason })
 
