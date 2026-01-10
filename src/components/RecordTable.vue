@@ -273,14 +273,14 @@ td:nth-child(7) {
     height: 30px;
   }
 
-  th:nth-child(7),
-  td:nth-child(7) {
+  th:nth-child(6),
+  td:nth-child(6) {
     width: 16%;
     text-align: center;
   }
 
-  th:nth-child(8),
-  td:nth-child(8) {
+  th:nth-child(7),
+  td:nth-child(7) {
     width: 16%;
     text-align: center;
   }
