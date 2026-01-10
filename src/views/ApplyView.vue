@@ -117,9 +117,8 @@
     try {
       const data = await Locker.getAll()
       apiLockers.value = data
-      console.log('API 櫃子資料:', data)
-      
-      // 載入完成後更新當前顯示的櫃子
+      console.log('API Response:', data)
+      // 載入完成後，生成櫃子（內部已整合 API 資料）
       lockers.value = generateLockersByGrade(selectedGrade.value)
     } catch (error) {
       console.error('載入櫃子資料失敗:', error)
@@ -212,12 +211,6 @@
         state: apiLocker ? apiLocker.state : LockerState.AVAILABLE
       }
     })
-  }
-
-  // 顯示 API 資料
-  function applyAPIDataToLockers(lockers) {
-    console.log('API 資料詳細:', apiLockers.value)
-    return lockers
   }
 
   // 組件掛載時載入 API 資料 
@@ -468,4 +461,4 @@
       justify-content: flex-start;    /* 每個小塊內部也靠左 */
     }
   }
-</style> 
+</style>
