@@ -66,7 +66,6 @@ const handleShowDetails = async (id) =>{
   }
 
   modalData.value = [
-    { label: '姓名', value: authStore.user?.name || item.user_id },
     { label: '借用類型', value: item.temporary ? '臨時借用' : '學年借用'},
 
     { label: '借用時間(起)', value: item.start_date },

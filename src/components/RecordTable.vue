@@ -65,7 +65,7 @@ function showDetails(id) {
           <tbody>
             <!--用item.id(唯一值)比較安全，index可能因為資料排序而有變動-->
             <tr v-for="item in props.records" :key="item.id">
-              <td>{{ item.reason }}</td>
+              <td>{{ item.temporary ? '臨時借用' : '學年借用' }}</td>
               <td class="mobileHide">{{ item.start_date }}</td>
               <td class="mobileHide">{{ item.end_date }}</td>
               <td class="mobileHide">{{ item.locker_id }}</td>
