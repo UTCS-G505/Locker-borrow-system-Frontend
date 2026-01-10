@@ -73,7 +73,8 @@ export const useAuthStore = defineStore('auth', {
       this.accessToken = ''
       this.refreshToken = ''
       this.isAuthenticated = false
-      this.user = null
+      this.user.id = null
+      this.user.role = null
       // 導向登入頁
       router.push({ name: 'home' })
     },
