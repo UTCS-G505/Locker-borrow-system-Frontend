@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import IconSearch from './icons/IconSearch.vue';
 import PopupViolationNote from './popups/PopupViolationNote.vue';
+import { User } from '@/api/main';
 import CheckPopup from './popups/CheckPopup.vue';
 
 const searchValue = ref('');
@@ -9,6 +10,9 @@ const showPopup = ref(false);
 const showPopupCheck=ref(false);
 const selectedStudent = ref(null);
 const title = ref('');
+
+// Note ID
+const USER_STATE = { NONE: 0, DORM: 1, VIOLATION: 2 };
 
 // sample data
 const studentsList = ref([
@@ -58,33 +62,45 @@ const filteredStudents = computed(() => {
 });
 
 const dormitoryNote = (student) => {
-  title.value='住宿生註記';
+  title.value = '住宿生註記';
   selectedStudent.value = student;
-  showPopupCheck.value=true;
+  showPopupCheck.value = true;
 };
-const handleDormitoryNote = () => {
-  selectedStudent.value.note = '住宿生註記';
-  title.value = '';
-  showPopupCheck.value = false;
+const handleDormitoryNote = async () => {
+  const response = await User.postNote(selectedStudent.value.id, USER_STATE.DORM, null);
+  if(response){ // 後端成功更新資料，前端畫面才做刷新
+    selectedStudent.value.note = '住宿生註記';
+    title.value = '';
+    showPopupCheck.value = false;
+  }
 }
+
 const violationNote = (student) => {
   selectedStudent.value = student;
   showPopup.value = true;
 };
-const handleViolationNote = (note) => {
-  selectedStudent.value.note = '違規註記';
-  alert(`學號：${note.user.id}\n姓名：${note.user.name}\n事由：${note.reason}`);
-  showPopup.value = false;
+const handleViolationNote = async ( payload ) => {
+  const { user, reason } = payload;
+  const response = await User.postNote(user.id, USER_STATE.VIOLATION, reason);
+  if(response){ // 後端成功更新資料，前端畫面才做刷新
+    selectedStudent.value.note = '違規註記';
+    alert(`學號：${user.id}\n姓名：${user.name}\n事由：${reason}`);
+    showPopup.value = false;
+  }
 }
-const clearNote=(student)=>{
+
+const clearNote = (student) =>{
   selectedStudent.value = student;
-  title.value='取消註記'
-  showPopupCheck.value=true;
+  title.value = '取消註記'
+  showPopupCheck.value = true;
 }
-const handleClearNote = () => {
-  selectedStudent.value.note = null;
-  title.value=''
-  showPopupCheck.value=false;
+const handleClearNote = async () => {
+  const response = await User.postNote(selectedStudent.value.id, USER_STATE.NONE, null);
+  if(response){ // 後端成功更新資料，前端畫面才做刷新
+    selectedStudent.value.note = null;
+    title.value = ''
+    showPopupCheck.value = false;
+  }
 };
 
 const confirmWhat =()=>{
