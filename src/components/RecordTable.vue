@@ -1,9 +1,46 @@
 <script setup>
+
 /* 子元件用props接收父元件傳來的record資料，它是個Array*/
 const props = defineProps({
   records: Array
 })
+
+// formatState 是用於顯示文字，把 null 、 true 、 false 轉變成審核中、借用中之類的中文文字
+const formatState = (item) => {
+  /*手動加入 item.state 可以讓使用者點擊按鈕後立刻看到結果。 
+    如果不加，formatState(item) 就不能執行，因為 Vue 認為資料沒變 */
+  if(item.state){
+    return item.state;
+  }
+
+  if(item.borrow_accepted === null){
+    return '審核中';
+  }
+  if(item.borrow_accepted === false){
+    return '駁回';
+  }
+  if(item.borrow_accepted === true){
+    if(item.return_available === false){
+      return '借用中';
+    }
+    if(item.return_available === true && !item.return_accepted_date){
+      return '歸還中';
+    }
+    if(item.return_available === true && item.return_accepted_date && item.return_accepted === true){
+      return '已歸還';
+    }
+  }
+  return '未知狀態'
+}
+
+const formatDate = (dateStr) => {
+  if(!dateStr) return '';
+
+  return dateStr.split('T')[0];
+}
+
 /* 讓子元件可以合法發出事件(沒有這行可能會出錯) */
+
 const emit = defineEmits(['cancel', 'return', 'show-details'])
 function cancel(id) {
   emit('cancel', id)
@@ -12,6 +49,7 @@ function cancel(id) {
 function toggleReturn(id) {
   emit('return', id)
 }
+
 
 function showDetails(id) {
   // 發出訊號，把 ID 傳給父組件
@@ -26,7 +64,6 @@ function showDetails(id) {
         <table>
           <thead class="head">
             <tr id="data">
-              <th>申請人</th>
               <th>借用類型</th>
               <th class="mobileHide">開始時間</th>
               <th class="mobileHide">結束時間</th>
@@ -39,20 +76,19 @@ function showDetails(id) {
           <tbody>
             <!--用item.id(唯一值)比較安全，index可能因為資料排序而有變動-->
             <tr v-for="item in props.records" :key="item.id">
-              <td>{{ item.name }}</td>
-              <td>{{ item.type }}</td>
-              <td class="mobileHide">{{ item.startTime }}</td>
-              <td class="mobileHide">{{ item.endTime }}</td>
-              <td class="mobileHide">{{ item.num }}</td>
+              <td>{{ item.temporary ? '臨時借用' : '學年借用' }}</td>
+              <td class="mobileHide">{{ formatDate(item.start_date) }}</td>
+              <td class="mobileHide">{{ formatDate(item.end_date) }}</td>
+              <td class="mobileHide">{{ item.locker_id }}</td>
               <td>
                 <button class="operateButton" @click="showDetails(item.id)">詳細資訊</button>
               </td>
-              <td>{{ item.state }}</td>
+              <td>{{ formatState(item) }}</td>
               <td>
-                <button v-if="item.state === '審核中'" @click="cancel(item.id)" class="operateButton">取消</button>
-                <button v-else-if="item.state === '借用中' || item.state === '歸還中'" @click="toggleReturn(item.id)"
+                <button v-if="formatState(item) === '審核中'" @click="cancel(item.id)" class="operateButton">取消</button>
+                <button v-else-if="formatState(item) === '借用中' || formatState(item) === '歸還中'" @click="toggleReturn(item.id)"
                   class="operateButton">
-                  {{ item.state === '借用中' ? '歸還' : '取消' }}
+                  {{ formatState(item) === '借用中' ? '歸還' : '取消' }}
                 </button>
               </td>
             </tr>
@@ -179,14 +215,14 @@ th {
   /* 滑鼠放上去時會變灰色 */
 }
 
-th:nth-child(7),
-td:nth-child(7) {
+th:nth-child(6),
+td:nth-child(6) {
   width: 17%;
   text-align: center;
 }
 
-th:nth-child(8),
-td:nth-child(8) {
+th:nth-child(7),
+td:nth-child(7) {
   width: 9.7%;
   text-align: center;
 }
@@ -213,13 +249,13 @@ td:nth-child(8) {
     font-size: 16px;
   }
 
-  th:nth-child(7),
-  td:nth-child(7) {
+  th:nth-child(6),
+  td:nth-child(6) {
     text-align: center;
   }
 
-  th:nth-child(8),
-  td:nth-child(8) {
+  th:nth-child(7),
+  td:nth-child(7) {
     text-align: center;
   }
 }
@@ -248,14 +284,14 @@ td:nth-child(8) {
     height: 30px;
   }
 
-  th:nth-child(7),
-  td:nth-child(7) {
+  th:nth-child(6),
+  td:nth-child(6) {
     width: 16%;
     text-align: center;
   }
 
-  th:nth-child(8),
-  td:nth-child(8) {
+  th:nth-child(7),
+  td:nth-child(7) {
     width: 16%;
     text-align: center;
   }
