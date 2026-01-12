@@ -33,7 +33,8 @@ export const useAuthStore = defineStore('auth', {
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
-          }
+          },
+          withCredentials: true
         }
       )
       this.accessToken = response.data.data.access_token
@@ -48,9 +49,11 @@ export const useAuthStore = defineStore('auth', {
 
     async refreshTokenAction() {
       try {
-        const response = await axios.post(`${import.meta.env.VITE_SSO_API_URL}/api/v1/auth/refresh`, null, {
-          withCredentials: true,
-        })
+        const response = await axios.post(
+          `${import.meta.env.VITE_SSO_API_URL}/api/v1/auth/refresh`,
+          null,
+          { withCredentials: true }
+        )
 
         this.accessToken = response.data.data.access_token
         this.isAuthenticated = true
@@ -72,7 +75,8 @@ export const useAuthStore = defineStore('auth', {
       this.accessToken = ''
       this.refreshToken = ''
       this.isAuthenticated = false
-      this.user = null
+      this.user.id = null
+      this.user.role = null
       // 導向登入頁
       router.push({ name: 'home' })
     },
