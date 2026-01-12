@@ -294,6 +294,7 @@ function openReturnModal() {
   }
   showReturnModal.value = true;
 }
+
 async function executeReturn() {
   if (returnSelections.value.length === 0) return;
 
@@ -309,7 +310,7 @@ async function executeReturn() {
     // 2. 根據 API 回傳結果更新 UI
     results.forEach((res, index) => {
       // 假設 res.code === 0 代表後端處理成功
-      if (res && res.code === 0) {
+      if (res !== null) {
         const targetId = returnSelections.value[index];
         const app = applications.find((a) => a.id === targetId);
         if (app) {
