@@ -87,7 +87,7 @@ class Record {
   static postReviewBorrow = async (record_id, borrow_accepted, reject_reason = null) => {
     try {
       const payload = { borrow_accepted };
-      if (reject_reason) payload.reject_reson = reject_reason;
+      if (reject_reason) payload.reject_reason = reject_reason;
 
       const response = await apiMainV1.post(
         `/record/reviewb/${record_id}`,
@@ -115,26 +115,3 @@ export {
   Record,
   Locker
 }
-
-// 通過按鈕事件
-export const approveMobile = async (record_id) => {
-  try {
-    await apiMainV1.post(`/record/reviewb/${record_id}`, {
-      borrow_accepted: true
-    });
-  } catch (err) {
-    console.error("審核通過失敗", err);
-  }
-};
-
-// 駁回按鈕事件
-export const rejectMobile = async (record_id, rejectReason) => {
-  try {
-    await apiMainV1.post(`/record/reviewb/${record_id}`, {
-      borrow_accepted: false,
-      reject_reason: rejectReason
-    });
-  } catch (err) {
-    console.error("審核駁回失敗", err);
-  }
-};

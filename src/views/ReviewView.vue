@@ -96,25 +96,25 @@
       title="詳細資訊"
       :fields="modalData"
     />
-    <CheckPopup 
-      v-if="showApproveModal" 
-      operation="借用審核通過" 
-      @confirm="executeApprove" 
-      @close="showApproveModal = false" 
+    <CheckPopup
+      v-if="showApproveModal"
+      operation="借用審核通過"
+      @confirm="executeApprove"
+      @close="showApproveModal = false"
     />
 
-    <CheckPopup 
-      v-if="showRejectModal" 
-      operation="借用審核駁回" 
-      @confirm="executeReject" 
-      @close="showRejectModal = false" 
+    <CheckPopup
+      v-if="showRejectModal"
+      operation="借用審核駁回"
+      @confirm="executeReject"
+      @close="showRejectModal = false"
     />
 
-    <CheckPopup 
-      v-if="showReturnModal" 
-      operation="歸還通過" 
-      @confirm="executeReturn" 
-      @close="showReturnModal = false" 
+    <CheckPopup
+      v-if="showReturnModal"
+      operation="歸還通過"
+      @confirm="executeReturn"
+      @close="showReturnModal = false"
     />
   </section>
 </template>
@@ -127,6 +127,7 @@ import ReviewList from "../components/ReviewList.vue";
 import InfoPopup from "@/components/popups/InfoPopup.vue";
 import CheckPopup from "../components/popups/CheckPopup.vue";
 import RejectModal from "../components/RejectModal.vue";
+import { Record } from '@/api/main';
 
 // 定義駁回選項常數，避免在 template 中出現解析錯誤
 const rejectOptions = ['資料不完整', '不符規定', '請重新填寫'];
@@ -136,16 +137,6 @@ const rejectModal = ref(null);
 
 // 暫存被駁回的 mobile 勾選項目
 const pendingRejectIds = ref([]);
-
-// function rejectMobile() {
-//   if (mobileSelections.value.length === 0) {
-//     alert("請先選擇至少一筆要駁回的資料");
-//     return;
-//   }
-
-//   pendingRejectIds.value = [...mobileSelections.value];
-//   rejectModal.value.open();
-// }
 
 function handleRejectSubmit(reason) {
   pendingRejectIds.value.forEach(id => {
@@ -293,7 +284,7 @@ function openReturnModal() {
   }
   showReturnModal.value = true;
 }
-// 真正執行「通過」邏輯的函式 
+// 真正執行「通過」邏輯的函式
 function executeReturn() {
   returnSelections.value.forEach((id) => {
     const app = applications.find((a) => a.id === id);
@@ -323,16 +314,24 @@ function openApproveModal() {
   showApproveModal.value = true;
 }
 
-// 真正執行「通過」邏輯的函式 
-function executeApprove() {
-  mobileSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
-    if (app && app.status === "審核中") {
-      app.status = "借用中";
+// 真正執行「通過」邏輯的函式
+async function executeApprove() {
+  try {
+    for (const id of mobileSelections.value) {
+      await Record.postReviewBorrow(id, true);
     }
-  });
-  mobileSelections.value = []; // 清空勾選
-  showApproveModal.value = false; // 執行完關閉彈窗
+    mobileSelections.value.forEach((id) => {
+      const app = applications.find((a) => a.id === id);
+      if (app && app.status === "審核中") {
+        app.status = "借用中";
+      }
+    });
+  } catch (err) {
+    console.error("審核通過失敗", err);
+  } finally {
+    mobileSelections.value = []; // 清空勾選
+    showApproveModal.value = false; // 執行完關閉彈窗
+  }
 }
 
 //申請「駁回」操作確認
@@ -342,19 +341,29 @@ function openRejectModal() {
     alert("請先勾選學生");
     return;
   }
-  showRejectModal.value = true;
+  //showRejectModal.value = true; 這是操作確認彈窗，用下面的駁回彈窗替換掉
+  pendingRejectIds.value = [...mobileSelections.value];
+  rejectModal.value.open();
 }
 
-// 真正執行「駁回」邏輯的函式 
-function executeReject() {
-  mobileSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
-    if (app && app.status === "審核中") {
-      app.status = "已駁回";
+// 真正執行「駁回」邏輯的函式
+async function executeReject() {
+  try {
+    for (const id of mobileSelections.value) {
+      await Record.postReviewBorrow(id, false);
     }
-  });
-  mobileSelections.value = []; // 清空勾選
-  showRejectModal.value = false; // 執行完關閉彈窗
+    mobileSelections.value.forEach((id) => {
+      const app = applications.find((a) => a.id === id);
+      if (app && app.status === "審核中") {
+        app.status = "已駁回";
+      }
+    });
+  } catch (err) {
+    console.error("審核駁回失敗", err);
+  } finally {
+    mobileSelections.value = []; // 清空勾選
+    showRejectModal.value = false; // 執行完關閉彈窗
+  }
 }
 
 
@@ -364,7 +373,7 @@ function executeReject() {
 // 處理子組件發出的 "show-details" 事件
 function handleShowDetails(item) {
   console.log("顯示詳細資訊: ", item);
-  
+
   // 這裡將 item 資料轉換成彈窗需要的 groups 格式
 modalData.value = [
     // --- 申請者資訊 ---
@@ -378,11 +387,11 @@ modalData.value = [
     // 合併起訖時間，因為較長建議給整行，或視情況拿掉 isFullRow
     { label: '借用時間起/迄', value: `${item.startTime} ~ ${item.endTime}`, isFullRow: true },
     { label: '借用系櫃編號', value: item.cabinet },
-    
+
     { label: '借用理由', value: '沒有宿舍ＱＡＱ', isFullRow: true, isBox: true },
-    
+
     // 以下補足截圖要求的欄位 (若 item 裡還沒這欄位，暫時用 item.applyTime 代替或寫死)
-    { label: '申請借用時間', value: '2025/06/30' }, 
+    { label: '申請借用時間', value: '2025/06/30' },
     { label: '系辦審核時間', value: item.approveTime || '' }, // 假設你有審核時間變數
     { label: '系辦審核結果', value: item.status },
 
@@ -393,17 +402,17 @@ modalData.value = [
 
     // --- 歸還資訊 (邏輯與之前相同，視狀態顯示) ---
     ...(['歸還中', '已歸還'].includes(item.status) ? [
-        { 
-          label: '申請歸還時間', 
-          value: item.returnApplyTime 
+        {
+          label: '申請歸還時間',
+          value: item.returnApplyTime
         },
-        { 
-          label: '系辦審核時間', 
-          value: item.returnApproveTime 
+        {
+          label: '系辦審核時間',
+          value: item.returnApproveTime
         },
-        { 
-          label: '系辦審核結果', 
-          value: item.status === '已歸還' ? '通過' : '審核中' 
+        {
+          label: '系辦審核結果',
+          value: item.status === '已歸還' ? '通過' : '審核中'
         }
     ] : [])
 ];
