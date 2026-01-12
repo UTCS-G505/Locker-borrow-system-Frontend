@@ -148,7 +148,7 @@ function handleRejectSubmit(reason) {
   });
 
   mobileSelections.value = [];
-  pendingRejectIds.value = [];
+  executeReject(reason);
 }
 
 const selectedType = ref("借用");
@@ -347,10 +347,10 @@ function openRejectModal() {
 }
 
 // 真正執行「駁回」邏輯的函式
-async function executeReject() {
+async function executeReject(rejectReason) {
   try {
-    for (const id of mobileSelections.value) {
-      await Record.postReviewBorrow(id, false);
+    for (const id of pendingRejectIds.value) {
+      await Record.postReviewBorrow(id, false, rejectReason);
     }
     mobileSelections.value.forEach((id) => {
       const app = applications.find((a) => a.id === id);
@@ -362,7 +362,7 @@ async function executeReject() {
     console.error("審核駁回失敗", err);
   } finally {
     mobileSelections.value = []; // 清空勾選
-    showRejectModal.value = false; // 執行完關閉彈窗
+    pendingRejectIds.value = [];
   }
 }
 
