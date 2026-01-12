@@ -74,15 +74,7 @@ class User {
 }
 
 class Record {
-  static getGet = async(recordId) => {
-    try{
-      const response = await apiMainV1.get(`/record/get/${recordId}`);
-      return response.data.data;
-    }catch(err){
-      console.error("獲取記錄詳細資訊失敗",err);
-      return null;
-    }
-  };
+  static getGet;
 
   static getList = async(userId) =>{
     try{
