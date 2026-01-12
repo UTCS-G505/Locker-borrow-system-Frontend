@@ -5,9 +5,9 @@ const props = defineProps({
   records: Array
 })
 
-const emit = defineEmits(['cancel', 'refresh'])
+const emit = defineEmits(['cancel', 'refresh', 'show-details'])
 
-// --- 申請歸還 (借用中 → 歸還中) ---
+// 申請歸還 (借用中 → 歸還中)
 const handleReturn = async (id) => {
   if (!confirm("確定要申請歸還嗎？")) return;
 
@@ -17,13 +17,12 @@ const handleReturn = async (id) => {
     if (response && response.code === 0) {
       alert(`申請成功\n${response.message}`);
 
-      // 手動更新本地狀態 (臨時用方案)
       const item = props.records.find(r => r.id === id);
       if (item) {
         item.state = '歸還中';
       }
 
-      // emit('refresh'); // 暫時不發出 refresh 事件
+      emit('refresh'); 
     } else {
       alert(`申請失敗\n${response?.message || '未知錯誤'}`);
     }
@@ -33,7 +32,7 @@ const handleReturn = async (id) => {
   }
 }
 
-// --- 撤回歸還申請 (歸還中 → 借用中) ---
+// 撤回歸還申請 (歸還中 → 借用中)
 const handleCancelReturn = async (id) => {
   if (!confirm("確定要撤回歸還申請嗎？")) return;
 
@@ -43,13 +42,12 @@ const handleCancelReturn = async (id) => {
     if (response && response.code === 0) {
       alert(`撤回成功\n${response.message}`);
 
-      // 手動更新本地狀態 (測試用方案)
       const item = props.records.find(r => r.id === id);
       if (item) {
         item.state = '借用中';
       }
 
-      // emit('refresh'); // 暫時不發出 refresh 事件
+      emit('refresh');
     } else {
       alert(`撤回失敗\n${response?.message || '未知錯誤'}`);
     }
@@ -59,9 +57,12 @@ const handleCancelReturn = async (id) => {
   }
 }
 
-// --- 取消借用申請 (這是另一個 API: /record/cancel) ---
 function cancelBorrow(id) {
   emit('cancel', id)
+}
+
+function showDetails(id) {
+  emit('show-details', id) 
 }
 </script>
 
@@ -90,7 +91,7 @@ function cancelBorrow(id) {
               <td class="mobileHide">{{ item.endTime }}</td>
               <td class="mobileHide">{{ item.num }}</td>
               <td>
-                <button class="operateButton">詳細資訊</button>
+                <button class="operateButton" @click="showDetails(item.id)">詳細資訊</button>
               </td>
               <td>{{ item.state }}</td>
 

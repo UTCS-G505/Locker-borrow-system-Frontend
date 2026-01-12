@@ -1,18 +1,22 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import AppNavBar from './components/AppNavBar.vue';
+import AppNavBar_LogOut from './components/AppNavBar_LogOut.vue';
 import AppFooter from './components/AppFooter.vue'
+import { useAuthStore } from './stores/auth';
+
+const authStore = useAuthStore();
 </script>
 
 <template>
   <header>
-    <AppNavBar />
+    <AppNavBar v-if="authStore.isAuthenticated" />
+    <AppNavBar_LogOut v-else />
   </header>
 
   <main>
     <RouterView />
   </main>
-
   <footer>
     <AppFooter />
   </footer>

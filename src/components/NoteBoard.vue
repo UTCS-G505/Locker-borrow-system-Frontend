@@ -2,10 +2,13 @@
 import { ref, computed } from 'vue'
 import IconSearch from './icons/IconSearch.vue';
 import PopupViolationNote from './popups/PopupViolationNote.vue';
+import CheckPopup from './popups/CheckPopup.vue';
 
 const searchValue = ref('');
 const showPopup = ref(false);
+const showPopupCheck=ref(false);
 const selectedStudent = ref(null);
+const title = ref('');
 
 // sample data
 const studentsList = ref([
@@ -55,8 +58,15 @@ const filteredStudents = computed(() => {
 });
 
 const dormitoryNote = (student) => {
-  student.note = '住宿生註記';
+  title.value='住宿生註記';
+  selectedStudent.value = student;
+  showPopupCheck.value=true;
 };
+const handleDormitoryNote = () => {
+  selectedStudent.value.note = '住宿生註記';
+  title.value = '';
+  showPopupCheck.value = false;
+}
 const violationNote = (student) => {
   selectedStudent.value = student;
   showPopup.value = true;
@@ -66,9 +76,21 @@ const handleViolationNote = (note) => {
   alert(`學號：${note.user.id}\n姓名：${note.user.name}\n事由：${note.reason}`);
   showPopup.value = false;
 }
-const clearNote = (student) => {
-  student.note = null;
+const clearNote=(student)=>{
+  selectedStudent.value = student;
+  title.value='取消註記'
+  showPopupCheck.value=true;
+}
+const handleClearNote = () => {
+  selectedStudent.value.note = null;
+  title.value=''
+  showPopupCheck.value=false;
 };
+
+const confirmWhat =()=>{
+  if(title.value==='住宿生註記') handleDormitoryNote();
+  else if(title.value==='取消註記') handleClearNote();
+}
 </script>
 
 <template>
@@ -118,7 +140,16 @@ const clearNote = (student) => {
     @close="showPopup = false"
     @confirm="handleViolationNote"
   />
+
+  <CheckPopup
+    v-if="showPopupCheck"
+    :operation="title"
+    @close="showPopupCheck = false"
+    @confirm="confirmWhat"
+  />
 </template>
+
+
 
 <style scoped>
 #search-bar {
