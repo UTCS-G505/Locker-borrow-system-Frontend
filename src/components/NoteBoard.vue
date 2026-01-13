@@ -1,4 +1,6 @@
 <script setup>
+import { onMounted } from 'vue';      
+import { User } from '@/api/main.js'; 
 import { ref, computed } from 'vue'
 import IconSearch from './icons/IconSearch.vue';
 import PopupViolationNote from './popups/PopupViolationNote.vue';
@@ -10,7 +12,26 @@ const showPopupCheck=ref(false);
 const selectedStudent = ref(null);
 const title = ref('');
 
-// sample data
+// 空的響應式陣列，用來接 API 資料
+const studentsList = ref([]);
+
+onMounted(async () => {
+  // 呼叫 API 
+  const data = await User.getAll();
+
+  // 只要確認有拿到資料 (data 不是 null) 就可以直接更新
+  if (data) {
+    studentsList.value = data.map(user => ({
+      id: user.id,
+      name: user.name || '使用者',
+      // 狀態轉換邏輯
+      note: user.state === 1 ? '住宿生註記' : 
+        user.state === 2 ? '違規註記' : null
+    }));
+  }
+});
+
+/* sample data
 const studentsList = ref([
   { id: 'U11016099', name: '學生一', note: '住宿生註記' },
   { id: 'U11116099', name: '學生二', note: null },
@@ -38,6 +59,7 @@ const studentsList = ref([
   { id: 'U11316108', name: 'Student Twenty Fourth', note: null },
   { id: 'U11316109', name: 'Student Twenty Fifth', note: null },
 ]);
+*/
 
 const filteredStudents = computed(() => {
   return studentsList.value.filter(student =>
