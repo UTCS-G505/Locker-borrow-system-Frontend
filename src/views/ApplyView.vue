@@ -79,7 +79,6 @@
   import FailModal  from '../components/FailedDialog.vue'
   import ApplySuccessModal from '../components/ApplySuccessModal.vue'
   import { useAuthStore } from '@/stores/auth';
-  import { User, Record } from '@/api/main.js';
 
 
   const selectedGrade = ref('一年級')
