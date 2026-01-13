@@ -122,6 +122,7 @@
       lockers.value = generateLockersByGrade(selectedGrade.value)
     } catch (error) {
       console.error('載入櫃子資料失敗:', error)
+      failReasons.value = [ERROR_LIBRARY.SYSTEM_ERROR]
       showFailModal.value = true
     } finally {
       isLoading.value = false
