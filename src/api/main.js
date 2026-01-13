@@ -68,7 +68,16 @@ class Announcement {
 class User {
   static getGet;
 
-  static getAll;
+  static getAll = async () => {
+    try {
+      // 猜測後端路徑為 /user/all (若不同請依後端文件調整)
+      const response = await apiMainV1.get("/user/all");
+      return response.data.data;
+    } catch (err) {
+      console.error("獲取使用者列表失敗", err);
+      return []; // 列表類失敗建議回傳空陣列，避免前端炸開
+    }
+  };
 
   static postNote;
 }
