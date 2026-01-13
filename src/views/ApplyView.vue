@@ -79,6 +79,7 @@
   import FailModal  from '../components/FailedDialog.vue'
   import ApplySuccessModal from '../components/ApplySuccessModal.vue'
   import { useAuthStore } from '@/stores/auth';
+  import { User } from '@/api/main.js';
 
 
   const selectedGrade = ref('一年級')
@@ -123,8 +124,6 @@
     const authStore = useAuthStore();
     const userId = authStore.user?.id;
 
-    console.log("準備呼叫 User API, UserID:", userId); // [Log 1] 確認 ID 存在
-
     if (!userId) {
       failReasons.value = ["無法取得使用者資訊，請重新登入"];
       showFailModal.value = true;
@@ -133,9 +132,6 @@
 
     // 呼叫 User API 
     const userData = await User.getGet(userId);
-
-    // [Log 2] 看這裡印出什麼
-    console.log("User API 回傳資料:", userData);
 
     // API 連線是否失敗
     if (!userData) {
@@ -157,13 +153,13 @@
     }else{
       borrowReason.value = reason
       showSuccessModal.value = true
-      console.log('父元件收到 confirm 事件：', { locker, reason })
     }
   }
 
+  
+
   function handleTimeRangeUpdate(range) {
     timeRange.value = range
-    console.log('臨時借用時間範圍更新:', range)
   }
 
   const lockers = ref(generateLockersByGrade(selectedGrade.value))
