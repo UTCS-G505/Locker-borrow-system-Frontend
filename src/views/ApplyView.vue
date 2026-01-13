@@ -78,6 +78,9 @@
   import ConfirmBorrowModal from '../components/ConfirmBorrowModal.vue'
   import FailModal  from '../components/FailedDialog.vue'
   import ApplySuccessModal from '../components/ApplySuccessModal.vue'
+  import { useAuthStore } from '@/stores/auth';
+  import { User, Record } from '@/api/main.js';
+
 
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
@@ -114,8 +117,40 @@
   }
 
 
-  function handleConfirmBorrow({ locker, reason }) {
+  async function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
+
+    // 取得 UserID
+    const authStore = useAuthStore();
+    const userId = authStore.user?.id;
+
+    console.log("準備呼叫 User API, UserID:", userId); // [Log 1] 確認 ID 存在
+
+    if (!userId) {
+      failReasons.value = ["無法取得使用者資訊，請重新登入"];
+      showFailModal.value = true;
+      return; 
+    }
+
+    // 呼叫 User API 
+    const userData = await User.getGet(userId);
+
+    // [Log 2] 看這裡印出什麼
+    console.log("User API 回傳資料:", userData);
+
+    // API 連線是否失敗
+    if (!userData) {
+      failReasons.value = ["讀取使用者資料失敗"];
+      showFailModal.value = true;
+      return;
+    }
+
+    // 是否違規
+    if (userData.state !== 0) { 
+      failReasons.value = ["已被註記住宿生身分或違規，無法借用"];
+      showFailModal.value = true;
+      return;
+    }
 
     if (String(locker.name) === '2') {
       failReasons.value = [ERROR_LIBRARY.SYSTEM_ERROR]
@@ -123,13 +158,8 @@
     }else{
       borrowReason.value = reason
       showSuccessModal.value = true
-      // 3. 成功邏輯：暫時使用 alert，等待您加入 ApplySuccessModal
       console.log('父元件收到 confirm 事件：', { locker, reason })
-      alert(`櫃子 ${locker.name} 已確認借用，理由：${reason} (申請成功)`)
-      // TODO: 這裡應該替換成顯示 ApplySuccessModal 的邏輯
     }
-    console.log('父元件收到 confirm 事件：', { locker, reason })
-
   }
 
   function handleTimeRangeUpdate(range) {
