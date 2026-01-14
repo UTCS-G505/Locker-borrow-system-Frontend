@@ -122,6 +122,7 @@
 <script setup>
 //加入nextTick
 import { ref, reactive, computed, watch, nextTick } from "vue";
+import { SsoUser } from "@/api/sso";
 // 導入新的子組件
 import ReviewList from "../components/ReviewList.vue";
 import InfoPopup from "@/components/popups/InfoPopup.vue";
@@ -171,9 +172,10 @@ const modalData = ref([]);        // 用來存放轉換後的詳細資料
 const applications = reactive([
   {
     id: 1,
-    studentId: "U11316050",
-    name: "王小明",
-    grade: "大四",
+    uuid:"07fb55e5-d681-11f0-9149-0242ac180003", //先用我的測試
+    studentId: "U11316022",
+    name: "洪瑋甯",
+    grade: "大二",
     phone: "0912345678",
     email: "wang.min@example.com",
     borrowType: "學年借用",
@@ -184,6 +186,7 @@ const applications = reactive([
   },
   {
     id: 2,
+    uuid:"", //api抓取都是uuid
     studentId: "U11316051",
     name: "李小美",
     grade: "大一",
@@ -197,6 +200,7 @@ const applications = reactive([
   },
   {
     id: 3,
+    uuid:"", //api抓取都是uuid
     studentId: "U11316052",
     name: "張大明",
     grade: "大二",
@@ -211,6 +215,7 @@ const applications = reactive([
   {
     id: 4,
     studentId: "U11316054",
+    uuid:"", //api抓取都是uuid
     name: "王中明",
     grade: "大一",
     phone: "0944555666",
@@ -234,7 +239,9 @@ const applications = reactive([
     cabinet: "21",
     status: "審核中",
   },
+
 ]);
+
 
 const borrowTypeFilter = ref("");
 const gradeFilter = ref("");
@@ -358,20 +365,40 @@ function executeReject() {
 }
 
 
-
-
-
 // 處理子組件發出的 "show-details" 事件
-function handleShowDetails(item) {
+async function handleShowDetails(item) {
   console.log("顯示詳細資訊: ", item);
   
+  let fetchedEmail = item.email || "載入中...";
+  let fetchedPhone = item.phone || "載入中...";
+
+  if (!item.uuid || item.uuid === "") {
+    console.log("這是假資料，不呼叫 API");
+    fetchedEmail = "沒有因為這是假資料";
+    fetchedPhone = "沒有因為這是假資料";
+  } 
+  // 如果有 UUID，才去呼叫 API
+  else {
+    try {
+      const userData = await SsoUser.getGet(item.uuid); 
+      if (userData) {
+        fetchedEmail = userData.primary_email || "無資料"; 
+        fetchedPhone = userData.phone_number ||  "無資料"; 
+      }
+    } catch (error) {
+      console.error("獲取使用者詳細資料失敗:", error);
+      fetchedEmail = "讀取失敗";
+      fetchedPhone = "讀取失敗";
+    }
+  }
   // 這裡將 item 資料轉換成彈窗需要的 groups 格式
 modalData.value = [
     // --- 申請者資訊 ---
+    { label: '學號', value: item.studentId, isFullRow: true },
     { label: '姓名', value: item.name },
     { label: '年級', value: item.grade },
-    { label: '主要電子郵件', value: item.email, isFullRow: true },
-    { label: '連絡電話', value: item.phone },
+    { label: '主要電子郵件', value: fetchedEmail, isFullRow: true },
+    { label: '連絡電話', value: fetchedPhone },
 
     // --- 借用資訊 ---
     { label: '借用類型', value: item.borrowType },
