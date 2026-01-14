@@ -16,29 +16,31 @@ const title = ref('');
 // 空的響應式陣列，用來接 API 資料
 const studentsList = ref([]);
 
+// 直接填入學號姓名在Board上
 onMounted(async () => {
-  // 呼叫 API 
   const data = await User.getAll();
+  if (!data) return;
 
-  // 只要確認有拿到資料 (data 不是 null) 就可以直接更新
-  if (data) {
-    studentsList.value = data.map(user => ({
-      id: user.id,
-      name: user.id,
-      
-      // 狀態轉換邏輯
-      note: user.state === 1 ? '住宿生註記' : 
-            user.state === 2 ? '違規註記' : null
-    }));
-  }
+  studentsList.value = await Promise.all(
+    data.map(async (user) => {
+      const apiData = await getUserData(user.id);
+      let note = null;
+      switch (user.state) {
+        case 1:
+          note = '住宿生註記';
+          break;
+        case 2:
+          note = '違規註記';
+          break;
+      }
 
-  for ( let user of studentsList.value) {
-    let apiData = await getUserData(user.id);
-    user.id = apiData[0];
-    user.name = apiData[1];
-    //console.log(user);
-  }
-
+      return {
+        id: apiData[0],
+        name: apiData[1],
+        note: note
+      };
+    })
+  );
 });
 
 const filteredStudents = computed(() => {
