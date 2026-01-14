@@ -3,8 +3,6 @@
 import { ref, nextTick } from 'vue'
 import RecordTable from '../components/RecordTable.vue';
 import InfoPopup from '@/components/popups/InfoPopup.vue';
-import CheckPopup from '@/components/popups/CheckPopup.vue';
-import { Record } from "@/api/main.js";
 
 /* 修改模擬資料，加入簽核時間欄位 */
 const record = ref([
@@ -51,38 +49,12 @@ const record = ref([
 // 彈窗相關變數
 const detailModalRef = ref(null);
 const modalData = ref([]);
-const showCancelCheck = ref(false); // 控制取消確認彈窗
-const pendingCancelId = ref(null);  // 暫存準備取消的 ID
 
 function handleCancel(id) {
   const item = record.value.find(r => r.id === id)
   if (item && item.state === '審核中') {
-    pendingCancelId.value = id;   // 記住是哪一筆要取消
-    showCancelCheck.value = true; // 開啟 CheckPopup 彈窗
+    item.state = '取消申請'
   }
-}
-
-async function executeCancel() {
-  if (!pendingCancelId.value) return;
-
-  // 發送 API 請求到後端
-  const result = await Record.postCancel(pendingCancelId.value);
-
-  if (result !== false) {
-    // --- 這裡就是你原本的邏輯 ---
-    const item = record.value.find(r => r.id === pendingCancelId.value);
-    if (item) {
-      item.state = '取消申請'; // 只有 API 成功後才改狀態
-    }
-    // -------------------------
-    alert("已成功取消申請");
-  } else {
-    alert("取消失敗，請檢查網路連線");
-  }
-
-  // 關閉彈窗並重置
-  showCancelCheck.value = false;
-  pendingCancelId.value = null;
 }
 
 /* 按下"歸還"按鈕，狀態要變為"歸還中"；按下"取消歸還"按鈕，狀態要變為"借用中" */
@@ -158,13 +130,6 @@ function handleShowDetails(id) {
       ref="detailModalRef"
       title="詳細資訊"
       :fields="modalData"
-    />
-
-    <CheckPopup
-      v-if="showCancelCheck"
-      operation="取消借用申請"
-      @confirm="executeCancel"
-      @close="showCancelCheck = false"
     />
   </div>
 </template>
