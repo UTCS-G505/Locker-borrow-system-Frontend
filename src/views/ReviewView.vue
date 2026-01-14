@@ -121,7 +121,7 @@
 
 <script setup>
 
-import { ref, reactive, computed, watch, nextTick, onMounted } from "vue";
+import { ref, computed, watch, nextTick, onMounted } from "vue";
 import { SsoUser } from "@/api/sso";
 //import { Record } from "@/api/main";
 // 導入新的子組件
@@ -142,7 +142,7 @@ const pendingRejectIds = ref([]);
 
 function handleRejectSubmit(reason) {
   pendingRejectIds.value.forEach(id => {
-    const app = applications.find(a => a.id === id);
+    const app = applications.value.find(a => a.id === id);
     if (app && app.status === "審核中") {
       app.status = "已駁回";
       app.rejectReason = reason;
@@ -236,12 +236,12 @@ const applications = ref([
 
 async function getSsoData(uuid) {
   // 設定預設回傳值
-  const defaultData = {
-    name: "載入中...",
-    grade: "載入中...",
-    email: "載入中...",
-    phone: "載入中..."
-  };
+  // const defaultData = {
+  //   name: "載入中...",
+  //   grade: "載入中...",
+  //   email: "載入中...",
+  //   phone: "載入中..."
+  // };
 
   // 檢查 UUID 
   if (!uuid || uuid === "") {
@@ -385,7 +385,7 @@ function openReturnModal() {
 // 真正執行「通過」邏輯的函式 
 function executeReturn() {
   returnSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
+    const app = applications.value.find((a) => a.id === id);
     // 邏輯：如果是借用中，改成已歸還
     if (app && app.status === "借用中") {
       app.status = "已歸還";
@@ -437,7 +437,7 @@ function openRejectModal() {
 // 真正執行「駁回」邏輯的函式 
 function executeReject() {
   mobileSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
+    const app = applications.value.find((a) => a.id === id);
     if (app && app.status === "審核中") {
       app.status = "已駁回";
     }
