@@ -2,6 +2,7 @@
 import { onMounted } from 'vue';      
 import { User } from '@/api/main.js'; 
 import { ref, computed } from 'vue'
+import { SsoUser } from '@/api/sso';
 import IconSearch from './icons/IconSearch.vue';
 import PopupViolationNote from './popups/PopupViolationNote.vue';
 import CheckPopup from './popups/CheckPopup.vue';
@@ -30,6 +31,14 @@ onMounted(async () => {
             user.state === 2 ? '違規註記' : null
     }));
   }
+
+  for ( let user of studentsList.value) {
+    let apiData = await getUserData(user.id);
+    user.id = apiData[0];
+    user.name = apiData[1];
+    //console.log(user);
+  }
+
 });
 
 const filteredStudents = computed(() => {
@@ -84,6 +93,23 @@ const confirmWhat =()=>{
   if(title.value==='住宿生註記') handleDormitoryNote();
   else if(title.value==='取消註記') handleClearNote();
 }
+
+let getUserData = async (userId) => {
+  //沒有被借走的話就顯示空字串
+  if(userId === null){
+    return null;
+  }
+
+  let data = await SsoUser.getGet(userId);
+  let value = ['', ''];
+  console.log(data);
+  if( data !== null) {
+    value[0] = data.account;
+    value[1] = data.name;
+  }
+  return value;
+}
+
 </script>
 
 <template>
