@@ -1,101 +1,144 @@
 <script setup>
-import { ref } from 'vue'
-import RecordTable from '../components/RecordTable.vue';
-import CheckPopup from '../components/popups/CheckPopup.vue';
-/* 先寫死3筆資料，方便檢視 */
-const record = ref([
-    {id:1, name:'陳胤華', type:'學年借用', startTime:'2024/9/1', endTime:'2025/6/30', num:'39', state:'審核中'},
-    {id:2, name:'陳胤華', type:'學年借用', startTime:'2024/9/1', endTime:'2025/6/30', num:'39', state:'駁回'},
-    {id:3, name:'陳胤華', type:'臨時借用', startTime:'2024/9/1', endTime:'2025/6/30', num:'39', state:'借用中'}
-])
 
-const showCancelModal = ref(false);       // 取消申請 (審核中 -> 取消)
-const showReturnModal = ref(false);       // 歸還 (借用中 -> 歸還中)
-const showCancelReturnModal = ref(false); // 取消歸還 (歸還中 -> 借用中)
-const currentId = ref(null);        // 記錄目前操作的是哪一筆 ID
+import { ref,onMounted,nextTick } from 'vue';
+import { Record } from '@/api/main';
+import RecordTable from '../components/RecordTable.vue';
+import InfoPopup from '@/components/popups/InfoPopup.vue';
+
+//引入 store 名稱與路徑，讓每個頁面都知道現在是誰在操作
+import { useAuthStore } from '@/stores/auth';
+const authStore = useAuthStore();
+const record = ref([]);
+
+// 彈窗相關變數
+const detailModalRef = ref(null);
+const modalData = ref([]);
+
+const formatDate = (dateStr) => {
+  if(!dateStr) return '';
+
+  return dateStr.split('T')[0];
+}
+
+const formatDateTime = (dateStr) => {
+  if(!dateStr) return '';
+
+  return dateStr.replace('T',' ');
+}
+
+onMounted(async () =>{
+  try{
+    const currentUserId = authStore.user?.id;
+
+    if(currentUserId){
+      const allRecordsResponse = await Record.getList(currentUserId);
+      record.value = allRecordsResponse || [];
+      console.log("從伺服器抓到真資料",record.value);
+    }
+  } catch (err){
+    console.error("獲取申請紀錄列表失敗",err);
+  }
+});
 
 function handleCancel(id){
   const item = record.value.find(r => r.id === id)
-  // 只有審核中才需要跳窗
-  if(item && item.state === '審核中'){
-    currentId.value = id;
-    showCancelModal.value = true;
+  if(item.borrow_accepted === null){
+    item.state = '取消申請' // 手動加入 state ，可以觸發畫面更新
   }
 }
 
-//區分狀況，借用中才跳窗
-function confirmCancel(){
-  const item = record.value.find(r => r.id === currentId.value)
-  if(item && item.state === '審核中'){
-    item.state = '取消申請'
-  }
-  showCancelModal.value = false; // 關閉彈窗
-}
-
-function handleReturn(id){
+function handleReturn(id) {
   const item = record.value.find(r => r.id === id)
-  
-  // 記錄現在操作哪一筆
-  currentId.value = id;
 
-  if(item.state === '借用中'){
-    // 如果是借用中 -> 要變成歸還中 -> 開啟「歸還」彈窗
-    showReturnModal.value = true;
-  } else if(item.state === '歸還中'){
-    // 如果是歸還中 -> 要變回借用中 -> 開啟「取消歸還」彈窗
-    showCancelReturnModal.value = true;
+  if(item.borrow_accepted === true && item.return_accepted !== true){
+    if(item.state === '歸還中'){
+      item.state = '' // 清空手動狀態，讓它變回"借用中"
+    }else{
+      item.state = '歸還中'
+    }
   }
 }
 
-//新增 confirmReturn：確認後執行歸還 (原本的邏輯移到這)
-function confirmReturn(){
-  const item = record.value.find(r => r.id === currentId.value)
-  if(item && item.state === '借用中'){
-    item.state = '歸還中'
+
+const handleShowDetails = async (id) =>{
+  const item = record.value.find(r => r.id === id);
+  if (!item) return;
+  console.log("查看詳細資訊:", item);
+
+  let statusText = item.state;
+
+  if(!statusText){
+    if(item.borrow_accepted === null){
+      statusText = '審核中';
+    }else if(item.borrow_accepted === false){
+      statusText = '駁回';
+    }else if(item.borrow_accepted === true){
+      if(item.return_available === false){
+        statusText = '借用中';
+      } else if(item.return_available === true && !item.return_accepted_date){
+        statusText = '歸還中';
+      } else if(item.return_available === true && item.return_accepted_date && item.return_accepted === true){
+        statusText = '已歸還';
+      } else {
+        statusText = '狀態異常'; // 防呆用
+      }
+    }
   }
-  showReturnModal.value = false; // 關閉彈窗
+
+  modalData.value = [
+    { label: '借用類型', value: item.temporary ? '臨時借用' : '學年借用'},
+
+    { label: '借用時間(起)', value: formatDate(item.start_date) },
+    { label: '借用時間(迄)', value: formatDate(item.end_date) },
+
+    { label: '借用系櫃編號', value: item.locker_id },
+    { label: '申請借用時間', value: formatDateTime(item.apply_date) }, 
+
+    { label: '借用理由', value: item.reason, isFullRow: true, isBox: true },
+
+    { label: '系辦審核時間', value: formatDateTime(item.review_date) || '' }, 
+    { label: '系辦審核結果', value: statusText },
+
+    // 駁回原因 (如果有)
+    ...(item.borrow_accepted === false ? [
+        { label: '駁回理由', value: item.reject_reason || '未填寫理由', isFullRow: true, isBox: true }
+    ] : []),
+
+    // 歸還資訊
+    ...(['歸還中', '已歸還'].includes(statusText) ? [
+        { label: '申請歸還時間', value: formatDateTime(item.return_available_date) || '' },
+        { label: '系辦審核時間', value: formatDateTime(item.return_accepted_date) || '' }, // 歸還的審核時間
+    ] : [])
+  ];
+
+  nextTick(() => {
+    if (detailModalRef.value) {
+      detailModalRef.value.open();
+    }
+  });
 }
 
-function confirmCancelReturn(){
-  const item = record.value.find(r => r.id === currentId.value)
-  if(item && item.state === '歸還中'){
-    item.state = '借用中'; // 變回借用狀態
-  }
-  showCancelReturnModal.value = false;
-}
 </script>
 
 <template>
   <div class="recordWrapper">
     <h1 class="record">申請紀錄</h1>
-    <!--監聽名為 'cancel'及'return' 的事件-->
-    <RecordTable :records = "record" @cancel = "handleCancel" @return = "handleReturn"/>
-
-    <CheckPopup 
-      v-if="showCancelModal" 
-      operation="取消申請" 
-      @confirm="confirmCancel" 
-      @close="showCancelModal = false" 
+    <RecordTable 
+      :records="record" 
+      @cancel="handleCancel" 
+      @return="handleReturn"
+      @show-details="handleShowDetails" 
     />
 
-    <CheckPopup 
-      v-if="showReturnModal" 
-      operation="歸還" 
-      @confirm="confirmReturn" 
-      @close="showReturnModal = false" 
-    />
-
-    <CheckPopup 
-      v-if="showCancelReturnModal" 
-      operation="取消歸還" 
-      @confirm="confirmCancelReturn" 
-      @close="showReturnModal = false" 
+    <InfoPopup
+      ref="detailModalRef"
+      title="詳細資訊"
+      :fields="modalData"
     />
   </div>
 </template>
 
 <style scoped>
-
 .recordWrapper {
   padding-top: 10px; /* 給點空間跟 navbar 分開 */
 }
@@ -109,16 +152,13 @@ function confirmCancelReturn(){
 
 /* 手機版 */
 @media (max-width: 640px) {
-
-.recordWrapper {
-    padding-top: 30px; /* 給點空間跟導航列分開 */
-}
-
-.record {
-    font-size: 24px;
-    margin-left: 12px;
+  .recordWrapper {
+      padding-top: 30px; /* 給點空間跟導航列分開 */
   }
 
+  .record {
+      font-size: 24px;
+      margin-left: 12px;
+  }
 }
-
 </style>

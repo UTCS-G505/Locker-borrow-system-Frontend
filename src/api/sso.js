@@ -5,7 +5,7 @@ class SsoAuth {
     try {
       const response = await apiSsoV1.post(
         `/auth/login`,
-        { credentials },
+        credentials,
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
