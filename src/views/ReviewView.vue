@@ -415,7 +415,7 @@ function openApproveModal() {
 // 真正執行「通過」邏輯的函式 
 function executeApprove() {
   mobileSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
+    const app = applications.value.find((a) => a.id === id);
     if (app && app.status === "審核中") {
       app.status = "借用中";
     }
