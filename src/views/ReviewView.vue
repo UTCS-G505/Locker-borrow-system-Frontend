@@ -96,25 +96,25 @@
       title="詳細資訊"
       :fields="modalData"
     />
-    <CheckPopup 
-      v-if="showApproveModal" 
-      operation="借用審核通過" 
-      @confirm="executeApprove" 
-      @close="showApproveModal = false" 
+    <CheckPopup
+      v-if="showApproveModal"
+      operation="借用審核通過"
+      @confirm="executeApprove"
+      @close="showApproveModal = false"
     />
 
-    <CheckPopup 
-      v-if="showRejectModal" 
-      operation="借用審核駁回" 
-      @confirm="executeReject" 
-      @close="showRejectModal = false" 
+    <CheckPopup
+      v-if="showRejectModal"
+      operation="借用審核駁回"
+      @confirm="executeReject"
+      @close="showRejectModal = false"
     />
 
-    <CheckPopup 
-      v-if="showReturnModal" 
-      operation="歸還通過" 
-      @confirm="executeReturn" 
-      @close="showReturnModal = false" 
+    <CheckPopup
+      v-if="showReturnModal"
+      operation="歸還通過"
+      @confirm="executeReturn"
+      @close="showReturnModal = false"
     />
   </section>
 </template>
@@ -127,6 +127,7 @@ import ReviewList from "../components/ReviewList.vue";
 import InfoPopup from "@/components/popups/InfoPopup.vue";
 import CheckPopup from "../components/popups/CheckPopup.vue";
 import RejectModal from "../components/RejectModal.vue";
+import { Record } from "@/api/main";
 
 // 定義駁回選項常數，避免在 template 中出現解析錯誤
 const rejectOptions = ['資料不完整', '不符規定', '請重新填寫'];
@@ -293,17 +294,37 @@ function openReturnModal() {
   }
   showReturnModal.value = true;
 }
-// 真正執行「通過」邏輯的函式 
-function executeReturn() {
-  returnSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
-    // 邏輯：如果是借用中，改成已歸還
-    if (app && app.status === "借用中") {
-      app.status = "已歸還";
-    }
-  });
-  returnSelections.value = []; // 清空勾選
-  showReturnModal.value = false; // 關閉彈窗
+// 真正執行「通過」邏輯的函式
+
+async function executeReturn() {
+  if (returnSelections.value.length === 0) return;
+  try {
+    // 1. 批次發送 API 請求
+    const requests = returnSelections.value.map((id) => {
+      // 呼叫你剛才寫在 api/main.js 的 Record.postReviewReturn
+      return Record.postReviewReturn(id, { return_accepted: true });
+    });
+    const results = await Promise.all(requests);
+    // 2. 根據 API 回傳結果更新 UI
+    results.forEach((res, index) => {
+      // 假設 res.code === 0 代表後端處理成功
+      if (res !== null) {
+        const targetId = returnSelections.value[index];
+        const app = applications.find((a) => a.id === targetId);
+        if (app) {
+          app.status = "已歸還"; // 狀態一變，filteredApplications 會自動過濾掉它
+        }
+      }
+    });
+    alert("歸還審核處理完成");
+  } catch (error) {
+    console.error("歸還 API 執行出錯:", error);
+    alert("系統連線失敗，請稍後再試");
+  } finally {
+    // 3. 無論成功或失敗都清理狀態
+    returnSelections.value = [];
+    showReturnModal.value = false;
+  }
 }
 
 // isMobile 判斷
@@ -323,7 +344,7 @@ function openApproveModal() {
   showApproveModal.value = true;
 }
 
-// 真正執行「通過」邏輯的函式 
+// 真正執行「通過」邏輯的函式
 function executeApprove() {
   mobileSelections.value.forEach((id) => {
     const app = applications.find((a) => a.id === id);
@@ -345,7 +366,7 @@ function openRejectModal() {
   showRejectModal.value = true;
 }
 
-// 真正執行「駁回」邏輯的函式 
+// 真正執行「駁回」邏輯的函式
 function executeReject() {
   mobileSelections.value.forEach((id) => {
     const app = applications.find((a) => a.id === id);
@@ -364,7 +385,7 @@ function executeReject() {
 // 處理子組件發出的 "show-details" 事件
 function handleShowDetails(item) {
   console.log("顯示詳細資訊: ", item);
-  
+
   // 這裡將 item 資料轉換成彈窗需要的 groups 格式
 modalData.value = [
     // --- 申請者資訊 ---
@@ -378,11 +399,11 @@ modalData.value = [
     // 合併起訖時間，因為較長建議給整行，或視情況拿掉 isFullRow
     { label: '借用時間起/迄', value: `${item.startTime} ~ ${item.endTime}`, isFullRow: true },
     { label: '借用系櫃編號', value: item.cabinet },
-    
+
     { label: '借用理由', value: '沒有宿舍ＱＡＱ', isFullRow: true, isBox: true },
-    
+
     // 以下補足截圖要求的欄位 (若 item 裡還沒這欄位，暫時用 item.applyTime 代替或寫死)
-    { label: '申請借用時間', value: '2025/06/30' }, 
+    { label: '申請借用時間', value: '2025/06/30' },
     { label: '系辦審核時間', value: item.approveTime || '' }, // 假設你有審核時間變數
     { label: '系辦審核結果', value: item.status },
 
@@ -393,17 +414,17 @@ modalData.value = [
 
     // --- 歸還資訊 (邏輯與之前相同，視狀態顯示) ---
     ...(['歸還中', '已歸還'].includes(item.status) ? [
-        { 
-          label: '申請歸還時間', 
-          value: item.returnApplyTime 
+        {
+          label: '申請歸還時間',
+          value: item.returnApplyTime
         },
-        { 
-          label: '系辦審核時間', 
-          value: item.returnApproveTime 
+        {
+          label: '系辦審核時間',
+          value: item.returnApproveTime
         },
-        { 
-          label: '系辦審核結果', 
-          value: item.status === '已歸還' ? '通過' : '審核中' 
+        {
+          label: '系辦審核結果',
+          value: item.status === '已歸還' ? '通過' : '審核中'
         }
     ] : [])
 ];
