@@ -109,7 +109,16 @@ class Record {
 }
 
 class Locker {
-  static getAll;
+  static getAll = async () => {
+    try {
+      const response = await apiMainV1.get("/locker/all");
+      return response.data.data;
+
+    } catch (err) {
+      console.error("獲取櫃子狀態列表失敗", err);
+      throw err; // 丟出錯誤訊息，讓父程式ApplyView.cue的函式loadLockersFromAPI可以成功接收錯誤訊息
+    }
+  };
 }
 
 export { 
