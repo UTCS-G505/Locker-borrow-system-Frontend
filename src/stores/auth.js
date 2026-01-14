@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import router from '@/router'
 import { Role } from '@/utils/constants'
+import { SsoAuth } from '@/api/sso'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -26,25 +27,35 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async login(credentials) {
-      // 假設 SSO API 有 /auth/login
-      const response = await axios.post(
-        `${import.meta.env.VITE_SSO_API_URL}/api/v1/auth/login`,
-        credentials,
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          withCredentials: true
-        }
-      )
-      this.accessToken = response.data.data.access_token
-      this.isAuthenticated = true
+      try{
+        // 假設 SSO API 有 /auth/login
+        const response = await axios.post(
+          `${import.meta.env.VITE_SSO_API_URL}/api/v1/auth/login`,
+          credentials,
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            withCredentials: true
+          }
+        )
+        this.accessToken = response.data.data.access_token
+        this.isAuthenticated = true
 
-      const payload = JSON.parse(
-        atob(this.accessToken.split('.')[1])
-      );
-      this.user.id = payload.sub;
-      this.user.role = payload.role;
+        const payload = JSON.parse(
+          atob(this.accessToken.split('.')[1])
+        );
+        this.user.id = payload.sub;
+        this.user.role = payload.role;
+
+        localStorage.setItem('userId',payload.sub);//登入資料存到本地，才有辦法抓資料
+
+        return true;
+      } catch (error) {
+        console.error('登入失敗', error);
+        throw error;
+      }
+
     },
 
     async refreshTokenAction() {
@@ -63,6 +74,8 @@ export const useAuthStore = defineStore('auth', {
         );
         this.user.id = payload.sub;
         this.user.role = payload.role;
+        localStorage.setItem('userId', payload.sub);
+
         return this.accessToken
       } catch (err) {
         console.error('刷新 token 失敗', err)
@@ -77,6 +90,8 @@ export const useAuthStore = defineStore('auth', {
       this.isAuthenticated = false
       this.user.id = null
       this.user.role = null
+
+      localStorage.removeItem('userId');//清掉
       // 導向登入頁
       router.push({ name: 'home' })
     },

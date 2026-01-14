@@ -122,6 +122,7 @@
 <script setup>
 //加入nextTick
 import { ref, reactive, computed, watch, nextTick } from "vue";
+import { SsoAuth, SsoUser } from "@/api/sso";
 // 導入新的子組件
 import ReviewList from "../components/ReviewList.vue";
 import InfoPopup from "@/components/popups/InfoPopup.vue";
