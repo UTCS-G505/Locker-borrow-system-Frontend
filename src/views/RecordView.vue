@@ -3,6 +3,8 @@
 import { ref, nextTick } from 'vue'
 import RecordTable from '../components/RecordTable.vue';
 import InfoPopup from '@/components/popups/InfoPopup.vue';
+import CheckPopup from "@/components/popups/CheckPopup.vue";
+import { Record } from "@/api/main";
 
 /* 修改模擬資料，加入簽核時間欄位 */
 const record = ref([
@@ -49,13 +51,45 @@ const record = ref([
 // 彈窗相關變數
 const detailModalRef = ref(null);
 const modalData = ref([]);
+const pendingCancelId = ref(null);
+const showCancelCheck = ref(false);
 
 function handleCancel(id) {
-  const item = record.value.find(r => r.id === id)
+  const item = record.value.find(r => r.id === id);
+  // 檢查是否為審核中，符合條件才開啟確認彈窗
   if (item && item.state === '審核中') {
-    item.state = '取消申請'
+    pendingCancelId.value = id;
+    showCancelCheck.value = true;
   }
 }
+
+async function executeCancel() {
+  const id = pendingCancelId.value;
+  if (!id) return;
+
+  try {
+    const res = await Record.postCancel(id);
+
+    // 成功（即使是 null）
+    if (res !== false) {
+      // 1. 更新前端狀態（移除 or 改狀態）
+      record.value = record.value.filter(r => r.id !== id);
+      // 或：
+      // const item = record.value.find(r => r.id === id);
+      // if (item) item.state = '已取消';
+
+      // 2. 關彈窗
+      showCancelCheck.value = false;
+      pendingCancelId.value = null;
+    } else {
+      alert("取消失敗，請稍後再試");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("系統錯誤");
+  }
+}
+
 
 /* 按下"歸還"按鈕，狀態要變為"歸還中"；按下"取消歸還"按鈕，狀態要變為"借用中" */
 function handleReturn(id) {
@@ -132,6 +166,13 @@ function handleShowDetails(id) {
       :fields="modalData"
     />
   </div>
+
+  <CheckPopup
+    v-if="showCancelCheck"
+    operation="取消借用申請"
+    @confirm="executeCancel"
+    @close="showCancelCheck = false"
+  />
 </template>
 
 <style scoped>
