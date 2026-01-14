@@ -88,7 +88,7 @@ class User {
       return response.data.data;
     } catch (err) {
       console.error(User.errorNoteMessages[state], err);
-      return null;
+      throw err;
     }
   }
 }

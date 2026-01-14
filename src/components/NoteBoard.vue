@@ -29,8 +29,8 @@ onMounted(async () => {
       name: user.id,
       
       // 狀態轉換邏輯
-      note: user.state === 1 ? '住宿生註記' : 
-            user.state === 2 ? '違規註記' : null
+      note: user.state === USER_STATE.DORM ? '住宿生註記' : 
+            user.state === USER_STATE.VIOLATION ? '違規註記' : null
     }));
   }
 });
@@ -59,12 +59,15 @@ const dormitoryNote = (student) => {
   showPopupCheck.value = true;
 };
 const handleDormitoryNote = async () => {
-  const response = await User.postNote(selectedStudent.value.id, USER_STATE.DORM, null);
-  if(response){ // 後端成功更新資料，前端畫面才做刷新
+  try {
+    await User.postNote(selectedStudent.value.id, USER_STATE.DORM, null);
     selectedStudent.value.note = '住宿生註記';
     title.value = '';
-    showPopupCheck.value = false;
+  } catch (err) {
+    console.error("dormitory note failed!", err);
+    alert("發生錯誤！住宿生註記失敗");
   }
+  showPopupCheck.value = false;
 }
 
 const violationNote = (student) => {
@@ -73,12 +76,15 @@ const violationNote = (student) => {
 };
 const handleViolationNote = async ( payload ) => {
   const { user, reason } = payload;
-  const response = await User.postNote(user.id, USER_STATE.VIOLATION, reason);
-  if(response){ // 後端成功更新資料，前端畫面才做刷新
+  try {
+    await User.postNote(user.id, USER_STATE.VIOLATION, reason);
     selectedStudent.value.note = '違規註記';
     alert(`學號：${user.id}\n姓名：${user.name}\n事由：${reason}`);
-    showPopup.value = false;
+  } catch (err) {
+    console.error("violation note failed!", err);
+    alert("發生錯誤！違規註記失敗");
   }
+  showPopup.value = false;
 }
 
 const clearNote = (student) =>{
@@ -87,12 +93,15 @@ const clearNote = (student) =>{
   showPopupCheck.value = true;
 }
 const handleClearNote = async () => {
-  const response = await User.postNote(selectedStudent.value.id, USER_STATE.NONE, null);
-  if(response){ // 後端成功更新資料，前端畫面才做刷新
+   try {
+    await User.postNote(selectedStudent.value.id, USER_STATE.NONE, null);
     selectedStudent.value.note = null;
     title.value = ''
-    showPopupCheck.value = false;
+  } catch (err) {
+    console.error("clear note failed!", err);
+    alert("發生錯誤！註記清除失敗");
   }
+  showPopupCheck.value = false;
 };
 
 const confirmWhat =()=>{
