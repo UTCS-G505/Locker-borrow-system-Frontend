@@ -1,213 +1,159 @@
 <script setup>
-// 加入 nextTick
-import { ref, nextTick, onMounted} from 'vue'
+import { ref, nextTick, onMounted } from 'vue';
+import { useAuthStore } from '@/stores/auth'; // 引入 Store
+import { SsoUser } from '@/api/sso';
+import { apiSsoV1, Record } from "@/api/base"; // 假設 Record 也在這，若無可移除
 
-import { ref,onMounted,nextTick } from 'vue';
-import { Record } from '@/api/main';
+// Component
 import RecordTable from '../components/RecordTable.vue';
 import InfoPopup from '@/components/popups/InfoPopup.vue';
-import { SsoUser } from '@/api/sso';
-import { apiSsoV1 } from "@/api/base";
 
-//引入 store 名稱與路徑，讓每個頁面都知道現在是誰在操作
-import { useAuthStore } from '@/stores/auth';
+// --- 狀態變數 ---
 const authStore = useAuthStore();
-const record = ref([]);
+const record = ref([]); // 申請紀錄列表
+const detailModalRef = ref(null); // 彈窗參照
+const modalData = ref([]); // 彈窗內容
 
-// 彈窗相關變數
-const record = ref([]);
-const detailModalRef = ref(null);
-const modalData = ref([]);
+// --- 工具函式：日期格式化 ---
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  return dateStr.split('T')[0]; // 回傳 YYYY-MM-DD
+};
 
-//判斷狀態
+const formatDateTime = (dateStr) => {
+  if (!dateStr) return '';
+  return dateStr.replace('T', ' '); // 回傳 YYYY-MM-DD HH:mm:ss
+};
+
+// --- 工具函式：判斷狀態字串 ---
 const getStatusString = (item) => {
-  // 如果有駁回原因，或是明確被拒絕 -> 駁回
+  // 1. 駁回：有駁回原因 或 明確被拒絕
   if (item.reject_reason || item.borrow_accepted === false) {
     return '駁回';
   }
-
-  // 如果系辦已經確認歸還 -> 已歸還
+  // 2. 已歸還：系辦已確認歸還
   if (item.return_accepted === true) {
     return '已歸還';
   }
-
-  // 如果申請歸還中 (還沒確認) -> 歸還中
+  // 3. 歸還中：申請歸還中 (還沒確認)
   if (item.return_available === true) {
     return '歸還中';
   }
-
-  // 如果同意借用 (且前面沒歸還) -> 借用中
+  // 4. 借用中：同意借用 (且前面沒歸還)
   if (item.borrow_accepted === true) {
     return '借用中';
   }
-
-  // 如果以上都不是，預設為審核中 (borrow_accepted 為 null 時)
+  // 5. 預設：審核中 (borrow_accepted 為 null)
   return '審核中';
 };
 
-// 按鈕邏輯 (這裡只改前端狀態，實際應該要呼叫 API)
-function handleCancel(id) {
-  const item = record.value.find(r => r.id === id)
-  if (item && item.state === '審核中') item.state = '取消申請';
-const formatDate = (dateStr) => {
-  if(!dateStr) return '';
-
-  return dateStr.split('T')[0];
-}
-
-const formatDateTime = (dateStr) => {
-  if(!dateStr) return '';
-
-  return dateStr.replace('T',' ');
-}
-
-onMounted(async () =>{
-  try{
-    const currentUserId = authStore.user?.id;
-
-    if(currentUserId){
-      const allRecordsResponse = await Record.getList(currentUserId);
-      record.value = allRecordsResponse || [];
-      console.log("從伺服器抓到真資料",record.value);
-    }
-  } catch (err){
-    console.error("獲取申請紀錄列表失敗",err);
-  }
-});
-
-function handleCancel(id){
-  const item = record.value.find(r => r.id === id)
-  if(item.borrow_accepted === null){
-    item.state = '取消申請' // 手動加入 state ，可以觸發畫面更新
-  }
-}
-
-function handleReturn(id) {
-  const item = record.value.find(r => r.id === id)
-  // 這邊只是前端切換顯示，之後記得要接「申請歸還」的 API
-  if (item.state === '借用中') item.state = '歸還中';
-}
-
-// 時間格式轉換工具
-const formatDate = (dateString) => {
-if (!dateString) return ''; // 如果是空值 (例如還沒審核的時間)，就回傳空
-const date = new Date(dateString);
-// 轉成 YYYY/MM/DD  
-const yyyy = date.getFullYear();
-const mm = String(date.getMonth() + 1).padStart(2, '0');
-const dd = String(date.getDate()).padStart(2,'0');
-
-return `${yyyy}/${mm}/${dd}`;
-};
-
+// --- 生命週期：載入資料 ---
 onMounted(async () => {
   try {
-    const currentUserId = localStorage.getItem('userId'); 
+    // 1. 取得使用者 ID (優先使用 Store，沒有則用 localStorage 或預設)
+    const currentUserId = authStore.user?.id || localStorage.getItem('userId');
     
     if (!currentUserId) {
-      console.error("尚未登入");
+      console.error("尚未登入，無法取得 ID");
       return;
     }
 
-    // 取得使用者名字
+    // 2. 取得使用者名字
     let userName = '未知使用者';
-    try {
-      const userInfo = await SsoUser.getGet(currentUserId);
-      if (userInfo) userName = userInfo.name;
-    } catch (e) {
-      console.log("無法取得使用者名字");
+    if (authStore.user?.name) {
+      userName = authStore.user.name;
+    } else {
+      try {
+        const userInfo = await SsoUser.getGet(currentUserId);
+        if (userInfo) userName = userInfo.name;
+      } catch (e) {
+        console.warn("無法取得使用者名字 API");
+      }
     }
 
-    // 直接串接後端 API
+    // 3. 抓取借用紀錄 (根據你的邏輯，這裡整合了 apiSsoV1)
     let apiData = [];
     try {
-        console.log("正在抓取借用紀錄...");
-        const response = await apiSsoV1.get(`/record/list/U11316022`);
-        
-        if(response.data && Array.isArray(response.data.data)) {
-          apiData = response.data.data;
-          console.log("成功從後端取得資料！");
-        } else {
-            throw new Error("API 回傳格式不正確或非陣列");
-        }
-
+      console.log(`正在抓取使用者 ${currentUserId} 的借用紀錄...`);
+      // 注意：這裡的路徑需確認是否要用變數取代硬寫的 U11316022
+      const response = await apiSsoV1.get(`/record/list/${currentUserId}`);
+      
+      if (response.data && Array.isArray(response.data.data)) {
+        apiData = response.data.data;
+        console.log("成功從後端取得資料！", apiData);
+      } else {
+        console.warn("API 回傳格式不正確或非陣列");
+      }
     } catch (e) {
-        console.error("抓取紀錄失敗 (可能是網址錯誤或後端沒開)", e);
-        // 若失敗，為了不讓畫面全白，我們暫時保持空陣列或用假資料測試
+      console.error("抓取紀錄失敗", e);
     }
 
-    //資料對應: 把後端欄位 -> 轉成前端欄位
+    // 4. 資料對應 (Mapping): 後端欄位 -> 前端欄位
+    // 這裡一次轉換好，之後 function 都用轉換後的欄位
     record.value = apiData.map(item => ({
-      // --- 基本欄位 ---
+      // --- 識別與基本資料 ---
       id: item.id,
-      name: userName, // 前端顯示名字
-      
-      // --- 類型轉換: temporary (bool) -> 文字 ---
+      name: userName,
       type: item.temporary ? '臨時借用' : '學年借用',
-
-      // --- 時間欄位 ---
+      
+      // --- 列表顯示用 ---
       startTime: formatDate(item.start_date),
       endTime: formatDate(item.end_date),
-      
-      // --- 系櫃與狀態 ---
       num: item.locker_id,
-      state: getStatusString(item), // 呼叫上面的判斷函式
-
-      // --- 詳細資訊彈窗會用到的原始資料 ---
-      applyTime: formatDate(item.apply_date),
+      state: getStatusString(item), // 計算並存入 state
+      
+      // --- 詳細資訊彈窗用 (原始資料保留或轉換) ---
+      applyTime: formatDateTime(item.apply_date),
       reason: item.reason,
       
-      // 審核資訊
-      directorTime: formatDate(item.review_date), // 假設這是系辦審核日
+      directorTime: formatDateTime(item.review_date),
       rejectReason: item.reject_reason,
+      
+      returnApplyTime: formatDateTime(item.return_available_date),
+      returnApproveTime: formatDateTime(item.return_accepted_date),
 
-      // 歸還資訊
-      returnApplyTime: formatDate(item.return_available_date),
-      returnApproveTime: formatDate(item.return_accepted_date)
+      // --- 原始邏輯判斷用 (若後續按鈕邏輯需要用到原始 boolean) ---
+      raw: {
+        borrow_accepted: item.borrow_accepted,
+        return_available: item.return_available,
+        return_accepted: item.return_accepted,
+        temporary: item.temporary
+      }
     }));
 
   } catch (err) {
-    console.error("載入流程錯誤", err);
+    console.error("載入流程發生未預期錯誤", err);
   }
 });
 
-function handleShowDetails(id) { 
+// --- 按鈕邏輯 ---
 
-  if(item.borrow_accepted === true && item.return_accepted !== true){
-    if(item.state === '歸還中'){
-      item.state = '' // 清空手動狀態，讓它變回"借用中"
-    }else{
-      item.state = '歸還中'
-    }
+// 取消申請
+function handleCancel(id) {
+  const item = record.value.find(r => r.id === id);
+  if (item && item.state === '審核中') {
+    // 這裡只改前端顯示，實際應呼叫 API
+    item.state = '取消申請'; 
   }
 }
 
+// 歸還
+function handleReturn(id) {
+  const item = record.value.find(r => r.id === id);
+  if (item && item.state === '借用中') {
+    // 這裡只改前端顯示，實際應呼叫 API
+    item.state = '歸還中';
+  }
+}
 
-const handleShowDetails = async (id) =>{
+// 查看詳細資訊
+const handleShowDetails = (id) => {
   const item = record.value.find(r => r.id === id);
   if (!item) return;
+
   console.log("查看詳細資訊:", item);
 
-  let statusText = item.state;
-
-  if(!statusText){
-    if(item.borrow_accepted === null){
-      statusText = '審核中';
-    }else if(item.borrow_accepted === false){
-      statusText = '駁回';
-    }else if(item.borrow_accepted === true){
-      if(item.return_available === false){
-        statusText = '借用中';
-      } else if(item.return_available === true && !item.return_accepted_date){
-        statusText = '歸還中';
-      } else if(item.return_available === true && item.return_accepted_date && item.return_accepted === true){
-        statusText = '已歸還';
-      } else {
-        statusText = '狀態異常'; // 防呆用
-      }
-    }
-  }
-
+  // 準備彈窗資料 (使用 map 過後的資料)
   modalData.value = [
     { label: '姓名', value: item.name },
     { label: '借用類型', value: item.type },
@@ -217,11 +163,11 @@ const handleShowDetails = async (id) =>{
     { label: '申請借用時間', value: item.applyTime || '無資料' }, 
     { label: '借用理由', value: item.reason || '無理由', isFullRow: true, isBox: true },
     
-    // 審核顯示邏輯
-    { label: '系辦審核時間', value: item.directorTime || '審核中' }, 
+    // 審核資訊
+    { label: '系辦審核時間', value: item.directorTime || '' }, 
     { label: '系辦審核結果', value: item.state },
 
-    // 駁回顯示
+    // 駁回顯示 (利用 state 文字判斷)
     ...(item.state === '駁回' ? [
         { label: '駁回理由', value: item.rejectReason || '無', isFullRow: true, isBox: true }
     ] : []),
@@ -230,77 +176,55 @@ const handleShowDetails = async (id) =>{
     ...(['歸還中', '已歸還'].includes(item.state) ? [
         { label: '申請歸還時間', value: item.returnApplyTime },
         { label: '系辦審核時間', value: item.returnApproveTime || '待審核' }, 
-    { label: '借用類型', value: item.temporary ? '臨時借用' : '學年借用'},
-
-    { label: '借用時間(起)', value: formatDate(item.start_date) },
-    { label: '借用時間(迄)', value: formatDate(item.end_date) },
-
-    { label: '借用系櫃編號', value: item.locker_id },
-    { label: '申請借用時間', value: formatDateTime(item.apply_date) }, 
-
-    { label: '借用理由', value: item.reason, isFullRow: true, isBox: true },
-
-    { label: '系辦審核時間', value: formatDateTime(item.review_date) || '' }, 
-    { label: '系辦審核結果', value: statusText },
-
-    // 駁回原因 (如果有)
-    ...(item.borrow_accepted === false ? [
-        { label: '駁回理由', value: item.reject_reason || '未填寫理由', isFullRow: true, isBox: true }
-    ] : []),
-
-    // 歸還資訊
-    ...(['歸還中', '已歸還'].includes(statusText) ? [
-        { label: '申請歸還時間', value: formatDateTime(item.return_available_date) || '' },
-        { label: '系辦審核時間', value: formatDateTime(item.return_accepted_date) || '' }, // 歸還的審核時間
     ] : [])
   ];
 
   nextTick(() => {
     if (detailModalRef.value) detailModalRef.value.open();
   });
-}
-
+};
 </script>
 
 <template>
-<div class="recordWrapper">
-<h1 class="record">申請紀錄</h1>
-<RecordTable
-:records="record"
-@cancel="handleCancel"
-@return="handleReturn"
-@show-details="handleShowDetails"
-/>
+  <div class="recordWrapper">
+    <h1 class="record">申請紀錄</h1>
+    
+    <RecordTable
+      :records="record"
+      @cancel="handleCancel"
+      @return="handleReturn"
+      @show-details="handleShowDetails"
+    />
 
-<InfoPopup
-ref="detailModalRef"
-title="詳細資訊"
-:fields="modalData"
-/>
-</div>
+    <InfoPopup
+      ref="detailModalRef"
+      title="詳細資訊"
+      :fields="modalData"
+    />
+  </div>
 </template>
 
 <style scoped>
 .recordWrapper {
-padding-top: 10px; /* 給點空間跟 navbar 分開 */
+  padding-top: 10px;
 }
 
 .record {
-font-size: 30px;
-color: #1a1a1a;
-margin-left: 15px;
-margin-bottom: 0;
+  font-size: 30px;
+  color: #1a1a1a;
+  margin-left: 15px;
+  margin-bottom: 0;
 }
 
 /* 手機版 */
 @media (max-width: 640px) {
-.recordWrapper {
-padding-top: 30px; /* 給點空間跟導航列分開 */
-}
+  .recordWrapper {
+    padding-top: 30px;
+  }
 
-.record {
-font-size: 24px;
-margin-left: 12px;
-}
+  .record {
+    font-size: 24px;
+    margin-left: 12px;
+  }
 }
 </style>
