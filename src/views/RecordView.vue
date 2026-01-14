@@ -2,7 +2,7 @@
 import { ref, nextTick, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth'; // 引入 Store
 import { SsoUser } from '@/api/sso';
-import { apiSsoV1, Record } from "@/api/base"; // 假設 Record 也在這，若無可移除
+import { apiSsoV1 } from "@/api/base"; 
 
 // Component
 import RecordTable from '../components/RecordTable.vue';
@@ -67,7 +67,7 @@ onMounted(async () => {
         const userInfo = await SsoUser.getGet(currentUserId);
         if (userInfo) userName = userInfo.name;
       } catch (e) {
-        console.warn("無法取得使用者名字 API");
+        console.warn("無法取得使用者名字 API",e);
       }
     }
 
