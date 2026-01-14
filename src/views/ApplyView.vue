@@ -70,7 +70,8 @@
 </template>
 
 <script setup>
-  import { ref, watch } from 'vue'
+
+  import { ref, watch, onMounted } from 'vue'
   import ModalMap from '../components/ModalMap.vue'
   import GradeSelect from '../components/GradeSelect.vue'
   import TypeSelect from '../components/TypeSelect.vue'
@@ -78,6 +79,7 @@
   import ConfirmBorrowModal from '../components/ConfirmBorrowModal.vue'
   import FailModal  from '../components/FailedDialog.vue'
   import ApplySuccessModal from '../components/ApplySuccessModal.vue'
+  import { Locker } from '../api/main.js'
 
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
@@ -92,11 +94,40 @@
   const showSuccessModal = ref(false)
   const borrowReason = ref('')
 
+  // API 相關狀態 
+  const apiLockers = ref([])  // 儲存從 API 獲取的原始資料
+  const isLoading = ref(false) // 載入狀態
+
   const ERROR_LIBRARY = {
   MAINTENANCE: '該櫃位目前正在維修中，無法借用',
   SYSTEM_ERROR: '伺服器連線異常，請稍後再試',
-  MISSING_INFO: '申請資訊填寫不完整'
+  MISSING_INFO: '申請資訊填寫不完整',
   };
+
+  // 櫃子狀態常數 
+  const LockerState = {
+    AVAILABLE: 0,     // 可借用
+    UNDER_REVIEW: 1,  // 審核中
+    BORROWED: 2       // 借用中
+  }
+
+  //從 API 載入櫃子資料 
+  async function loadLockersFromAPI() {
+    isLoading.value = true
+    try {
+      const data = await Locker.getAll()
+      apiLockers.value = data
+      console.log('API Response:', data)
+      // 載入完成後，生成櫃子（內部已整合 API 資料）
+      lockers.value = generateLockersByGrade(selectedGrade.value)
+    } catch (error) {
+      console.error('載入櫃子資料失敗:', error)
+      failReasons.value = [ERROR_LIBRARY.SYSTEM_ERROR]
+      showFailModal.value = true
+    } finally {
+      isLoading.value = false
+    }
+  }
 
   function openModal() {
     showModal.value = true
@@ -123,10 +154,9 @@
     }else{
       borrowReason.value = reason
       showSuccessModal.value = true
-      // 3. 成功邏輯：暫時使用 alert，等待您加入 ApplySuccessModal
       console.log('父元件收到 confirm 事件：', { locker, reason })
       alert(`櫃子 ${locker.name} 已確認借用，理由：${reason} (申請成功)`)
-      // TODO: 這裡應該替換成顯示 ApplySuccessModal 的邏輯
+      
     }
     console.log('父元件收到 confirm 事件：', { locker, reason })
 
@@ -165,17 +195,29 @@
     return lockers;
   }
 
+  // 將 API 資料應用到櫃子生成邏輯
   function generateLockerRange(startId, count) {
     return Array.from({ length: count }, (_, i) => {
       const id = startId + i
+      
+      // 從 API 資料中查找對應的櫃子
+      const apiLocker = apiLockers.value.find(l => l.id === id)
+      
       return {
-        id,
+        id: id,
         name: `${id}`,
-        isBorrowed: [1, 4, 7, 11, 30].includes(id),
-        isReviewed: [3, 8, 9, 21, 20].includes(id),
+        isBorrowed: apiLocker ? (apiLocker.state === LockerState.BORROWED) : false,
+        isReviewed: apiLocker ? (apiLocker.state === LockerState.UNDER_REVIEW) : false,
+        userId: apiLocker ? apiLocker.user_id : null,
+        state: apiLocker ? apiLocker.state : LockerState.AVAILABLE
       }
     })
   }
+
+  // 組件掛載時載入 API 資料 
+  onMounted(() => {
+    loadLockersFromAPI()
+  })
 
 </script>
 

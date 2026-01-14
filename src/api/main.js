@@ -68,7 +68,16 @@ class Announcement {
 class User {
   static getGet;
 
-  static getAll;
+  static getAll = async () => {
+    try {
+      // 猜測後端路徑為 /user/all (若不同請依後端文件調整)
+      const response = await apiMainV1.get("/user/all");
+      return response.data.data;
+    } catch (err) {
+      console.error("獲取使用者列表失敗", err);
+      return []; // 列表類失敗建議回傳空陣列，避免前端炸開
+    }
+  };
 
   static errorNoteMessages = { 0: "取消註記失敗", 1: "住宿生註記失敗", 2: "違規註記失敗" };
   static postNote = async (userId, state, reason) => {
@@ -87,7 +96,15 @@ class User {
 class Record {
   static getGet;
 
-  static getList;
+  static getList = async(userId) =>{
+    try{
+      const response = await apiMainV1.get(`/record/list/${userId}`);
+      return response.data.data;
+    } catch (err){
+      console.error("獲取申請紀錄列表失敗",err);
+      return null;
+    }
+  };
 
   static getAll;
 
@@ -103,7 +120,16 @@ class Record {
 }
 
 class Locker {
-  static getAll;
+  static getAll = async () => {
+    try {
+      const response = await apiMainV1.get("/locker/all");
+      return response.data.data;
+
+    } catch (err) {
+      console.error("獲取櫃子狀態列表失敗", err);
+      throw err; // 丟出錯誤訊息，讓父程式ApplyView.cue的函式loadLockersFromAPI可以成功接收錯誤訊息
+    }
+  };
 }
 
 export { 
