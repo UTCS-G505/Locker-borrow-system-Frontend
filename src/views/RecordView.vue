@@ -27,30 +27,30 @@ const formatDateTime = (dateStr) => {
 
 // --- 工具函式：判斷狀態字串 ---
 const getStatusString = (item) => {
-  // 1. 駁回：有駁回原因 或 明確被拒絕
+  // 有駁回原因 或 明確被拒絕
   if (item.reject_reason || item.borrow_accepted === false) {
     return '駁回';
   }
-  // 2. 已歸還：系辦已確認歸還
+  // 已歸還：系辦已確認歸還
   if (item.return_accepted === true) {
     return '已歸還';
   }
-  // 3. 歸還中：申請歸還中 (還沒確認)
+  // 歸還中：申請歸還中 (還沒確認)
   if (item.return_available === true) {
     return '歸還中';
   }
-  // 4. 借用中：同意借用 (且前面沒歸還)
+  // 借用中：同意借用 (且前面沒歸還)
   if (item.borrow_accepted === true) {
     return '借用中';
   }
-  // 5. 預設：審核中 (borrow_accepted 為 null)
+  // 預設：審核中 (borrow_accepted 為 null)
   return '審核中';
 };
 
-// --- 生命週期：載入資料 ---
+// --- 載入資料 ---
 onMounted(async () => {
   try {
-    // 1. 取得使用者 ID (優先使用 Store，沒有則用 localStorage 或預設)
+    // [修正1] 使用 authStore 實體，而不是類別定義 useAuthStore
     const currentUserId = authStore.user?.id || localStorage.getItem('userId');
     
     if (!currentUserId) {
@@ -58,38 +58,49 @@ onMounted(async () => {
       return;
     }
 
-    // 2. 取得使用者名字
-    let userName = '未知使用者';
-    if (authStore.user?.name) {
-      userName = authStore.user.name;
-    } else {
-      try {
-        const userInfo = await SsoUser.getGet(currentUserId);
-        if (userInfo) userName = userInfo.name;
-      } catch (e) {
-        console.warn("無法取得使用者名字 API",e);
-      }
-    }
+    console.log("目前 Store 中的 ID (UUID):", currentUserId);
 
-    // 3. 抓取借用紀錄 (根據你的邏輯，這裡整合了 apiSsoV1)
-    let apiData = [];
+    // 準備變數
+    let userName = '未知使用者';
+    let realStudentId = '';
+
+    // [優化] 合併 API 呼叫：一次取得名字與學號
     try {
-      console.log(`正在抓取使用者 ${currentUserId} 的借用紀錄...`);
-      // 注意：這裡的路徑需確認是否要用變數取代硬寫的 U11316022
-      const response = await apiSsoV1.get(`/record/list/${currentUserId}`);
-      
-      if (response.data && Array.isArray(response.data.data)) {
-        apiData = response.data.data;
-        console.log("成功從後端取得資料！", apiData);
-      } else {
-        console.warn("API 回傳格式不正確或非陣列");
+      const userInfo = await SsoUser.getGet(currentUserId);
+      console.log("取得使用者詳細資料:", userInfo);
+
+      if (userInfo) {
+        // 取得名字 (優先使用 real_name，若無則用 name)
+        userName = userInfo.real_name || userInfo.name || authStore.user?.name;
+        
+        // [修正2] 根據 CSV 檔案，欄位名稱應為 'acc'，而非 'account'
+        realStudentId = userInfo.account; 
+        console.log("轉換後的學號 (acc):", realStudentId);
       }
     } catch (e) {
-      console.error("抓取紀錄失敗", e);
+      console.warn("無法取得使用者資訊，將嘗試使用原始 ID", e);
     }
 
-    // 4. 資料對應 (Mapping): 後端欄位 -> 前端欄位
-    // 這裡一次轉換好，之後 function 都用轉換後的欄位
+    // 抓取借用紀錄
+    let apiData = [];
+    if (realStudentId) {
+        try {
+          console.log(`正在抓取使用者 ${realStudentId} 的借用紀錄...`);
+          // 注意：你的路徑如果是 /record/get/list/ 請保留，若有誤請改回 /record/list/
+          const response = await apiSsoV1.get(`/record/list/${currentUserId}`);
+          
+          if (response.data && Array.isArray(response.data.data)) {
+            apiData = response.data.data;
+            console.log("成功從後端取得資料！", apiData);
+          } else {
+            console.warn("API 回傳格式不正確或非陣列", response);
+          }
+        } catch (e) {
+          console.error("抓取紀錄失敗", e);
+        }
+    }
+
+    // 4. 資料對應 (Mapping)
     record.value = apiData.map(item => ({
       // --- 識別與基本資料 ---
       id: item.id,
@@ -100,9 +111,9 @@ onMounted(async () => {
       startTime: formatDate(item.start_date),
       endTime: formatDate(item.end_date),
       num: item.locker_id,
-      state: getStatusString(item), // 計算並存入 state
+      state: getStatusString(item),
       
-      // --- 詳細資訊彈窗用 (原始資料保留或轉換) ---
+      // --- 詳細資訊彈窗用 ---
       applyTime: formatDateTime(item.apply_date),
       reason: item.reason,
       
@@ -112,7 +123,7 @@ onMounted(async () => {
       returnApplyTime: formatDateTime(item.return_available_date),
       returnApproveTime: formatDateTime(item.return_accepted_date),
 
-      // --- 原始邏輯判斷用 (若後續按鈕邏輯需要用到原始 boolean) ---
+      // --- 原始邏輯判斷用 ---
       raw: {
         borrow_accepted: item.borrow_accepted,
         return_available: item.return_available,
@@ -132,7 +143,6 @@ onMounted(async () => {
 function handleCancel(id) {
   const item = record.value.find(r => r.id === id);
   if (item && item.state === '審核中') {
-    // 這裡只改前端顯示，實際應呼叫 API
     item.state = '取消申請'; 
   }
 }
@@ -141,7 +151,6 @@ function handleCancel(id) {
 function handleReturn(id) {
   const item = record.value.find(r => r.id === id);
   if (item && item.state === '借用中') {
-    // 這裡只改前端顯示，實際應呼叫 API
     item.state = '歸還中';
   }
 }
@@ -153,7 +162,6 @@ const handleShowDetails = (id) => {
 
   console.log("查看詳細資訊:", item);
 
-  // 準備彈窗資料 (使用 map 過後的資料)
   modalData.value = [
     { label: '姓名', value: item.name },
     { label: '借用類型', value: item.type },
@@ -167,7 +175,7 @@ const handleShowDetails = (id) => {
     { label: '系辦審核時間', value: item.directorTime || '' }, 
     { label: '系辦審核結果', value: item.state },
 
-    // 駁回顯示 (利用 state 文字判斷)
+    // 駁回顯示
     ...(item.state === '駁回' ? [
         { label: '駁回理由', value: item.rejectReason || '無', isFullRow: true, isBox: true }
     ] : []),
