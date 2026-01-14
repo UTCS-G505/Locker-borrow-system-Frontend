@@ -140,9 +140,19 @@
       return;
     }
 
-    // 是否違規
-    if (userData.state !== 0) { 
-      failReasons.value = ["已被註記住宿生身分或違規，無法借用"];
+    // 檢查是否為住宿生 (State 1)
+    if (userData.state === 1) { 
+      failReasons.value = ["您已被註記為住宿生，無法借用系櫃，如有疑問請洽系辦"];
+      showFailModal.value = true;
+      return;
+    }
+
+    // 檢查是否為違規 (State 2)
+    if (userData.state === 2) {
+      // 從後端資料取得 reason，若無則顯示預設文字
+      const violationReason = userData.reason || '違反規定';
+      
+      failReasons.value = [`您已被註記違規（事由：${violationReason}），不可借用系櫃，如有疑問請洽系辦`];
       showFailModal.value = true;
       return;
     }
@@ -150,7 +160,7 @@
     if (String(locker.name) === '2') {
       failReasons.value = [ERROR_LIBRARY.SYSTEM_ERROR]
       showFailModal.value = true // 開啟失敗彈窗
-    }else{
+    } else {
       borrowReason.value = reason
       showSuccessModal.value = true
     }
