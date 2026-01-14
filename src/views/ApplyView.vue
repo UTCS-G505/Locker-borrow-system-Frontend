@@ -206,8 +206,8 @@
       return {
         id: id,
         name: `${id}`,
-        isBorrowed: apiLocker ? (apiLocker.state === 2) : false,
-        isReviewed: apiLocker ? (apiLocker.state === 1) : false,
+        isBorrowed: apiLocker ? (apiLocker.state === LockerState.BORROWED) : false,
+        isReviewed: apiLocker ? (apiLocker.state === LockerState.UNDER_REVIEW) : false,
         userId: apiLocker ? apiLocker.user_id : null,
         state: apiLocker ? apiLocker.state : LockerState.AVAILABLE
       }
