@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import router from '@/router'
 import { Role } from '@/utils/constants'
-import { SsoAuth } from '@/api/sso'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
