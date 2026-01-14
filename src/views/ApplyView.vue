@@ -201,14 +201,14 @@
       const id = startId + i
       
       // 從 API 資料中查找對應的櫃子
-      const apiLocker = apiLockers.value.find(l => l.id === id)
+      const apiLocker = apiLockers.value.find(l => l.id === id);
       
       return {
-        id: id,
+        id: id, //櫃子編號
         name: `${id}`,
         isBorrowed: apiLocker ? (apiLocker.state === LockerState.BORROWED) : false,
         isReviewed: apiLocker ? (apiLocker.state === LockerState.UNDER_REVIEW) : false,
-        userId: apiLocker ? apiLocker.user_id : null,
+        userId: apiLocker ? apiLocker.user_id : null, //UUID
         state: apiLocker ? apiLocker.state : LockerState.AVAILABLE
       }
     })
@@ -218,7 +218,6 @@
   onMounted(() => {
     loadLockersFromAPI()
   })
-
 </script>
 
 <style scoped>
