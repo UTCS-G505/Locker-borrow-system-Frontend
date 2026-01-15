@@ -97,7 +97,15 @@ class Record {
 
   static getAll;
 
-  static postBorrow;
+  static postBorrow = async (data) => {
+    try{
+      const response = await apiMainV1.post('/record/borrow', data);
+      return response.data;
+    }catch (err){
+      console.error("錯誤: ", err);
+      throw err;
+    }
+  }
 
   static postCancel = async (recordId) => {
     try {
