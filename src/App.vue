@@ -1,27 +1,22 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
 import AppNavBar from './components/AppNavBar.vue';
+import AppNavBar_LogOut from './components/AppNavBar_LogOut.vue';
 import AppFooter from './components/AppFooter.vue'
+import { useAuthStore } from './stores/auth';
+
+const authStore = useAuthStore();
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-
-    <nav>
-      <AppNavBar />
-    </nav>
+    <AppNavBar v-if="authStore.isAuthenticated" />
+    <AppNavBar_LogOut v-else />
   </header>
-  
+
   <main>
     <RouterView />
   </main>
-
   <footer>
     <AppFooter />
   </footer>
@@ -30,26 +25,12 @@ import AppFooter from './components/AppFooter.vue'
 <style scoped>
 header {
   line-height: 1.5;
-  min-height: 10vh;
   max-height: 100vh;
   margin: 0 auto;
-  padding: 2rem;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+  padding: 0;
 }
 
 main {
-  min-height: 80vh;
   margin: 0 auto;
   padding: 2rem;
 }
@@ -60,8 +41,18 @@ footer {
   padding: 2rem;
 }
 
+@media screen and (max-width: 1023px) {
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+}
+
 @media print {
-  header, footer {
+
+  header,
+  footer {
     display: none;
   }
 }

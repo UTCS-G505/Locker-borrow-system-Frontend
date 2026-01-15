@@ -1,59 +1,60 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import logo from '@/assets/logo.png'
-import { SsoAuth, SsoUser } from '@/api/sso'
+import PopupSignIn from './popups/PopupSignIn.vue'
 
-// 控制電腦版使用者選單顯示
-const showMenu = ref(false)
 // 控制手機版主選單顯示
 const showMobileMenu = ref(false)
-// 參考電腦版使用者選單 DOM 元素
-const menuRef = ref(null)
+
 // 控制手機版使用者選單顯示
 const showMobileUserMenu = ref(false)
-const loggedInUser = ref(null);
 
-const authStore = useAuthStore();
+// 控制登入彈窗顯示的響應式狀態
+const isSignInPopupVisible = ref(false)
 
-// 切換電腦版使用者選單
-function toggleMenu() {
-  showMenu.value = !showMenu.value
+// 手機使用者選單區域的 DOM 引用
+const mobileMenuRef = ref(null)
+// 手機漢堡選單區域的 DOM 引用
+const mobileHamburgerRef = ref(null)
+
+// 顯示登入彈窗的函數 
+function showSignInPopup() {
+  isSignInPopupVisible.value = true;
+  showMobileUserMenu.value = false;
+}
+
+// 關閉登入彈窗的函數
+function closeSignInPopup() {
+  isSignInPopupVisible.value = false;
 }
 
 // 切換手機版主選單
 function toggleMobileMenu() {
   showMobileMenu.value = !showMobileMenu.value
+  showMobileUserMenu.value = false
 }
 
-// 切換手機版使用者選單
 function toggleMobileUserMenu() {
   showMobileUserMenu.value = !showMobileUserMenu.value
+  showMobileMenu.value = false
 }
 
-// 點擊外部關閉電腦版使用者選單
 function handleClickOutside(event) {
-  if (menuRef.value && !menuRef.value.contains(event.target)) {
-    showMenu.value = false
-    showMobileMenu.value = false
-    showMobileUserMenu.value = false
+  //檢查點擊是否在 mobileHamburgerRef (漢堡菜單區域) 之外
+  if (mobileHamburgerRef.value && !mobileHamburgerRef.value.contains(event.target)) {
+    showMobileMenu.value = false;
+  }
+
+  //檢查點擊是否在 mobileMenuRef (頭像/選單區域) 之外
+  if (mobileMenuRef.value && !mobileMenuRef.value.contains(event.target)) {
+    showMobileUserMenu.value = false;
   }
 }
 
-async function handleLogout() {
-  await SsoAuth.postLogout();
-  loggedInUser.value = null;
-  authStore.logout();
-}
-
 // 掛載全局點擊事件
-onMounted(async () => {
+onMounted(() => {
   document.addEventListener('click', handleClickOutside)
-
-  let uid = authStore.user?.id;
-  let usernameResponse = await SsoUser.getGet(uid);
-  loggedInUser.value = usernameResponse?.name;
 })
 
 // 卸載事件監聽器
@@ -64,7 +65,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="app-navbar">
-    <!-- 電腦版 Header -->
+
     <div class="desktop-header">
       <div class="top-bar">
         <RouterLink to="/" class="logo-link">
@@ -75,59 +76,48 @@ onBeforeUnmount(() => {
       <nav class="nav-bar">
         <div class="nav-links">
           <RouterLink to="/">首頁</RouterLink>
-          <RouterLink to="/apply">申請借用</RouterLink>
-          <RouterLink to="/record">申請紀錄</RouterLink>
-          <RouterLink to="/review" v-if="authStore.isManager">審核申請</RouterLink>
-          <RouterLink to="/setting" v-if="authStore.isManager">系統管理</RouterLink>
+          <div @click="showSignInPopup" class="nav-link-disabled">申請借用</div>
+          <div @click="showSignInPopup" class="nav-link-disabled">申請紀錄</div>
         </div>
-        <div class="user-menu" ref="menuRef">
-          <button class="user-btn" @click.stop="toggleMenu">
-            {{ loggedInUser }}
-            <span :class="['arrow', { 'arrow-up': showMenu }]">▼</span>
-          </button>
-          <div v-if="showMenu" class="dropdown">
-            <ul>
-              <li><a @click="handleLogout">登出</a></li>
-            </ul>
-          </div>
+        <div class="user-menu">
+          <button class="user-btn" @click="showSignInPopup"> 登入 </button>
         </div>
       </nav>
     </div>
 
-    <!-- 手機版 Header -->
     <div class="mobile-header">
 
       <div class="mobile-top-bar">
-        <!-- 漢堡選單按鈕 -->
-        <button class="menu-toggle" @click.stop="toggleMobileMenu">☰</button>
+        <button class="menu-toggle" @click.stop="toggleMobileMenu" ref="mobileHamburgerRef">☰</button>
 
-        <!-- Logo & 系統名稱 -->
         <RouterLink to="/" class="mobile-logo-link">
           <img class="mobile-logo" :src="logo" alt="Logo" />
           <h1 class="mobile-system-title">系櫃借用系統</h1>
         </RouterLink>
 
-        <!-- 手機版使用者圖示 -->
-        <div class="mobile-user-icon" @click.stop="toggleMobileUserMenu">👤</div>
+        <div class="login" ref="mobileMenuRef">
+          <div class="mobile-user-icon-container" @click.stop="toggleMobileUserMenu">
+            <div class="mobile-user-icon">👤</div>
+          </div>
+        </div>
       </div>
 
-      <!-- 手機版主選單 -->
       <div v-if="showMobileMenu" class="mobile-menu">
         <RouterLink to="/" @click="toggleMobileMenu">首頁</RouterLink>
-        <RouterLink to="/apply" @click="toggleMobileMenu">申請借用</RouterLink>
-        <RouterLink to="/record" @click="toggleMobileMenu">申請紀錄</RouterLink>
-        <RouterLink to="/review" @click="toggleMobileMenu" v-if="authStore.isManager">審核申請</RouterLink>
-        <RouterLink to="/setting" @click="toggleMobileMenu" v-if="authStore.isManager">系統管理</RouterLink>
+        <a href="#" @click.prevent="showSignInPopup(); toggleMobileMenu()">申請借用</a>
+        <a href="#" @click.prevent="showSignInPopup(); toggleMobileMenu()">申請紀錄</a>
       </div>
 
-      <!-- 手機版使用者選單 -->
       <div v-if="showMobileUserMenu" class="mobile-user-menu">
-        <div class="user-name">{{ loggedInUser }}</div>
-        <div class="logout"><a @click="handleLogout">登出</a></div>
+        <div class="logout">
+          <a href="#" @click.prevent="showSignInPopup">登入</a>
+        </div>
       </div>
-
     </div>
   </div>
+
+  <PopupSignIn v-if="isSignInPopupVisible" @close="closeSignInPopup" />
+
 </template>
 
 
@@ -138,7 +128,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
 }
 
-/* 電腦版樣式 */
+/* --- 電腦版樣式 --- */
 .desktop-header {
   display: none;
 }
@@ -173,18 +163,47 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   background: rgba(235, 247, 255, 0.8);
-  padding: 1rem 24px;
+  padding: 8px 24px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
 }
 
 .nav-links a {
   text-decoration: none;
   color: #333;
-  padding: 12px 16px;
+  padding: 8px 16px;
   margin-left: 1rem;
   margin-right: 1rem;
   border-radius: 4px;
   font-size: 25px;
+
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.5;
+}
+
+.nav-links div {
+  text-decoration: none;
+  color: #333;
+  padding: 8px 16px;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  border-radius: 4px;
+  font-size: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.5;
+}
+
+.nav-links div:hover {
+  background-color: #a1d2ff;
 }
 
 .nav-links a.router-link-exact-active {
@@ -209,45 +228,19 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #000;
+  transition: background-color 0.3s ease;
 }
 
-.arrow {
-  display: inline-block;
-  transition: transform 0.3s ease;
+.desktop-header .user-menu .user-btn {
+  padding: 8px 16px;
+  margin-left: 0.8rem;
+  margin-right: 0.8rem;
+  line-height: 1.5;
 }
 
-.arrow-up {
-  transform: rotate(90deg);
-}
-
-.dropdown {
-  position: absolute;
-  right: 0;
-  top: 35px;
-  background: white;
-  border: 1px solid #ddd;
+.desktop-header .user-menu .user-btn:hover {
+  background-color: #a1d2ff;
   border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  min-width: 100%;
-}
-
-.dropdown ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.dropdown li a {
-  display: block;
-  padding: 16px 12px;
-  font-size: 20px;
-  text-decoration: none;
-  color: #333;
-}
-
-.dropdown li a:hover {
-  background-color: #f0f0f0;
 }
 
 /* 手機版樣式 */
@@ -264,11 +257,9 @@ onBeforeUnmount(() => {
   padding: 8px 12px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   height: 56px;
-  border-bottom: 1px solid #ddd;
 }
 
 .menu-toggle {
-  color: #000;
   font-size: 24px;
   background: none;
   border: none;
@@ -294,9 +285,21 @@ onBeforeUnmount(() => {
   margin: 0;
 }
 
+.mobile-user-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 8px;
+  cursor: pointer;
+}
+
 .mobile-user-icon {
   font-size: 24px;
-  cursor: pointer;
+}
+
+.mobile-header .login .user-btn {
+  display: none;
 }
 
 .mobile-menu {
@@ -305,7 +308,6 @@ onBeforeUnmount(() => {
   align-items: flex-start;
   background: #EFF9FF;
   padding: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-menu a {
@@ -313,13 +315,13 @@ onBeforeUnmount(() => {
   padding: 10px 0;
   text-decoration: none;
   color: #333;
+  display: block;
 }
 
 .mobile-menu a:hover {
   font-weight: bold;
 }
 
-/* 手機版使用者選單 */
 .mobile-user-menu {
   position: absolute;
   right: 12px;
@@ -328,18 +330,12 @@ onBeforeUnmount(() => {
   border: 1px solid #ddd;
   border-radius: 6px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  width: 140px;
-  padding: 8px 12px;
+  width: 100px;
+  /* 只需要顯示「登入」 */
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.mobile-user-menu .user-name {
-  font-size: 16px;
-  font-weight: bold;
-  text-align: center;
-  padding: 6px 0;
+  z-index: 10;
 }
 
 .mobile-user-menu .logout a {
@@ -348,8 +344,9 @@ onBeforeUnmount(() => {
   color: #333;
   display: block;
   text-align: center;
-  padding: 6px 0;
-  border-radius: 4px;
+  padding: 8px 12px;
+  /* 調整 padding */
+  border-radius: 6px;
 }
 
 .mobile-user-menu .logout a:hover {
@@ -371,30 +368,26 @@ onBeforeUnmount(() => {
 @media (min-width: 600px) and (max-width: 1023px) {
   .mobile-top-bar {
     padding: 12px 20px;
-    /* 增加 padding */
   }
 
   .mobile-system-title {
     font-size: 26px;
-    /* 原本是 18px，放大 */
   }
 
   .mobile-logo {
     height: 48px;
-    /* 原本是 36px，放大 */
   }
 
   .mobile-menu a {
     font-size: 23px;
-    /* 原本是 18px，放大 */
   }
 
   .mobile-user-menu .user-name {
     font-size: 18px;
   }
 
-  .mobile-user-menu .logout a {
-    font-size: 18px;
+  .mobile-user-menu .login a {
+    font-size: 16px;
   }
 }
 </style>

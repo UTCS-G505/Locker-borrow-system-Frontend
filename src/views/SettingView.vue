@@ -1,13 +1,29 @@
 <script setup>
+import { ref } from 'vue';
 import GeneralSetting from '@/components/GeneralSetting.vue';
 import NoteBoard from '@/components/NoteBoard.vue';
+import AnnounceBoard from '@/components/AnnounceBoard.vue';
+
+const board = ref('note');
+const BoardMap = {
+  note: NoteBoard,
+  announcement: AnnounceBoard
+};
+
+if(location.hash) {
+  board.value = location.hash.slice(1);
+}
+
+const setHash = () => {
+  location.hash = `#${board.value}`
+}
 </script>
 
 <template>
   <div id="setting-board">
-    <GeneralSetting />
+    <GeneralSetting v-model:board="board" @update:board="setHash" />
     <hr>
-    <NoteBoard />
+    <component :is="BoardMap[board]" />
   </div>
 </template>
 

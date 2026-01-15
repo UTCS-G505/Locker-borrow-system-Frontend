@@ -6,6 +6,7 @@ import ReviewView from '@/views/ReviewView.vue'
 import SettingView from '@/views/SettingView.vue'
 import NotFoundView from '@/views/http-errors/NotFoundView.vue'
 import HistoryExportView from '@/views/HistoryExportView.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,7 +27,8 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: ApplyView,
       meta: {
-        title: '申請借用'
+        title: '申請借用',
+        requiresAuth: true
       }
     },
     {
@@ -34,7 +36,8 @@ const router = createRouter({
       name: 'record',
       component: RecordView,
       meta: {
-        title: '申請紀錄'
+        title: '申請紀錄',
+        requiresAuth: true
       }
     },
     {
@@ -42,7 +45,9 @@ const router = createRouter({
       name: 'review',
       component: ReviewView,
       meta: {
-        title: '審核申請'
+        title: '審核申請',
+        requiresAuth: true,
+        requiresManager: true
       }
     },
     {
@@ -50,7 +55,9 @@ const router = createRouter({
       name: 'setting',
       component: SettingView,
       meta: {
-        title: '系統管理'
+        title: '系統管理',
+        requiresAuth: true,
+        requiresManager: true
       }
     },
     {
@@ -77,7 +84,28 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, _, next) => {
+router.beforeEach(async (to, _, next) => {
+  const authStore = useAuthStore()
+  if (to.meta.requiresAuth) {
+    if (!authStore.isLoggedIn) {
+      await authStore.initAuth()
+    }
+
+    if (!authStore.isLoggedIn) {
+      return next({ name: 'home' }) // 導向登入頁
+    }
+
+    if(!authStore.isUTCS) {
+      return next({ name: 'home' }) // 導向首頁
+    }
+  }
+
+  if(to.meta.requiresManager){
+    if(!authStore.isManager){
+      return next({ name: 'home' }) // 導向首頁
+    }
+  }
+
   let costumTitle = typeof to.meta.title === 'string' ? to.meta.title : null;
   let appName = 'UTaipei CS Locker Borrow System';
   if (costumTitle){
