@@ -26,7 +26,7 @@ const handleBorrowHistory = () => {
 };
 
 const handleBorrowOverview = () => {
-  window.open('/export', '_blank', 'noopener');
+  window.open('/overview', '_blank', 'noopener');
 };
 
 const updateSemesterInterval = async () => {
