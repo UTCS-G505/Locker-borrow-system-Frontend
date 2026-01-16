@@ -5,7 +5,7 @@ import RecordView from '@/views/RecordView.vue'
 import ReviewView from '@/views/ReviewView.vue'
 import SettingView from '@/views/SettingView.vue'
 import NotFoundView from '@/views/http-errors/NotFoundView.vue'
-import HistoryExportView from '@/views/HistoryExportView.vue'
+import ExportLockerStatusView from '@/views/ExportLockerStatusView.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
@@ -63,14 +63,9 @@ const router = createRouter({
     {
       path: '/export',
       name: 'export',
-      redirect: '/export/history'
-    },
-    {
-      path: '/export/history',
-      name: 'export-history',
-      component: HistoryExportView,
+      component: ExportLockerStatusView,
       meta: {
-        title: '借用紀錄表'
+        title: '借用概況圖'
       }
     },
     {

@@ -135,6 +135,11 @@ const handleBorrowHistory = async () => {
   a.click();
   URL.revokeObjectURL(url);
 };
+
+const handleBorrowOverview = () => {
+  window.open('/export', '_blank', 'noopener');
+};
+
 const updateSemesterInterval = async () => {
   const start = initialStartDate.value;
   const end = initialEndDate.value;
@@ -154,11 +159,6 @@ const updateSemesterInterval = async () => {
   } catch (err) {
     console.error('更新公告失敗', err);
   }
-};
-
-const handleBorrowOverview = () => {
-  console.log('handleBorrowOverview');
-  // window.open('/export/overview', '_blank', 'noopener');
 };
 
 onMounted(async () => {
@@ -325,7 +325,6 @@ button {
     flex-direction: row;
     justify-content: space-between;
   }
-
 
   .semester-form {
     margin-right: 4rem;
