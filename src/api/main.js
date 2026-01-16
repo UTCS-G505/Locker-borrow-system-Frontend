@@ -95,7 +95,15 @@ class Record {
     }
   };
 
-  static getAll;
+  static getAll = async (params) => {
+    try {
+      const response = await apiMainV1.get("/record/all", { params });
+      return response.data.data; // 回傳陣列
+    } catch (err) {
+      console.error("獲取所有申請紀錄失敗", err);
+      return [];
+    }
+  };
 
   static postBorrow = async (data) => {
     try{
@@ -129,7 +137,7 @@ class Locker {
   };
 }
 
-export { 
+export {
   Announcement,
   User,
   Record,

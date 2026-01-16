@@ -96,37 +96,39 @@
       title="詳細資訊"
       :fields="modalData"
     />
-    <CheckPopup 
-      v-if="showApproveModal" 
-      operation="借用審核通過" 
-      @confirm="executeApprove" 
-      @close="showApproveModal = false" 
+    <CheckPopup
+      v-if="showApproveModal"
+      operation="借用審核通過"
+      @confirm="executeApprove"
+      @close="showApproveModal = false"
     />
 
-    <CheckPopup 
-      v-if="showRejectModal" 
-      operation="借用審核駁回" 
-      @confirm="executeReject" 
-      @close="showRejectModal = false" 
+    <CheckPopup
+      v-if="showRejectModal"
+      operation="借用審核駁回"
+      @confirm="executeReject"
+      @close="showRejectModal = false"
     />
 
-    <CheckPopup 
-      v-if="showReturnModal" 
-      operation="歸還通過" 
-      @confirm="executeReturn" 
-      @close="showReturnModal = false" 
+    <CheckPopup
+      v-if="showReturnModal"
+      operation="歸還通過"
+      @confirm="executeReturn"
+      @close="showReturnModal = false"
     />
   </section>
 </template>
 
 <script setup>
-//加入nextTick
-import { ref, reactive, computed, watch, nextTick } from "vue";
+import { ref, computed, watch, nextTick, onMounted } from "vue";
 // 導入新的子組件
 import ReviewList from "../components/ReviewList.vue";
 import InfoPopup from "@/components/popups/InfoPopup.vue";
 import CheckPopup from "../components/popups/CheckPopup.vue";
 import RejectModal from "../components/RejectModal.vue";
+
+// ✅ 導入 API
+import { Record, User } from "@/api/main.js";
 
 // 定義駁回選項常數，避免在 template 中出現解析錯誤
 const rejectOptions = ['資料不完整', '不符規定', '請重新填寫'];
@@ -137,19 +139,9 @@ const rejectModal = ref(null);
 // 暫存被駁回的 mobile 勾選項目
 const pendingRejectIds = ref([]);
 
-// function rejectMobile() {
-//   if (mobileSelections.value.length === 0) {
-//     alert("請先選擇至少一筆要駁回的資料");
-//     return;
-//   }
-
-//   pendingRejectIds.value = [...mobileSelections.value];
-//   rejectModal.value.open();
-// }
-
 function handleRejectSubmit(reason) {
   pendingRejectIds.value.forEach(id => {
-    const app = applications.find(a => a.id === id);
+    const app = applications.value.find(a => a.id === id);
     if (app && app.status === "審核中") {
       app.status = "已駁回";
       app.rejectReason = reason;
@@ -168,80 +160,67 @@ const mobileSelections = ref([]);
 const detailModalRef = ref(null); // 用來綁定彈窗組件
 const modalData = ref([]);        // 用來存放轉換後的詳細資料
 
-const applications = reactive([
-  {
-    id: 1,
-    studentId: "U11316050",
-    name: "王小明",
-    grade: "大四",
-    phone: "0912345678",
-    email: "wang.min@example.com",
-    borrowType: "學年借用",
-    startTime: "2024/09/01",
-    endTime: "2025/06/30",
-    cabinet: "31",
-    status: "審核中",
-  },
-  {
-    id: 2,
-    studentId: "U11316051",
-    name: "李小美",
-    grade: "大一",
-    phone: "0922333444",
-    email: "may.lee@example.com",
-    borrowType: "臨時借用",
-    startTime: "2025/07/23",
-    endTime: "2025/07/23",
-    cabinet: "35",
-    status: "已駁回",
-  },
-  {
-    id: 3,
-    studentId: "U11316052",
-    name: "張大明",
-    grade: "大二",
-    phone: "0933444555",
-    email: "chang.big@example.com",
-    borrowType: "學年借用",
-    startTime: "2024/09/01",
-    endTime: "2025/06/30",
-    cabinet: "36",
-    status: "借用中",
-  },
-  {
-    id: 4,
-    studentId: "U11316054",
-    name: "王中明",
-    grade: "大一",
-    phone: "0944555666",
-    email: "wang.mid@example.com",
-    borrowType: "學年借用",
-    startTime: "2024/09/01",
-    endTime: "2025/06/30",
-    cabinet: "20",
-    status: "審核中",
-  },
-  {
-    id: 5,
-    studentId: "U11316055",
-    name: "王大明",
-    grade: "大一",
-    phone: "0955666777",
-    email: "wang.big@example.com",
-    borrowType: "臨時借用",
-    startTime: "2024/09/01",
-    endTime: "2025/06/30",
-    cabinet: "21",
-    status: "審核中",
-  },
-]);
+// ✅ 改用 ref 存放從後端取得的資料
+const applications = ref([]);
+
+// ✅ 根據後端資料判斷狀態
+function getStatus(record) {
+  if (record.return_accepted) {
+    return "已歸還";
+  }
+  if (record.borrow_accepted && !record.return_available) {
+    return "借用中";
+  }
+  if (!record.borrow_accepted && record.reject_reason) {
+    return "已駁回";
+  }
+  return "審核中";
+}
+
+// ✅ 建立一個函式來載入資料
+const loadApplications = async () => {
+  try {
+    const records = await Record.getAll();
+    const users = await User.getAll(); // 取得所有使用者資料
+
+    // 建立 user_id 對應表
+    const userMap = new Map(users.map(user => [user.id, user]));
+
+    applications.value = records.map(record => {
+      const user = userMap.get(record.user_id) || {};
+
+      return {
+        id: record.id,
+        studentId: user.student_id || record.user_id,
+        name: user.name || "未知",
+        grade: user.grade || "未知",
+        phone: user.phone || "未提供",
+        email: user.email || "未提供",
+        borrowType: record.temporary ? "臨時借用" : "學年借用",
+        startTime: record.start_date?.split('T')[0] || "",
+        endTime: record.end_date?.split('T')[0] || "",
+        cabinet: record.locker_id,
+        status: getStatus(record),
+        applyTime: record.apply_date?.split('T')[0] || "",
+        approveTime: record.review_date?.split('T')[0] || "",
+        rejectReason: record.reject_reason || "",
+        reason: record.reason || "",
+        returnApplyTime: record.return_available_date?.split('T')[0] || "",
+        returnApproveTime: record.return_accepted_date?.split('T')[0] || "",
+      };
+    });
+  } catch (err) {
+    console.error("載入申請紀錄失敗:", err);
+    alert("無法載入申請紀錄，請稍後再試");
+  }
+};
 
 const borrowTypeFilter = ref("");
 const gradeFilter = ref("");
 const statusFilter = ref("");
 
 const filteredApplications = computed(() => {
-  return applications.filter((app) => {
+  return applications.value.filter((app) => {
     const matchName =
       app.name.includes(searchName.value) ||
       app.studentId.includes(searchName.value);
@@ -293,17 +272,22 @@ function openReturnModal() {
   }
   showReturnModal.value = true;
 }
-// 真正執行「通過」邏輯的函式 
-function executeReturn() {
-  returnSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
-    // 邏輯：如果是借用中，改成已歸還
-    if (app && app.status === "借用中") {
-      app.status = "已歸還";
+
+async function executeReturn() {
+  try {
+    for (const id of returnSelections.value) {
+      await Record.postReviewReturn(id, { approved: true });
     }
-  });
-  returnSelections.value = []; // 清空勾選
-  showReturnModal.value = false; // 關閉彈窗
+
+    // 重新載入資料
+    await loadApplications();
+
+    returnSelections.value = [];
+    showReturnModal.value = false;
+  } catch (err) {
+    console.error("歸還審核失敗:", err);
+    alert("歸還審核失敗，請稍後再試");
+  }
 }
 
 // isMobile 判斷
@@ -323,16 +307,22 @@ function openApproveModal() {
   showApproveModal.value = true;
 }
 
-// 真正執行「通過」邏輯的函式 
-function executeApprove() {
-  mobileSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
-    if (app && app.status === "審核中") {
-      app.status = "借用中";
+
+async function executeApprove() {
+  try {
+    for (const id of mobileSelections.value) {
+      await Record.postReviewBorrow(id, { approved: true });
     }
-  });
-  mobileSelections.value = []; // 清空勾選
-  showApproveModal.value = false; // 執行完關閉彈窗
+
+    // 重新載入資料
+    await loadApplications();
+
+    mobileSelections.value = [];
+    showApproveModal.value = false;
+  } catch (err) {
+    console.error("審核失敗:", err);
+    alert("審核失敗，請稍後再試");
+  }
 }
 
 //申請「駁回」操作確認
@@ -345,28 +335,33 @@ function openRejectModal() {
   showRejectModal.value = true;
 }
 
-// 真正執行「駁回」邏輯的函式 
-function executeReject() {
-  mobileSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
-    if (app && app.status === "審核中") {
-      app.status = "已駁回";
+async function executeReject() {
+  try {
+    for (const id of mobileSelections.value) {
+      const app = applications.value.find(a => a.id === id);
+      await Record.postReviewBorrow(id, {
+        approved: false,
+        reject_reason: app.rejectReason || "已駁回"
+      });
     }
-  });
-  mobileSelections.value = []; // 清空勾選
-  showRejectModal.value = false; // 執行完關閉彈窗
+
+    // 重新載入資料
+    await loadApplications();
+
+    mobileSelections.value = [];
+    showRejectModal.value = false;
+  } catch (err) {
+    console.error("駁回失敗:", err);
+    alert("駁回失敗，請稍後再試");
+  }
 }
-
-
-
-
 
 // 處理子組件發出的 "show-details" 事件
 function handleShowDetails(item) {
   console.log("顯示詳細資訊: ", item);
-  
+
   // 這裡將 item 資料轉換成彈窗需要的 groups 格式
-modalData.value = [
+  modalData.value = [
     // --- 申請者資訊 ---
     { label: '姓名', value: item.name },
     { label: '年級', value: item.grade },
@@ -375,46 +370,40 @@ modalData.value = [
 
     // --- 借用資訊 ---
     { label: '借用類型', value: item.borrowType },
-    // 合併起訖時間，因為較長建議給整行，或視情況拿掉 isFullRow
     { label: '借用時間起/迄', value: `${item.startTime} ~ ${item.endTime}`, isFullRow: true },
     { label: '借用系櫃編號', value: item.cabinet },
-    
-    { label: '借用理由', value: '沒有宿舍ＱＡＱ', isFullRow: true, isBox: true },
-    
-    // 以下補足截圖要求的欄位 (若 item 裡還沒這欄位，暫時用 item.applyTime 代替或寫死)
-    { label: '申請借用時間', value: '2025/06/30' }, 
-    { label: '系辦審核時間', value: item.approveTime || '' }, // 假設你有審核時間變數
+
+    { label: '借用理由', value: item.reason || '無', isFullRow: true, isBox: true },
+
+    { label: '申請借用時間', value: item.applyTime },
+    { label: '系辦審核時間', value: item.approveTime || '尚未審核' },
     { label: '系辦審核結果', value: item.status },
 
     // 駁回理由
     ...(item.status === '已駁回' ? [
-        { label: '駁回理由', value: '資料不符', isFullRow: true, isBox: true }
+        { label: '駁回理由', value: item.rejectReason || '無', isFullRow: true, isBox: true }
     ] : []),
 
-    // --- 歸還資訊 (邏輯與之前相同，視狀態顯示) ---
+    // --- 歸還資訊 ---
     ...(['歸還中', '已歸還'].includes(item.status) ? [
-        { 
-          label: '申請歸還時間', 
-          value: item.returnApplyTime 
-        },
-        { 
-          label: '系辦審核時間', 
-          value: item.returnApproveTime 
-        },
-        { 
-          label: '系辦審核結果', 
-          value: item.status === '已歸還' ? '通過' : '審核中' 
-        }
+        { label: '申請歸還時間', value: item.returnApplyTime },
+        { label: '系辦審核時間', value: item.returnApproveTime },
+        { label: '系辦審核結果', value: item.status === '已歸還' ? '通過' : '審核中' }
     ] : [])
-];
+  ];
 
-  // 打開彈窗 (確保 DOM 更新後再執行)
+  // 打開彈窗
   nextTick(() => {
     if (detailModalRef.value) {
       detailModalRef.value.open();
     }
   });
 }
+
+// ✅ 在組件載入時取得資料
+onMounted(() => {
+  loadApplications();
+});
 
 // 當切換頁面時重置所有過濾器與勾選
 watch(selectedType, () => {
@@ -614,26 +603,26 @@ input[type="text"] {
     padding: 0 20px;
     border-radius: 8px;
   }
-  /* 手機版：水平排列 */
+  /* 手機版:水平排列 */
   .mobile-header-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: flex-start; /* 初始同一行靠左 */
+    justify-content: flex-start;
     gap: 10px;
   }
   .mobile-header-top {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    justify-content: space-between; /* 標題與下拉 right 對齊 */
+    justify-content: space-between;
     gap: 10px;
   }
 
   .mobile-header-bottom {
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* 按鈕靠左 */
+    justify-content: flex-start;
     gap: 10px;
   }
   .mobile-header-row h1 {
