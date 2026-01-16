@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { Announcement } from '@/api/main';
+import { Announcement, Record } from '@/api/main';
+import { SsoUser } from '@/api/sso';
+import generateCSV from '@/utils/generateCSV';
+import dateFormatter from '@/utils/dateFormatter';
 
 defineProps({
   board: {
@@ -18,6 +21,120 @@ const endDate = `${today.getFullYear() + 1}-${String(today.getMonth() + 1).padSt
 const initialStartDate = ref(startDate);
 const initialEndDate = ref(endDate);
 
+const BORROW_HISTORY_CSV_COLUMNS = [
+  { key: "id", label: "借用紀錄編號", get: r => r.id ?? "" },
+  { key: "account", label: "借用者帳號", get: (_, u) => u?.account ?? "" },
+  { key: "name", label: "借用者姓名", get: (_, u) => u?.name ?? "" },
+  { label: "借用日期(起)", get: r => dateFormatter(r.start_date) ?? "" },
+  { label: "借用日期(迄)", get: r => dateFormatter(r.end_date) ?? "" },
+  { label: "借用類型", get: r => getBorrowType(r) },
+  { label: "借用原因", get: r => r.reason ?? "" },
+  { label: "借用系櫃編號", get: r => r.locker_id ?? "" },
+  { label: "申請借用時間", get: r => timeFormatter(r.apply_date) ?? "" },
+  {
+    label: "系辦審核時間(借用)",
+    get: r => getBorrowReviewTime(r)
+  },
+  {
+    label: "系辦審核結果(借用)",
+    get: r => getBorrowReviewResult(r)
+  },
+  { label: "系辦駁回原因", get: r => r.reject_reason ?? "" },
+  {
+    label: "申請歸還時間",
+    get: r => getReturnAvailableTime(r)
+  },
+  {
+    label: "系辦審核結果(歸還)",
+    get: r => getReturnReviewResult(r)
+  },
+  {
+    label: "系辦審核時間(歸還)",
+    get: r => getReturnReviewTime(r)
+  }
+];
+
+const timeFormatter = (date) => {
+  if (!date) return "";
+  return new Date(date).toLocaleString();
+}
+
+const getBorrowType = (r) => {
+  if (r.temporary) return "臨時借用";
+  return "學年借用";
+}
+
+const getBorrowReviewTime = (r) => {
+  if (r.borrow_accepted === null) return "";
+  return timeFormatter(r.review_date);
+}
+
+const getBorrowReviewResult = (r) => {
+  if (r.borrow_accepted === true) return "通過";
+  if (r.borrow_accepted === false) return "駁回";
+  return "審核中";
+}
+
+const getReturnAvailableTime = (r) => {
+  if (r.return_available) return timeFormatter(r.return_available_date);
+  return "";
+}
+
+const getReturnReviewResult = (r) => {
+  if (!r.return_available) return "";
+  if (r.return_accepted === true) return "通過";
+  return "未接受"
+}
+
+const getReturnReviewTime = (r) => {
+  if (!r.return_available) return "";
+  return timeFormatter(r.return_accepted_date);
+}
+
+const handleBorrowHistory = async () => {
+  // 取得所有紀錄
+  const recordData = await Record.getAll();
+
+  // 取得所有 user 的資料
+  const userIds = [...new Set(recordData.map(r => r.user_id))];
+  const users = await Promise.all(userIds.map(id => SsoUser.getGet(id)));
+
+  // 建立 user id 與資料的對應表
+  const userMap = new Map(users.map(u => [u.id, u]));
+
+  // 整合資料
+  const records = recordData.map(record => ({
+    record,
+    user: userMap.get(record.user_id)
+  }));
+
+  // 按照申請日期排序
+  records.sort((a, b) => new Date(a.record.apply_date) - new Date(b.record.apply_date));
+
+  // 產生 CSV 檔案
+  const csv = generateCSV({
+    titleLines: [
+      "UTaipei CS Locker Borrow System - 借用紀錄匯出",
+      `匯出時間: ${new Date().toLocaleString()}`
+    ],
+    columns: BORROW_HISTORY_CSV_COLUMNS,
+    records
+  });
+
+  // 下載
+  const blob = new Blob(['\uFEFF' + csv], {
+    type: 'text/csv;charset=utf-8;'
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download =
+    `UTaipei_CS_Locker_Borrow_System_History_Export_${new Date()
+      .toLocaleString()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
 const updateSemesterInterval = async () => {
   const start = initialStartDate.value;
   const end = initialEndDate.value;
@@ -39,10 +156,6 @@ const updateSemesterInterval = async () => {
   }
 };
 
-const handleBorrowHistory = () => {
-  console.log('handleBorrowHistory');
-  // window.open('/export/history', '_blank', 'noopener');
-};
 const handleBorrowOverview = () => {
   console.log('handleBorrowOverview');
   // window.open('/export/overview', '_blank', 'noopener');
