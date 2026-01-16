@@ -50,10 +50,19 @@ footer {
 }
 
 @media print {
+  * {
+    background-color: white;
+    margin: 0;
+    padding: 0;
+  }
 
   header,
   footer {
     display: none;
+  }
+
+  main {
+    padding: 0;
   }
 }
 </style>
