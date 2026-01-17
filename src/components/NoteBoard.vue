@@ -38,7 +38,8 @@ onMounted(async () => {
       }
 
       return {
-        id: user.id,
+        dataID: user.id,
+        id: apiData[0],
         name: apiData[1],
         note: note
       };
@@ -71,7 +72,7 @@ const dormitoryNote = (student) => {
 };
 const handleDormitoryNote = async () => {
   try {
-    await User.postNote(selectedStudent.value.id, USER_STATE.DORM, null);
+    await User.postNote(selectedStudent.value.dataID, USER_STATE.DORM, null);
     selectedStudent.value.note = '住宿生註記';
     title.value = '';
   } catch (err) {
@@ -88,7 +89,7 @@ const violationNote = (student) => {
 const handleViolationNote = async ( payload ) => {
   const { user, reason } = payload;
   try {
-    await User.postNote(user.id, USER_STATE.VIOLATION, reason);
+    await User.postNote(user.dataID, USER_STATE.VIOLATION, reason);
     selectedStudent.value.note = '違規註記';
     alert(`學號：${user.id}\n姓名：${user.name}\n事由：${reason}`);
   } catch (err) {
@@ -105,7 +106,7 @@ const clearNote = (student) =>{
 }
 const handleClearNote = async () => {
    try {
-    await User.postNote(selectedStudent.value.id, USER_STATE.NONE, null);
+    await User.postNote(selectedStudent.value.dataID, USER_STATE.NONE, null);
     selectedStudent.value.note = null;
     title.value = ''
   } catch (err) {
