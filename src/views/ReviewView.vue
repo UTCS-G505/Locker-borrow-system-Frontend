@@ -120,14 +120,17 @@
 </template>
 
 <script setup>
-//加入nextTick
-import { ref, reactive, computed, watch, nextTick } from "vue";
+
+import { ref, computed, watch, nextTick, onMounted } from "vue";
+import { SsoUser } from "@/api/sso";
+//import { Record } from "@/api/main";
 // 導入新的子組件
 import ReviewList from "../components/ReviewList.vue";
 import InfoPopup from "@/components/popups/InfoPopup.vue";
 import CheckPopup from "../components/popups/CheckPopup.vue";
 import RejectModal from "../components/RejectModal.vue";
 import { Record } from '@/api/main';
+
 
 // 定義駁回選項常數，避免在 template 中出現解析錯誤
 const rejectOptions = ['資料不完整', '不符規定', '請重新填寫'];
@@ -140,7 +143,7 @@ const pendingRejectIds = ref([]);
 
 function handleRejectSubmit(reason) {
   pendingRejectIds.value.forEach(id => {
-    const app = applications.find(a => a.id === id);
+    const app = applications.value.find(a => a.id === id);
     if (app && app.status === "審核中") {
       app.status = "已駁回";
       app.rejectReason = reason;
@@ -159,12 +162,13 @@ const mobileSelections = ref([]);
 const detailModalRef = ref(null); // 用來綁定彈窗組件
 const modalData = ref([]);        // 用來存放轉換後的詳細資料
 
-const applications = reactive([
+const applications = ref([
   {
     id: 1,
-    studentId: "U11316050",
-    name: "王小明",
-    grade: "大四",
+    uuid:"07fb55e5-d681-11f0-9149-0242ac180003", //先用我的測試
+    studentId: "U11316022",
+    name: "有顯示我的名字代表測試成功",
+    grade: "大負一",
     phone: "0912345678",
     email: "wang.min@example.com",
     borrowType: "學年借用",
@@ -175,6 +179,7 @@ const applications = reactive([
   },
   {
     id: 2,
+    uuid:"", //api抓取都是uuid
     studentId: "U11316051",
     name: "李小美",
     grade: "大一",
@@ -188,6 +193,7 @@ const applications = reactive([
   },
   {
     id: 3,
+    uuid:"", //api抓取都是uuid
     studentId: "U11316052",
     name: "張大明",
     grade: "大二",
@@ -202,6 +208,7 @@ const applications = reactive([
   {
     id: 4,
     studentId: "U11316054",
+    uuid:"", //api抓取都是uuid
     name: "王中明",
     grade: "大一",
     phone: "0944555666",
@@ -225,14 +232,106 @@ const applications = reactive([
     cabinet: "21",
     status: "審核中",
   },
+
 ]);
+
+async function getSsoData(uuid) {
+  // 設定預設回傳值
+  // const defaultData = {
+  //   name: "載入中...",
+  //   grade: "載入中...",
+  //   email: "載入中...",
+  //   phone: "載入中..."
+  // };
+
+  // 檢查 UUID 
+  if (!uuid || uuid === "") {
+    console.warn("getSsoData: UUID 為空");
+    return {
+      name: "無資料 (假資料)",
+      grade: "無資料 (假資料)",
+      email: "無資料 (假資料)",
+      phone: "無資料 (假資料)"
+    };
+  }
+
+  try {
+    // 呼叫 API
+    const ssoData = await SsoUser.getGet(uuid);
+    
+    // 確認回傳資料並進行對應
+    if (ssoData) {
+      return {
+        name: ssoData.user_name || ssoData.name || "未知姓名",
+        grade: ssoData.position || "未知年級", 
+        email: ssoData.primary_email || "無信箱",
+        phone: ssoData.phone_number || "無電話"
+      };
+    }
+  } catch (error) {
+    console.error(`查詢 SSO 失敗 (UUID: ${uuid}):`, error);
+  }
+  // 如果發生錯誤或沒資料，回傳預設錯誤訊息
+  return {
+    name: "讀取失敗",
+    grade: "讀取失敗",
+    email: "讀取失敗",
+    phone: "讀取失敗"
+  };
+}
+
+
+async function loadApplications() {
+  console.log("開始載入假資料並串接 SSO...");
+
+  try {
+    // 使用 Promise.all 對每一筆假資料執行 getSsoData
+    const processedData = await Promise.all(
+      applications.value.map(async (item) => {
+        
+        // 先複製一份原本的資料 (這樣預設就會是李小美、張大明等假資料)
+        let newItem = { ...item };
+
+        // 判斷邏輯：只有當 UUID 存在且不為空字串時，才去呼叫 SSO
+        if (item.uuid && item.uuid.trim() !== "") {
+          
+          const ssoInfo = await getSsoData(item.uuid);
+
+          // 只有當成功抓到資料 (不是錯誤訊息) 時，才覆蓋原本的假資料
+          if (ssoInfo.name !== "讀取失敗" && ssoInfo.name !== "無資料 (假資料)") {
+             newItem.name = ssoInfo.name;
+             newItem.grade = ssoInfo.grade;
+             newItem.email = ssoInfo.email;
+             newItem.phone = ssoInfo.phone;
+          }
+        }
+
+        // 回傳處理後的資料 (若沒 uuid，就會回傳原本的 item)
+        return newItem;
+      })
+    );
+
+    // 更新到畫面變數
+    applications.value = processedData;
+    console.log("資料處理完成:", processedData);
+
+  } catch (error) {
+    console.error("處理資料發生錯誤:", error);
+  }
+}
+
+// 頁面載入時執行
+onMounted(() => {
+  loadApplications();
+});
+
 
 const borrowTypeFilter = ref("");
 const gradeFilter = ref("");
 const statusFilter = ref("");
 
 const filteredApplications = computed(() => {
-  return applications.filter((app) => {
+  return applications.value.filter((app) => {
     const matchName =
       app.name.includes(searchName.value) ||
       app.studentId.includes(searchName.value);
@@ -287,7 +386,7 @@ function openReturnModal() {
 // 真正執行「通過」邏輯的函式
 function executeReturn() {
   returnSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
+    const app = applications.value.find((a) => a.id === id);
     // 邏輯：如果是借用中，改成已歸還
     if (app && app.status === "借用中") {
       app.status = "已歸還";
@@ -366,21 +465,19 @@ async function executeReject(rejectReason) {
   }
 }
 
-
-
-
-
 // 處理子組件發出的 "show-details" 事件
-function handleShowDetails(item) {
-  console.log("顯示詳細資訊: ", item);
-
+async function handleShowDetails(item) {
+  console.log("顯示詳細資訊uuid: ", item.uuid);
+  const ssoInfo = await getSsoData(item.uuid);
+  
   // 這裡將 item 資料轉換成彈窗需要的 groups 格式
 modalData.value = [
     // --- 申請者資訊 ---
-    { label: '姓名', value: item.name },
-    { label: '年級', value: item.grade },
-    { label: '主要電子郵件', value: item.email, isFullRow: true },
-    { label: '連絡電話', value: item.phone },
+    { label: '學號', value: item.studentId, isFullRow: true },
+    { label: '姓名', value: ssoInfo.name },
+    { label: '年級', value: ssoInfo.grade },
+    { label: '主要電子郵件', value: ssoInfo.email, isFullRow: true },
+    { label: '連絡電話', value: ssoInfo.phone },
 
     // --- 借用資訊 ---
     { label: '借用類型', value: item.borrowType },
