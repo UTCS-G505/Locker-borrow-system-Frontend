@@ -29,16 +29,16 @@ onMounted(async () => {
       const apiData = await getUserData(user.id);
       let note = null;
       switch (user.state) {
-        case 1:
+        case USER_STATE.DORM:
           note = '住宿生註記';
           break;
-        case 2:
+        case USER_STATE.VIOLATION:
           note = '違規註記';
           break;
       }
 
       return {
-        id: apiData[0],
+        id: user.id,
         name: apiData[1],
         note: note
       };
