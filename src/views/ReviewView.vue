@@ -172,10 +172,10 @@ const gradeFilter = ref("");
 const statusFilter = ref("");
 
 async function getSsoData(uuid) {
-  // 檢查 UUID
   if (!uuid || uuid === "") {
     console.warn("getSsoData: UUID 為空");
     return {
+      studentId: "無資料",
       name: "無資料",
       grade: "無資料",
       email: "無資料",
@@ -184,13 +184,14 @@ async function getSsoData(uuid) {
   }
 
   try {
-    // 呼叫 API
     const ssoData = await SsoUser.getGet(uuid);
 
-    // 確認回傳資料並進行對應
+    console.log("📋 SSO 回傳資料:", ssoData);  // 可以保留 debug
+
     if (ssoData) {
       return {
-        name: ssoData.user_name || ssoData.name || "未知姓名",
+        studentId: ssoData.account || "未知學號",  
+        name: ssoData.name || "未知姓名",
         grade: ssoData.position || "未知年級",
         email: ssoData.primary_email || "無信箱",
         phone: ssoData.phone_number || "無電話"
@@ -199,8 +200,9 @@ async function getSsoData(uuid) {
   } catch (error) {
     console.error(`查詢 SSO 失敗 (UUID: ${uuid}):`, error);
   }
-  // 如果發生錯誤或沒資料，回傳預設錯誤訊息
+
   return {
+    studentId: "讀取失敗",
     name: "讀取失敗",
     grade: "讀取失敗",
     email: "讀取失敗",
@@ -264,49 +266,58 @@ async function loadApplications() {
 
     console.log("API 回傳資料筆數:", apiData.length);
 
-    // DEBUG: 印出第一筆資料結構
-    if (apiData.length > 0) {
-      console.log("📋 第一筆 API 資料:", apiData[0]);
-      console.log("📋 可用欄位:", Object.keys(apiData[0]));
-    }
-
-    // 處理資料，只對前 20 筆載入 SSO 避免太慢
     const processedData = await Promise.all(
       apiData.map(async (record, index) => {
       const basicData = {
-        id: record.id,
-        uuid: record.user_id || "",
-        studentId: record.user_id || "未知", // 暫時用 user_id
-        borrowType: convertBorrowType(record.temporary),
-        startTime: formatDate(record.start_date),
-        endTime: formatDate(record.end_date),
-        cabinet: String(record.locker_id || "未分配"),
-        status: convertStatus(record),
-        rejectReason: record.reject_reason || "",
-        applyTime: formatDate(record.apply_date),
-        approveTime: formatDate(record.review_date),
-        returnApplyTime: formatDate(record.return_available_date),
-        returnApproveTime: formatDate(record.return_accepted_date),
-        borrowReason: record.reason || ""
-      };
+          id: record.id,
+          uuid: record.user_id || "",
+          borrowType: convertBorrowType(record.temporary),
+          startTime: formatDate(record.start_date),
+          endTime: formatDate(record.end_date),
+          cabinet: String(record.locker_id || "未分配"),
+          status: convertStatus(record),
+          rejectReason: record.reject_reason || "",
+          applyTime: formatDate(record.apply_date),
+          approveTime: formatDate(record.review_date),
+          returnApplyTime: formatDate(record.return_available_date),
+          returnApproveTime: formatDate(record.return_accepted_date),
+          borrowReason: record.reason || ""
+        };
+
+        // 取得 SSO 資料（包含學號）
         try {
           const ssoInfo = await getSsoData(basicData.uuid);
-          return { ...basicData, ...ssoInfo };
+          return {
+            ...basicData,
+            studentId: ssoInfo.student_id || ssoInfo.studentId || "未知", // ✅ 從 SSO 取學號
+            name: ssoInfo.name,
+            grade: ssoInfo.grade,
+            phone: ssoInfo.phone,
+            email: ssoInfo.email
+          };
         } catch (error) {
           console.warn(`SSO 失敗 (${index}):`, error);
+          return {
+            ...basicData,
+            studentId: "載入失敗",
+            name: "載入失敗",
+            grade: "",
+            phone: "",
+            email: ""
+          };
         }
       })
     );
 
     applications.value = processedData;
-    console.log("✅ 載入完成:", processedData.length, "筆");
+    console.log("載入完成:", processedData.length, "筆");
 
     if (processedData.length > 0) {
-      console.log("📊 轉換後第一筆:", processedData[0]);
+      console.log("轉換後第一筆:", processedData[0]);
     }
 
   } catch (error) {
-    console.error("❌ 載入錯誤:", error);
+    console.error("載入錯誤:", error);
     loadError.value = error.message || "載入失敗";
   } finally {
     isLoading.value = false;
