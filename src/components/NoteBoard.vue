@@ -2,6 +2,7 @@
 import { onMounted } from 'vue';      
 import { User } from '@/api/main.js'; 
 import { ref, computed } from 'vue'
+import { SsoUser } from '@/api/sso';
 import IconSearch from './icons/IconSearch.vue';
 import PopupViolationNote from './popups/PopupViolationNote.vue';
 import CheckPopup from './popups/CheckPopup.vue';
@@ -18,21 +19,31 @@ const USER_STATE = { NONE: 0, DORM: 1, VIOLATION: 2 };
 // 空的響應式陣列，用來接 API 資料
 const studentsList = ref([]);
 
+// 直接填入學號姓名在Board上
 onMounted(async () => {
-  // 呼叫 API 
   const data = await User.getAll();
+  if (!data) return;
 
-  // 只要確認有拿到資料 (data 不是 null) 就可以直接更新
-  if (data) {
-    studentsList.value = data.map(user => ({
-      id: user.id,
-      name: user.id,
-      
-      // 狀態轉換邏輯
-      note: user.state === USER_STATE.DORM ? '住宿生註記' : 
-            user.state === USER_STATE.VIOLATION ? '違規註記' : null
-    }));
-  }
+  studentsList.value = await Promise.all(
+    data.map(async (user) => {
+      const apiData = await getUserData(user.id);
+      let note = null;
+      switch (user.state) {
+        case 1:
+          note = '住宿生註記';
+          break;
+        case 2:
+          note = '違規註記';
+          break;
+      }
+
+      return {
+        id: apiData[0],
+        name: apiData[1],
+        note: note
+      };
+    })
+  );
 });
 
 const filteredStudents = computed(() => {
@@ -108,6 +119,23 @@ const confirmWhat =()=>{
   if(title.value==='住宿生註記') handleDormitoryNote();
   else if(title.value==='取消註記') handleClearNote();
 }
+
+let getUserData = async (userId) => {
+  //沒有被借走的話就顯示空字串
+  if(userId === null){
+    return null;
+  }
+
+  let data = await SsoUser.getGet(userId);
+  let value = ['', ''];
+  console.log(data);
+  if( data !== null) {
+    value[0] = data.account;
+    value[1] = data.name;
+  }
+  return value;
+}
+
 </script>
 
 <template>
