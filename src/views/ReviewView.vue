@@ -120,7 +120,10 @@
 </template>
 
 <script setup>
+
 import { ref, computed, watch, nextTick, onMounted } from "vue";
+import { SsoUser } from "@/api/sso";
+//import { Record } from "@/api/main";
 // 導入新的子組件
 import ReviewList from "../components/ReviewList.vue";
 import InfoPopup from "@/components/popups/InfoPopup.vue";
@@ -272,22 +275,17 @@ function openReturnModal() {
   }
   showReturnModal.value = true;
 }
-
-async function executeReturn() {
-  try {
-    for (const id of returnSelections.value) {
-      await Record.postReviewReturn(id, { approved: true });
+// 真正執行「通過」邏輯的函式
+function executeReturn() {
+  returnSelections.value.forEach((id) => {
+    const app = applications.find((a) => a.id === id);
+    // 邏輯：如果是借用中，改成已歸還
+    if (app && app.status === "借用中") {
+      app.status = "已歸還";
     }
-
-    // 重新載入資料
-    await loadApplications();
-
-    returnSelections.value = [];
-    showReturnModal.value = false;
-  } catch (err) {
-    console.error("歸還審核失敗:", err);
-    alert("歸還審核失敗，請稍後再試");
-  }
+  });
+  returnSelections.value = []; // 清空勾選
+  showReturnModal.value = false; // 關閉彈窗
 }
 
 // isMobile 判斷
@@ -307,22 +305,16 @@ function openApproveModal() {
   showApproveModal.value = true;
 }
 
-
-async function executeApprove() {
-  try {
-    for (const id of mobileSelections.value) {
-      await Record.postReviewBorrow(id, { approved: true });
+// 真正執行「通過」邏輯的函式
+function executeApprove() {
+  mobileSelections.value.forEach((id) => {
+    const app = applications.find((a) => a.id === id);
+    if (app && app.status === "審核中") {
+      app.status = "借用中";
     }
-
-    // 重新載入資料
-    await loadApplications();
-
-    mobileSelections.value = [];
-    showApproveModal.value = false;
-  } catch (err) {
-    console.error("審核失敗:", err);
-    alert("審核失敗，請稍後再試");
-  }
+  });
+  mobileSelections.value = []; // 清空勾選
+  showApproveModal.value = false; // 執行完關閉彈窗
 }
 
 //申請「駁回」操作確認
@@ -335,26 +327,21 @@ function openRejectModal() {
   showRejectModal.value = true;
 }
 
-async function executeReject() {
-  try {
-    for (const id of mobileSelections.value) {
-      const app = applications.value.find(a => a.id === id);
-      await Record.postReviewBorrow(id, {
-        approved: false,
-        reject_reason: app.rejectReason || "已駁回"
-      });
+// 真正執行「駁回」邏輯的函式
+function executeReject() {
+  mobileSelections.value.forEach((id) => {
+    const app = applications.find((a) => a.id === id);
+    if (app && app.status === "審核中") {
+      app.status = "已駁回";
     }
-
-    // 重新載入資料
-    await loadApplications();
-
-    mobileSelections.value = [];
-    showRejectModal.value = false;
-  } catch (err) {
-    console.error("駁回失敗:", err);
-    alert("駁回失敗，請稍後再試");
-  }
+  });
+  mobileSelections.value = []; // 清空勾選
+  showRejectModal.value = false; // 執行完關閉彈窗
 }
+
+
+
+
 
 // 處理子組件發出的 "show-details" 事件
 function handleShowDetails(item) {
@@ -363,10 +350,11 @@ function handleShowDetails(item) {
   // 這裡將 item 資料轉換成彈窗需要的 groups 格式
   modalData.value = [
     // --- 申請者資訊 ---
-    { label: '姓名', value: item.name },
-    { label: '年級', value: item.grade },
-    { label: '主要電子郵件', value: item.email, isFullRow: true },
-    { label: '連絡電話', value: item.phone },
+    { label: '學號', value: item.studentId, isFullRow: true },
+    { label: '姓名', value: ssoInfo.name },
+    { label: '年級', value: ssoInfo.grade },
+    { label: '主要電子郵件', value: ssoInfo.email, isFullRow: true },
+    { label: '連絡電話', value: ssoInfo.phone },
 
     // --- 借用資訊 ---
     { label: '借用類型', value: item.borrowType },
