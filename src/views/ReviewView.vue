@@ -420,7 +420,7 @@ async function executeApprove() {
       await Record.postReviewBorrow(id, true);
     }
     mobileSelections.value.forEach((id) => {
-      const app = applications.find((a) => a.id === id);
+      const app = applications.value.find((a) => a.id === id);
       if (app && app.status === "審核中") {
         app.status = "借用中";
       }
@@ -452,7 +452,7 @@ async function executeReject(rejectReason) {
       await Record.postReviewBorrow(id, false, rejectReason);
     }
     mobileSelections.value.forEach((id) => {
-      const app = applications.find((a) => a.id === id);
+      const app = applications.value.find((a) => a.id === id);
       if (app && app.status === "審核中") {
         app.status = "已駁回";
       }
