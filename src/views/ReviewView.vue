@@ -96,25 +96,25 @@
       title="詳細資訊"
       :fields="modalData"
     />
-    <CheckPopup 
-      v-if="showApproveModal" 
-      operation="借用審核通過" 
-      @confirm="executeApprove" 
-      @close="showApproveModal = false" 
+    <CheckPopup
+      v-if="showApproveModal"
+      operation="借用審核通過"
+      @confirm="executeApprove"
+      @close="showApproveModal = false"
     />
 
-    <CheckPopup 
-      v-if="showRejectModal" 
-      operation="借用審核駁回" 
-      @confirm="executeReject" 
-      @close="showRejectModal = false" 
+    <CheckPopup
+      v-if="showRejectModal"
+      operation="借用審核駁回"
+      @confirm="executeReject"
+      @close="showRejectModal = false"
     />
 
-    <CheckPopup 
-      v-if="showReturnModal" 
-      operation="歸還通過" 
-      @confirm="executeReturn" 
-      @close="showReturnModal = false" 
+    <CheckPopup
+      v-if="showReturnModal"
+      operation="歸還通過"
+      @confirm="executeReturn"
+      @close="showReturnModal = false"
     />
   </section>
 </template>
@@ -123,7 +123,7 @@
 
 import { ref, computed, watch, nextTick, onMounted } from "vue";
 import { SsoUser } from "@/api/sso";
-//import { Record } from "@/api/main";
+import { Record } from "@/api/main";
 // 導入新的子組件
 import ReviewList from "../components/ReviewList.vue";
 import InfoPopup from "@/components/popups/InfoPopup.vue";
@@ -161,108 +161,37 @@ const mobileSelections = ref([]);
 const detailModalRef = ref(null); // 用來綁定彈窗組件
 const modalData = ref([]);        // 用來存放轉換後的詳細資料
 
-const applications = ref([
-  {
-    id: 1,
-    uuid:"07fb55e5-d681-11f0-9149-0242ac180003", //先用我的測試
-    studentId: "U11316022",
-    name: "有顯示我的名字代表測試成功",
-    grade: "大負一",
-    phone: "0912345678",
-    email: "wang.min@example.com",
-    borrowType: "學年借用",
-    startTime: "2024/09/01",
-    endTime: "2025/06/30",
-    cabinet: "31",
-    status: "審核中",
-  },
-  {
-    id: 2,
-    uuid:"", //api抓取都是uuid
-    studentId: "U11316051",
-    name: "李小美",
-    grade: "大一",
-    phone: "0922333444",
-    email: "may.lee@example.com",
-    borrowType: "臨時借用",
-    startTime: "2025/07/23",
-    endTime: "2025/07/23",
-    cabinet: "35",
-    status: "已駁回",
-  },
-  {
-    id: 3,
-    uuid:"", //api抓取都是uuid
-    studentId: "U11316052",
-    name: "張大明",
-    grade: "大二",
-    phone: "0933444555",
-    email: "chang.big@example.com",
-    borrowType: "學年借用",
-    startTime: "2024/09/01",
-    endTime: "2025/06/30",
-    cabinet: "36",
-    status: "借用中",
-  },
-  {
-    id: 4,
-    studentId: "U11316054",
-    uuid:"", //api抓取都是uuid
-    name: "王中明",
-    grade: "大一",
-    phone: "0944555666",
-    email: "wang.mid@example.com",
-    borrowType: "學年借用",
-    startTime: "2024/09/01",
-    endTime: "2025/06/30",
-    cabinet: "20",
-    status: "審核中",
-  },
-  {
-    id: 5,
-    studentId: "U11316055",
-    name: "王大明",
-    grade: "大一",
-    phone: "0955666777",
-    email: "wang.big@example.com",
-    borrowType: "臨時借用",
-    startTime: "2024/09/01",
-    endTime: "2025/06/30",
-    cabinet: "21",
-    status: "審核中",
-  },
+// 初始化為空陣列,資料將從 API 載入
+const applications = ref([]);
 
-]);
+const isLoading = ref(true);
+const loadError = ref(null);
+
+const borrowTypeFilter = ref("");
+const gradeFilter = ref("");
+const statusFilter = ref("");
 
 async function getSsoData(uuid) {
-  // 設定預設回傳值
-  // const defaultData = {
-  //   name: "載入中...",
-  //   grade: "載入中...",
-  //   email: "載入中...",
-  //   phone: "載入中..."
-  // };
-
-  // 檢查 UUID 
+  // 檢查 UUID
   if (!uuid || uuid === "") {
     console.warn("getSsoData: UUID 為空");
     return {
-      name: "無資料 (假資料)",
-      grade: "無資料 (假資料)",
-      email: "無資料 (假資料)",
-      phone: "無資料 (假資料)"
+      name: "無資料",
+      grade: "無資料",
+      email: "無資料",
+      phone: "無資料"
     };
   }
 
   try {
     // 呼叫 API
     const ssoData = await SsoUser.getGet(uuid);
-    
+
     // 確認回傳資料並進行對應
     if (ssoData) {
       return {
         name: ssoData.user_name || ssoData.name || "未知姓名",
-        grade: ssoData.position || "未知年級", 
+        grade: ssoData.position || "未知年級",
         email: ssoData.primary_email || "無信箱",
         phone: ssoData.phone_number || "無電話"
       };
@@ -279,55 +208,114 @@ async function getSsoData(uuid) {
   };
 }
 
+function convertStatus(record) {
+  // 根據不同欄位組合判斷狀態
+  if (record.return_accepted === true) {
+    return "已歸還";
+  }
+  if (record.return_available === true && record.return_accepted !== true) {
+    return "歸還中";
+  }
+  if (record.borrow_accepted === true) {
+    return "借用中";
+  }
+  if (record.borrow_accepted === false) {
+    return "已駁回";
+  }
+  if (record.borrow_accepted === null) {
+    return "審核中";
+  }
+  return "未知狀態";
+}
 
+function convertBorrowType(temporary) {
+  // temporary 是 boolean
+  return temporary === true ? "臨時借用" : "學年借用";
+}
+
+/**
+ * 格式化日期為 YYYY/MM/DD 格式
+ */
+function formatDate(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}/${month}/${day}`;
+}
+
+/**
+ * 從 API 載入所有申請紀錄
+ */
 async function loadApplications() {
-  console.log("開始載入假資料並串接 SSO...");
+  console.log("開始從 API 載入申請資料...");
+  isLoading.value = true;
+  loadError.value = null;
 
   try {
-    // 使用 Promise.all 對每一筆假資料執行 getSsoData
+    const apiData = await Record.getAll();
+
+    if (!apiData || !Array.isArray(apiData)) {
+      console.error("API 回傳資料格式錯誤");
+      loadError.value = "資料格式錯誤";
+      return;
+    }
+
+    console.log("API 回傳資料筆數:", apiData.length);
+
+    // DEBUG: 印出第一筆資料結構
+    if (apiData.length > 0) {
+      console.log("📋 第一筆 API 資料:", apiData[0]);
+      console.log("📋 可用欄位:", Object.keys(apiData[0]));
+    }
+
+    // 處理資料，只對前 20 筆載入 SSO 避免太慢
     const processedData = await Promise.all(
-      applications.value.map(async (item) => {
-        
-        // 先複製一份原本的資料 (這樣預設就會是李小美、張大明等假資料)
-        let newItem = { ...item };
-
-        // 判斷邏輯：只有當 UUID 存在且不為空字串時，才去呼叫 SSO
-        if (item.uuid && item.uuid.trim() !== "") {
-          
-          const ssoInfo = await getSsoData(item.uuid);
-
-          // 只有當成功抓到資料 (不是錯誤訊息) 時，才覆蓋原本的假資料
-          if (ssoInfo.name !== "讀取失敗" && ssoInfo.name !== "無資料 (假資料)") {
-             newItem.name = ssoInfo.name;
-             newItem.grade = ssoInfo.grade;
-             newItem.email = ssoInfo.email;
-             newItem.phone = ssoInfo.phone;
-          }
+      apiData.map(async (record, index) => {
+      const basicData = {
+        id: record.id,
+        uuid: record.user_id || "",
+        studentId: record.user_id || "未知", // 暫時用 user_id
+        borrowType: convertBorrowType(record.temporary),
+        startTime: formatDate(record.start_date),
+        endTime: formatDate(record.end_date),
+        cabinet: String(record.locker_id || "未分配"),
+        status: convertStatus(record),
+        rejectReason: record.reject_reason || "",
+        applyTime: formatDate(record.apply_date),
+        approveTime: formatDate(record.review_date),
+        returnApplyTime: formatDate(record.return_available_date),
+        returnApproveTime: formatDate(record.return_accepted_date),
+        borrowReason: record.reason || ""
+      };
+        try {
+          const ssoInfo = await getSsoData(basicData.uuid);
+          return { ...basicData, ...ssoInfo };
+        } catch (error) {
+          console.warn(`SSO 失敗 (${index}):`, error);
         }
-
-        // 回傳處理後的資料 (若沒 uuid，就會回傳原本的 item)
-        return newItem;
       })
     );
 
-    // 更新到畫面變數
     applications.value = processedData;
-    console.log("資料處理完成:", processedData);
+    console.log("✅ 載入完成:", processedData.length, "筆");
+
+    if (processedData.length > 0) {
+      console.log("📊 轉換後第一筆:", processedData[0]);
+    }
 
   } catch (error) {
-    console.error("處理資料發生錯誤:", error);
+    console.error("❌ 載入錯誤:", error);
+    loadError.value = error.message || "載入失敗";
+  } finally {
+    isLoading.value = false;
   }
 }
-
 // 頁面載入時執行
 onMounted(() => {
   loadApplications();
 });
-
-
-const borrowTypeFilter = ref("");
-const gradeFilter = ref("");
-const statusFilter = ref("");
 
 const filteredApplications = computed(() => {
   return applications.value.filter((app) => {
@@ -342,6 +330,7 @@ const filteredApplications = computed(() => {
       statusFilter.value === "" || app.status === statusFilter.value;
 
     if (selectedType.value === "借用") {
+      // 借用申請：只顯示審核中
       return (
         app.status === "審核中" &&
         matchName &&
@@ -350,16 +339,18 @@ const filteredApplications = computed(() => {
         matchStatus
       );
     } else if (selectedType.value === "歸還") {
+      // 歸還申請：顯示「借用中」或「歸還中」的紀錄
       return (
-        app.status === "借用中" &&
+        (app.status === "借用中" || app.status === "歸還中") &&
         matchName &&
         matchBorrowType &&
         matchGrade &&
         matchStatus
       );
     } else if (selectedType.value === "審核") {
+      // 審核紀錄：顯示所有狀態
       return (
-        ["審核中", "已駁回", "借用中", "已歸還"].includes(app.status) &&
+        ["審核中", "已駁回", "借用中", "歸還中", "已歸還"].includes(app.status) &&
         matchName &&
         matchBorrowType &&
         matchGrade &&
@@ -382,11 +373,11 @@ function openReturnModal() {
   }
   showReturnModal.value = true;
 }
-// 真正執行「通過」邏輯的函式 
+// 真正執行「通過」邏輯的函式
 function executeReturn() {
   returnSelections.value.forEach((id) => {
     const app = applications.value.find((a) => a.id === id);
-    // 邏輯：如果是借用中，改成已歸還
+    // 邏輯:如果是借用中,改成已歸還
     if (app && app.status === "借用中") {
       app.status = "已歸還";
     }
@@ -412,7 +403,7 @@ function openApproveModal() {
   showApproveModal.value = true;
 }
 
-// 真正執行「通過」邏輯的函式 
+// 真正執行「通過」邏輯的函式
 function executeApprove() {
   mobileSelections.value.forEach((id) => {
     const app = applications.value.find((a) => a.id === id);
@@ -434,7 +425,7 @@ function openRejectModal() {
   showRejectModal.value = true;
 }
 
-// 真正執行「駁回」邏輯的函式 
+// 真正執行「駁回」邏輯的函式
 function executeReject() {
   mobileSelections.value.forEach((id) => {
     const app = applications.value.find((a) => a.id === id);
@@ -451,7 +442,7 @@ function executeReject() {
 async function handleShowDetails(item) {
   console.log("顯示詳細資訊uuid: ", item.uuid);
   const ssoInfo = await getSsoData(item.uuid);
-  
+
   // 這裡將 item 資料轉換成彈窗需要的 groups 格式
 modalData.value = [
     // --- 申請者資訊 ---
@@ -466,32 +457,32 @@ modalData.value = [
     // 合併起訖時間，因為較長建議給整行，或視情況拿掉 isFullRow
     { label: '借用時間起/迄', value: `${item.startTime} ~ ${item.endTime}`, isFullRow: true },
     { label: '借用系櫃編號', value: item.cabinet },
-    
-    { label: '借用理由', value: '沒有宿舍ＱＡＱ', isFullRow: true, isBox: true },
-    
-    // 以下補足截圖要求的欄位 (若 item 裡還沒這欄位，暫時用 item.applyTime 代替或寫死)
-    { label: '申請借用時間', value: '2025/06/30' }, 
-    { label: '系辦審核時間', value: item.approveTime || '' }, // 假設你有審核時間變數
+
+    { label: '借用理由', value: item.borrowReason || '無', isFullRow: true, isBox: true },
+
+    // 以下補足截圖要求的欄位
+    { label: '申請借用時間', value: item.applyTime || '' },
+    { label: '系辦審核時間', value: item.approveTime || '' },
     { label: '系辦審核結果', value: item.status },
 
     // 駁回理由
     ...(item.status === '已駁回' ? [
-        { label: '駁回理由', value: '資料不符', isFullRow: true, isBox: true }
+        { label: '駁回理由', value: item.rejectReason || '無', isFullRow: true, isBox: true }
     ] : []),
 
     // --- 歸還資訊 (邏輯與之前相同，視狀態顯示) ---
     ...(['歸還中', '已歸還'].includes(item.status) ? [
-        { 
-          label: '申請歸還時間', 
-          value: item.returnApplyTime 
+        {
+          label: '申請歸還時間',
+          value: item.returnApplyTime || ''
         },
-        { 
-          label: '系辦審核時間', 
-          value: item.returnApproveTime 
+        {
+          label: '系辦審核時間',
+          value: item.returnApproveTime || ''
         },
-        { 
-          label: '系辦審核結果', 
-          value: item.status === '已歸還' ? '通過' : '審核中' 
+        {
+          label: '系辦審核結果',
+          value: item.status === '已歸還' ? '通過' : '審核中'
         }
     ] : [])
 ];
