@@ -192,16 +192,6 @@
     } else {
       borrowReason.value = reason
       showSuccessModal.value = true
-      try {
-        await Record.postBorrow(borrow)
-        console.log('申請成功')
-        showSuccessModal.value = true
-      } catch (error) {
-        console.error('申請失敗:', error)
-        const errorMsg = error.response?.data?.message || error.message || ERROR_LIBRARY.SYSTEM_ERROR;
-        failReasons.value = [errorMsg]
-        showFailModal.value = true
-      }
     }
   }
 
