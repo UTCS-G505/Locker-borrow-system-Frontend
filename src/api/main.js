@@ -94,7 +94,17 @@ class User {
 }
 
 class Record {
-  static getGet;
+  static getGet = async (record_id) => {
+    try {
+      const response = await apiMainV1.get(
+        `/record/get/${record_id}`
+      );
+      return response.data.data;
+    } catch (err) {
+      console.error("獲取借用紀錄失敗", err);
+      return null;
+    }
+  };
 
   static getList = async(userId) =>{
     try{
