@@ -150,7 +150,6 @@
     showConfirmModal.value = false
 
     // 取得 UserID
-    const authStore = useAuthStore();
     const userId = authStore.user?.id;
 
     if (!userId) {
