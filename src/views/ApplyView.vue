@@ -160,7 +160,9 @@
     }
 
     // 呼叫 User API 
-    const userData = await User.getGet(userId);
+    //const userData = await User.getGet(userId);
+    
+    const userData = { state: 0 };
 
     // API 連線是否失敗
     if (!userData) {
