@@ -79,11 +79,32 @@ class User {
     }
   };
 
-  static postNote;
+  static errorNoteMessages = { 0: "取消註記失敗", 1: "住宿生註記失敗", 2: "違規註記失敗" };
+  static postNote = async (userId, state, reason) => {
+    try {
+      const response = await apiMainV1.post(
+        `/user/note/${ userId }`, null, { params: { state, reason } }
+      );
+      return response.data.data;
+    } catch (err) {
+      console.error(User.errorNoteMessages[state], err);
+      throw err;
+    }
+  }
 }
 
 class Record {
-  static getGet;
+  static getGet = async (record_id) => {
+    try {
+      const response = await apiMainV1.get(
+        `/record/get/${record_id}`
+      );
+      return response.data.data;
+    } catch (err) {
+      console.error("獲取借用紀錄失敗", err);
+      return null;
+    }
+  };
 
   static getList = async(userId) =>{
     try{
