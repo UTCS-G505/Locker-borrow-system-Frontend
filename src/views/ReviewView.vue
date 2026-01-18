@@ -150,7 +150,7 @@ const pendingRejectIds = ref([]);
 
 function handleRejectSubmit(reason) {
   pendingRejectIds.value.forEach(id => {
-    const app = applications.find(a => a.id === id);
+    const app = applications.value.find(a => a.id === id);
     if (app && app.status === "審核中") {
       app.status = "已駁回";
       app.rejectReason = reason;
@@ -312,7 +312,7 @@ async function executeReturn() {
       // 假設 res.code === 0 代表後端處理成功
       if (res !== null) {
         const targetId = returnSelections.value[index];
-        const app = applications.find((a) => a.id === targetId);
+        const app = applications.value.find((a) => a.id === targetId);
         if (app) {
           app.status = "已歸還"; // 狀態一變，filteredApplications 會自動過濾掉它
         }
@@ -350,7 +350,7 @@ function openApproveModal() {
 // 真正執行「通過」邏輯的函式
 function executeApprove() {
   mobileSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
+    const app = applications.value.find((a) => a.id === id);
     if (app && app.status === "審核中") {
       app.status = "借用中";
     }
@@ -372,7 +372,7 @@ function openRejectModal() {
 // 真正執行「駁回」邏輯的函式
 function executeReject() {
   mobileSelections.value.forEach((id) => {
-    const app = applications.find((a) => a.id === id);
+    const app = applications.value.find((a) => a.id === id);
     if (app && app.status === "審核中") {
       app.status = "已駁回";
     }
