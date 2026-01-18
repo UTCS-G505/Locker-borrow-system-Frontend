@@ -78,14 +78,9 @@
   import ConfirmBorrowModal from '../components/ConfirmBorrowModal.vue'
   import FailModal  from '../components/FailedDialog.vue'
   import ApplySuccessModal from '../components/ApplySuccessModal.vue'
-<<<<<<< HEAD
+
   import { useAuthStore } from '@/stores/auth';
   import { User, Locker, Record } from '@/api/main.js';
-=======
-  import { useAuthStore } from '@/stores/auth'
-  import { Record, Locker } from '@/api/main'
-
->>>>>>> main
 
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
@@ -151,8 +146,6 @@
     showConfirmModal.value = true
   }
 
-<<<<<<< HEAD
-
   async function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
 
@@ -167,9 +160,7 @@
     }
 
     // 呼叫 User API 
-    //const userData = await User.getGet(userId);
-    
-    const userData = { state: 0 };
+    const userData = await User.getGet(userId);
 
     // API 連線是否失敗
     if (!userData) {
@@ -196,12 +187,10 @@
     }
     
     // 通過檢查
-=======
-  async function handleConfirmBorrow({ locker, reason }) {
+
     showConfirmModal.value = false
     console.log('父元件收到 confirm 事件：', { locker, reason })
 
->>>>>>> main
     borrowReason.value = reason
 
     const isTemporary = selectedType.value !== '學年借用'
