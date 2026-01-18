@@ -350,9 +350,9 @@ const filteredApplications = computed(() => {
         matchStatus
       );
     } else if (selectedType.value === "歸還") {
-      // 歸還申請：顯示「借用中」或「歸還中」的紀錄
+      // 歸還申請：顯示「歸還中」的紀錄
       return (
-        (app.status === "借用中" || app.status === "歸還中") &&
+        (app.status === "歸還中") &&
         matchName &&
         matchBorrowType &&
         matchGrade &&
