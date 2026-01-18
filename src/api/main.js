@@ -66,7 +66,16 @@ class Announcement {
 }
 
 class User {
-  static getGet;
+  static getGet = async (userId) => {
+    try {
+      const response = await apiMainV1.get(`/user/get/${userId}`);
+      return response.data.data;
+
+    } catch (err) {
+      console.error("取得使用者資料失敗", err);
+      return null; 
+    }
+  };
 
   static getAll = async () => {
     try {
