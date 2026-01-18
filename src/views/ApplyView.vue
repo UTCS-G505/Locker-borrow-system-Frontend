@@ -185,13 +185,52 @@
       showFailModal.value = true;
       return;
     }
+    
+    // 通過檢查
+    borrowReason.value = reason
 
-    if (String(locker.name) === '2') {
-      failReasons.value = [ERROR_LIBRARY.SYSTEM_ERROR]
-      showFailModal.value = true // 開啟失敗彈窗
-    } else {
-      borrowReason.value = reason
-      showSuccessModal.value = true
+    const isTemporary = selectedType.value !== '學年借用'
+    const startIso = new Date(timeRange.value.start).toISOString();
+    // 結束時間 (設為當天最後一秒)
+    let endObj = new Date(timeRange.value.end);
+    endObj.setHours(23, 59, 59, 999);
+
+    const endIso = endObj.toISOString();
+
+    const currentUserId = authStore.user?.id
+
+    if (!currentUserId) {
+      alert("尚未登入，無法借用！")
+      return
+    }
+
+    //打包 API 需要的資料
+    let borrow = {
+      "user_id": currentUserId,
+      "temporary": isTemporary,
+      "start_date": startIso,
+      "end_date": endIso,
+      "locker_id": locker.id,
+      "reason": reason
+    }
+
+    try {
+      await Record.postBorrow(borrow)
+      // 成功後的處理
+      console.log('申請成功')
+
+      showSuccessModal.value = true // 跳出成功視窗
+    } catch (error) {
+      // 失敗後的處理
+      console.error('申請失敗:', error)
+      const errorMsg = error.response?.data?.message || error.message || ERROR_LIBRARY.SYSTEM_ERROR;
+
+      // 錯誤訊息陣列
+      failReasons.value = [errorMsg]
+      
+      // 開啟失敗彈窗
+      showFailModal.value = true
+
     }
   }
 
