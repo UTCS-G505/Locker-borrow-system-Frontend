@@ -13,6 +13,9 @@ const showPopupCheck=ref(false);
 const selectedStudent = ref(null);
 const title = ref('');
 
+// Note ID
+const USER_STATE = { NONE: 0, DORM: 1, VIOLATION: 2 };
+
 // 空的響應式陣列，用來接 API 資料
 const studentsList = ref([]);
 
@@ -26,15 +29,16 @@ onMounted(async () => {
       const apiData = await getUserData(user.id);
       let note = null;
       switch (user.state) {
-        case 1:
+        case USER_STATE.DORM:
           note = '住宿生註記';
           break;
-        case 2:
+        case USER_STATE.VIOLATION:
           note = '違規註記';
           break;
       }
 
       return {
+        dataID: user.id,
         id: apiData[0],
         name: apiData[1],
         note: note
@@ -62,33 +66,54 @@ const filteredStudents = computed(() => {
 });
 
 const dormitoryNote = (student) => {
-  title.value='住宿生註記';
+  title.value = '住宿生註記';
   selectedStudent.value = student;
-  showPopupCheck.value=true;
+  showPopupCheck.value = true;
 };
-const handleDormitoryNote = () => {
-  selectedStudent.value.note = '住宿生註記';
-  title.value = '';
+const handleDormitoryNote = async () => {
+  try {
+    await User.postNote(selectedStudent.value.dataID, USER_STATE.DORM, null);
+    selectedStudent.value.note = '住宿生註記';
+    title.value = '';
+  } catch (err) {
+    console.error("dormitory note failed!", err);
+    alert("發生錯誤！住宿生註記失敗");
+  }
   showPopupCheck.value = false;
 }
+
 const violationNote = (student) => {
   selectedStudent.value = student;
   showPopup.value = true;
 };
-const handleViolationNote = (note) => {
-  selectedStudent.value.note = '違規註記';
-  alert(`學號：${note.user.id}\n姓名：${note.user.name}\n事由：${note.reason}`);
+const handleViolationNote = async ( payload ) => {
+  const { user, reason } = payload;
+  try {
+    await User.postNote(user.dataID, USER_STATE.VIOLATION, reason);
+    selectedStudent.value.note = '違規註記';
+    alert(`學號：${user.id}\n姓名：${user.name}\n事由：${reason}`);
+  } catch (err) {
+    console.error("violation note failed!", err);
+    alert("發生錯誤！違規註記失敗");
+  }
   showPopup.value = false;
 }
-const clearNote=(student)=>{
+
+const clearNote = (student) =>{
   selectedStudent.value = student;
-  title.value='取消註記'
-  showPopupCheck.value=true;
+  title.value = '取消註記'
+  showPopupCheck.value = true;
 }
-const handleClearNote = () => {
-  selectedStudent.value.note = null;
-  title.value=''
-  showPopupCheck.value=false;
+const handleClearNote = async () => {
+   try {
+    await User.postNote(selectedStudent.value.dataID, USER_STATE.NONE, null);
+    selectedStudent.value.note = null;
+    title.value = ''
+  } catch (err) {
+    console.error("clear note failed!", err);
+    alert("發生錯誤！註記清除失敗");
+  }
+  showPopupCheck.value = false;
 };
 
 const confirmWhat =()=>{

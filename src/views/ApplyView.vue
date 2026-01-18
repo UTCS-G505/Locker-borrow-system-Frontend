@@ -78,9 +78,9 @@
   import ConfirmBorrowModal from '../components/ConfirmBorrowModal.vue'
   import FailModal  from '../components/FailedDialog.vue'
   import ApplySuccessModal from '../components/ApplySuccessModal.vue'
-  import { useAuthStore } from '@/stores/auth'
-  import { Record, Locker } from '@/api/main'
 
+  import { useAuthStore } from '@/stores/auth';
+  import { User, Locker, Record } from '@/api/main.js';
 
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
@@ -148,6 +148,46 @@
 
   async function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
+
+    // 取得 UserID
+    const userId = authStore.user?.id;
+
+    if (!userId) {
+      failReasons.value = ["無法取得使用者資訊，請重新登入"];
+      showFailModal.value = true;
+      return; 
+    }
+
+    // 呼叫 User API 
+    const userData = await User.getGet(userId);
+
+    // API 連線是否失敗
+    if (!userData) {
+      failReasons.value = ["讀取使用者資料失敗"];
+      showFailModal.value = true;
+      return;
+    }
+
+    // 檢查是否為住宿生 (State 1)
+    if (userData.state === 1) { 
+      failReasons.value = ["您已被註記為住宿生，無法借用系櫃，如有疑問請洽系辦"];
+      showFailModal.value = true;
+      return;
+    }
+
+    // 檢查是否為違規 (State 2)
+    if (userData.state === 2) {
+      // 從後端資料取得 reason，若無則顯示預設文字
+      const violationReason = userData.reason || '違反規定';
+      
+      failReasons.value = [`您已被註記違規（事由：${violationReason}），不可借用系櫃，如有疑問請洽系辦`];
+      showFailModal.value = true;
+      return;
+    }
+    
+    // 通過檢查
+
+    showConfirmModal.value = false
     console.log('父元件收到 confirm 事件：', { locker, reason })
 
     borrowReason.value = reason
@@ -197,9 +237,10 @@
     }
   }
 
+  
+
   function handleTimeRangeUpdate(range) {
     timeRange.value = range
-    console.log('臨時借用時間範圍更新:', range)
   }
 
   const lockers = ref(generateLockersByGrade(selectedGrade.value))
@@ -486,4 +527,4 @@
       justify-content: flex-start;    /* 每個小塊內部也靠左 */
     }
   }
-</style>
+  </style>
