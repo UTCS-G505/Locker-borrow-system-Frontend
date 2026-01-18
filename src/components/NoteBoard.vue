@@ -1,5 +1,8 @@
 <script setup>
+import { onMounted } from 'vue';      
+import { User } from '@/api/main.js'; 
 import { ref, computed } from 'vue'
+import { SsoUser } from '@/api/sso';
 import IconSearch from './icons/IconSearch.vue';
 import PopupViolationNote from './popups/PopupViolationNote.vue';
 import CheckPopup from './popups/CheckPopup.vue';
@@ -10,34 +13,39 @@ const showPopupCheck=ref(false);
 const selectedStudent = ref(null);
 const title = ref('');
 
-// sample data
-const studentsList = ref([
-  { id: 'U11016099', name: '學生一', note: '住宿生註記' },
-  { id: 'U11116099', name: '學生二', note: null },
-  { id: 'U11216099', name: '學生三', note: '違規註記' },
-  { id: 'U11316099', name: '學生四', note: null },
-  { id: 'U11416099', name: 'Student Five', note: null },
-  { id: 'G11016099', name: '學生六', note: '住宿生註記' },
-  { id: 'G11116099', name: '學生七', note: null },
-  { id: 'G11216099', name: '學生八', note: '違規註記' },
-  { id: 'G11316099', name: '學生九', note: null },
-  { id: 'G11416099', name: '學生十', note: null },
-  { id: 'M11016099', name: '學生十一', note: '住宿生註記' },
-  { id: 'M11116099', name: '學生十二', note: null },
-  { id: 'M11216099', name: 'Student Thirteen', note: null },
-  { id: 'M11316099', name: '學生十四', note: null },
-  { id: 'M11416099', name: '學生十五', note: null },
-  { id: 'U11316100', name: '學生十六', note: '住宿生註記' },
-  { id: 'U11316101', name: '學生十七', note: '違規註記' },
-  { id: 'U11316102', name: '學生十八', note: '住宿生註記' },
-  { id: 'U11316103', name: '學生十九', note: null },
-  { id: 'U11316104', name: '學生二十', note: null },
-  { id: 'U11316105', name: 'Student Twenty First', note: null },
-  { id: 'U11316106', name: 'Student Twenty Second', note: null },
-  { id: 'U11316107', name: 'Student Twenty Third', note: '違規註記' },
-  { id: 'U11316108', name: 'Student Twenty Fourth', note: null },
-  { id: 'U11316109', name: 'Student Twenty Fifth', note: null },
-]);
+// Note ID
+const USER_STATE = { NONE: 0, DORM: 1, VIOLATION: 2 };
+
+// 空的響應式陣列，用來接 API 資料
+const studentsList = ref([]);
+
+// 直接填入學號姓名在Board上
+onMounted(async () => {
+  const data = await User.getAll();
+  if (!data) return;
+
+  studentsList.value = await Promise.all(
+    data.map(async (user) => {
+      const apiData = await getUserData(user.id);
+      let note = null;
+      switch (user.state) {
+        case USER_STATE.DORM:
+          note = '住宿生註記';
+          break;
+        case USER_STATE.VIOLATION:
+          note = '違規註記';
+          break;
+      }
+
+      return {
+        dataID: user.id,
+        id: apiData[0],
+        name: apiData[1],
+        note: note
+      };
+    })
+  );
+});
 
 const filteredStudents = computed(() => {
   return studentsList.value.filter(student =>
@@ -58,39 +66,77 @@ const filteredStudents = computed(() => {
 });
 
 const dormitoryNote = (student) => {
-  title.value='住宿生註記';
+  title.value = '住宿生註記';
   selectedStudent.value = student;
-  showPopupCheck.value=true;
+  showPopupCheck.value = true;
 };
-const handleDormitoryNote = () => {
-  selectedStudent.value.note = '住宿生註記';
-  title.value = '';
+const handleDormitoryNote = async () => {
+  try {
+    await User.postNote(selectedStudent.value.dataID, USER_STATE.DORM, null);
+    selectedStudent.value.note = '住宿生註記';
+    title.value = '';
+  } catch (err) {
+    console.error("dormitory note failed!", err);
+    alert("發生錯誤！住宿生註記失敗");
+  }
   showPopupCheck.value = false;
 }
+
 const violationNote = (student) => {
   selectedStudent.value = student;
   showPopup.value = true;
 };
-const handleViolationNote = (note) => {
-  selectedStudent.value.note = '違規註記';
-  alert(`學號：${note.user.id}\n姓名：${note.user.name}\n事由：${note.reason}`);
+const handleViolationNote = async ( payload ) => {
+  const { user, reason } = payload;
+  try {
+    await User.postNote(user.dataID, USER_STATE.VIOLATION, reason);
+    selectedStudent.value.note = '違規註記';
+    alert(`學號：${user.id}\n姓名：${user.name}\n事由：${reason}`);
+  } catch (err) {
+    console.error("violation note failed!", err);
+    alert("發生錯誤！違規註記失敗");
+  }
   showPopup.value = false;
 }
-const clearNote=(student)=>{
+
+const clearNote = (student) =>{
   selectedStudent.value = student;
-  title.value='取消註記'
-  showPopupCheck.value=true;
+  title.value = '取消註記'
+  showPopupCheck.value = true;
 }
-const handleClearNote = () => {
-  selectedStudent.value.note = null;
-  title.value=''
-  showPopupCheck.value=false;
+const handleClearNote = async () => {
+   try {
+    await User.postNote(selectedStudent.value.dataID, USER_STATE.NONE, null);
+    selectedStudent.value.note = null;
+    title.value = ''
+  } catch (err) {
+    console.error("clear note failed!", err);
+    alert("發生錯誤！註記清除失敗");
+  }
+  showPopupCheck.value = false;
 };
 
 const confirmWhat =()=>{
   if(title.value==='住宿生註記') handleDormitoryNote();
   else if(title.value==='取消註記') handleClearNote();
 }
+
+let getUserData = async (userId) => {
+  //沒有被借走的話就顯示空字串
+  if(userId === null){
+    return null;
+  }
+
+  let data = await SsoUser.getGet(userId);
+  let value = ['', ''];
+  console.log(data);
+  if( data !== null) {
+    value[0] = data.account;
+    value[1] = data.name;
+  }
+  return value;
+}
+
 </script>
 
 <template>

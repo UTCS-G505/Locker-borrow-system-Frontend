@@ -4,7 +4,6 @@
     <div class="left-group">
       <div class="label-text"><h2>請填寫申請內容</h2></div>
     </div>
-
     <!-- 借用類型與時間 -->
     <div class="left-group">
       <TypeSelect
@@ -39,7 +38,7 @@
     </div>
 
     <!-- 地圖彈窗 -->
-    <ModalMap v-if="showModal" @select="selectGradeFromMap" @close="closeModal" />
+    <ModalMap v-if="showMapModal" @select="selectGradeFromMap" @close="closeModal" />
 
     <div class="content-container">
       <LockerStatus :lockers="lockers" @select="handleLockerSelect" />
@@ -70,7 +69,8 @@
 </template>
 
 <script setup>
-  import { ref, watch } from 'vue'
+
+  import { ref, watch, onMounted } from 'vue'
   import ModalMap from '../components/ModalMap.vue'
   import GradeSelect from '../components/GradeSelect.vue'
   import TypeSelect from '../components/TypeSelect.vue'
@@ -78,12 +78,15 @@
   import ConfirmBorrowModal from '../components/ConfirmBorrowModal.vue'
   import FailModal  from '../components/FailedDialog.vue'
   import ApplySuccessModal from '../components/ApplySuccessModal.vue'
+  import { useAuthStore } from '@/stores/auth'
+  import { Record, Locker } from '@/api/main'
+
 
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
   const timeRange = ref({ start: '', end: '' })
 
-  const showModal = ref(false)
+  const showMapModal = ref(false)
   const selectedLocker = ref(null)
   const showConfirmModal = ref(false)
   const showFailModal = ref(false)
@@ -91,18 +94,48 @@
   const failReasons = ref([])
   const showSuccessModal = ref(false)
   const borrowReason = ref('')
+  const authStore = useAuthStore()
+
+  // API 相關狀態 
+  const apiLockers = ref([])  // 儲存從 API 獲取的原始資料
+  const isLoading = ref(false) // 載入狀態
 
   const ERROR_LIBRARY = {
   MAINTENANCE: '該櫃位目前正在維修中，無法借用',
   SYSTEM_ERROR: '伺服器連線異常，請稍後再試',
-  MISSING_INFO: '申請資訊填寫不完整'
+  MISSING_INFO: '申請資訊填寫不完整',
   };
 
+  // 櫃子狀態常數 
+  const LockerState = {
+    AVAILABLE: 0,     // 可借用
+    UNDER_REVIEW: 1,  // 審核中
+    BORROWED: 2       // 借用中
+  }
+
+  //從 API 載入櫃子資料 
+  async function loadLockersFromAPI() {
+    isLoading.value = true
+    try {
+      const data = await Locker.getAll()
+      apiLockers.value = data
+      console.log('API Response:', data)
+      // 載入完成後，生成櫃子（內部已整合 API 資料）
+      lockers.value = generateLockersByGrade(selectedGrade.value)
+    } catch (error) {
+      console.error('載入櫃子資料失敗:', error)
+      failReasons.value = [ERROR_LIBRARY.SYSTEM_ERROR]
+      showFailModal.value = true
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   function openModal() {
-    showModal.value = true
+    showMapModal.value = true
   }
   function closeModal() {
-    showModal.value = false
+    showMapModal.value = false
   }
   function selectGradeFromMap(grade) {
     selectedGrade.value = grade
@@ -113,23 +146,55 @@
     showConfirmModal.value = true
   }
 
-
-  function handleConfirmBorrow({ locker, reason }) {
+  async function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
-
-    if (String(locker.name) === '2') {
-      failReasons.value = [ERROR_LIBRARY.SYSTEM_ERROR]
-      showFailModal.value = true // 開啟失敗彈窗
-    }else{
-      borrowReason.value = reason
-      showSuccessModal.value = true
-      // 3. 成功邏輯：暫時使用 alert，等待您加入 ApplySuccessModal
-      console.log('父元件收到 confirm 事件：', { locker, reason })
-      alert(`櫃子 ${locker.name} 已確認借用，理由：${reason} (申請成功)`)
-      // TODO: 這裡應該替換成顯示 ApplySuccessModal 的邏輯
-    }
     console.log('父元件收到 confirm 事件：', { locker, reason })
 
+    borrowReason.value = reason
+
+    const isTemporary = selectedType.value !== '學年借用'
+    const startIso = new Date(timeRange.value.start).toISOString();
+    // 結束時間 (設為當天最後一秒)
+    let endObj = new Date(timeRange.value.end);
+    endObj.setHours(23, 59, 59, 999);
+
+    const endIso = endObj.toISOString();
+
+    const currentUserId = authStore.user?.id
+
+    if (!currentUserId) {
+      alert("尚未登入，無法借用！")
+      return
+    }
+
+    //打包 API 需要的資料
+    let borrow = {
+      "user_id": currentUserId,
+      "temporary": isTemporary,
+      "start_date": startIso,
+      "end_date": endIso,
+      "locker_id": locker.id,
+      "reason": reason
+    }
+
+    try {
+      await Record.postBorrow(borrow)
+      // 成功後的處理
+      console.log('申請成功')
+
+      showSuccessModal.value = true // 跳出成功視窗
+    } catch (error) {
+      // 失敗後的處理
+      console.error('申請失敗:', error)
+      const errorMsg = error.response?.data?.message || error.message || ERROR_LIBRARY.SYSTEM_ERROR;
+
+      // 錯誤訊息陣列
+      failReasons.value = [errorMsg]
+      
+      // 開啟失敗彈窗
+      showFailModal.value = true
+
+    }
   }
 
   function handleTimeRangeUpdate(range) {
@@ -165,18 +230,29 @@
     return lockers;
   }
 
+  // 將 API 資料應用到櫃子生成邏輯
   function generateLockerRange(startId, count) {
     return Array.from({ length: count }, (_, i) => {
       const id = startId + i
+      
+      // 從 API 資料中查找對應的櫃子
+      const apiLocker = apiLockers.value.find(l => l.id === id);
+      
       return {
-        id,
+        id: id, //櫃子編號
         name: `${id}`,
-        isBorrowed: [1, 4, 7, 11, 30].includes(id),
-        isReviewed: [3, 8, 9, 21, 20].includes(id),
+        isBorrowed: apiLocker ? (apiLocker.state === LockerState.BORROWED) : false,
+        isReviewed: apiLocker ? (apiLocker.state === LockerState.UNDER_REVIEW) : false,
+        userId: apiLocker ? apiLocker.user_id : null, //UUID
+        state: apiLocker ? apiLocker.state : LockerState.AVAILABLE
       }
     })
   }
 
+  // 組件掛載時載入 API 資料 
+  onMounted(() => {
+    loadLockersFromAPI()
+  })
 </script>
 
 <style scoped>
@@ -221,7 +297,6 @@
     box-sizing: border-box;
     width: 100%; /* 撐滿，元素左對齊 */
     gap: 12px;                 /* 行間隙 */
-
   }
 
   /* 右側狀態標示 */
@@ -314,8 +389,7 @@
     }
   }
 
-    /* 手機版 */
-
+    /* 手機版 */    
   @media (max-width: 767px) {
     .row-space-between {
       flex-direction: column;
@@ -327,14 +401,6 @@
       font-size: 20px;
       white-space: normal;
       margin-right: 0;
-    }
-    /*.view-button {
-      font-size: 14px;
-      padding: 6px 14px;
-    }*/
-    .status-legend {
-      font-size: 16px;
-      margin-left: 20px;
     }
 
      /* 下方一排：狀態標示 */
