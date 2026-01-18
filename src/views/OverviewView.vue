@@ -86,10 +86,7 @@ function generateNullLocker(count) {
   })
 }
 
-onMounted(async () => {
-  printDate.value = new Date().toLocaleString()
-  await loadLockersFromAPI()
-
+function printOverview() {
   const closePage = () => {
     window.close()
   }
@@ -102,15 +99,29 @@ onMounted(async () => {
   })
 
   globalThis.print()
+}
+
+onMounted(async () => {
+  printDate.value = new Date().toLocaleString()
+  await loadLockersFromAPI()
 })
 </script>
 
 <template>
+  <div class="btn-container">
+    <button @click="printOverview">列印</button>
+  </div>
   <LockerOverview v-for="(lockers, grade) in lockers" :key="grade" :grade="grade" :lockers="lockers"
     :printDate="printDate" />
 </template>
 
 <style scoped>
+.btn-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
 @page {
   size: A4, landscape;
 }
@@ -119,6 +130,10 @@ onMounted(async () => {
   * {
     margin: 0;
     padding: 0;
+  }
+
+  .btn-container {
+    display: none;
   }
 }
 </style>
