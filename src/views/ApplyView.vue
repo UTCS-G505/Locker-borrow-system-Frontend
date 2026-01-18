@@ -4,7 +4,6 @@
     <div class="left-group">
       <div class="label-text"><h2>請填寫申請內容</h2></div>
     </div>
-
     <!-- 借用類型與時間 -->
     <div class="left-group">
       <TypeSelect
@@ -39,7 +38,7 @@
     </div>
 
     <!-- 地圖彈窗 -->
-    <ModalMap v-if="showModal" @select="selectGradeFromMap" @close="closeModal" />
+    <ModalMap v-if="showMapModal" @select="selectGradeFromMap" @close="closeModal" />
 
     <div class="content-container">
       <LockerStatus :lockers="lockers" @select="handleLockerSelect" />
@@ -79,14 +78,20 @@
   import ConfirmBorrowModal from '../components/ConfirmBorrowModal.vue'
   import FailModal  from '../components/FailedDialog.vue'
   import ApplySuccessModal from '../components/ApplySuccessModal.vue'
+<<<<<<< HEAD
   import { useAuthStore } from '@/stores/auth';
   import { User, Locker, Record } from '@/api/main.js';
+=======
+  import { useAuthStore } from '@/stores/auth'
+  import { Record, Locker } from '@/api/main'
+
+>>>>>>> main
 
   const selectedGrade = ref('一年級')
   const selectedType = ref('學年借用')
   const timeRange = ref({ start: '', end: '' })
 
-  const showModal = ref(false)
+  const showMapModal = ref(false)
   const selectedLocker = ref(null)
   const showConfirmModal = ref(false)
   const showFailModal = ref(false)
@@ -94,6 +99,7 @@
   const failReasons = ref([])
   const showSuccessModal = ref(false)
   const borrowReason = ref('')
+  const authStore = useAuthStore()
 
   // API 相關狀態 
   const apiLockers = ref([])  // 儲存從 API 獲取的原始資料
@@ -131,10 +137,10 @@
   }
 
   function openModal() {
-    showModal.value = true
+    showMapModal.value = true
   }
   function closeModal() {
-    showModal.value = false
+    showMapModal.value = false
   }
   function selectGradeFromMap(grade) {
     selectedGrade.value = grade
@@ -145,6 +151,7 @@
     showConfirmModal.value = true
   }
 
+<<<<<<< HEAD
 
   async function handleConfirmBorrow({ locker, reason }) {
     showConfirmModal.value = false
@@ -189,6 +196,12 @@
     }
     
     // 通過檢查
+=======
+  async function handleConfirmBorrow({ locker, reason }) {
+    showConfirmModal.value = false
+    console.log('父元件收到 confirm 事件：', { locker, reason })
+
+>>>>>>> main
     borrowReason.value = reason
 
     const isTemporary = selectedType.value !== '學年借用'
@@ -276,14 +289,14 @@
       const id = startId + i
       
       // 從 API 資料中查找對應的櫃子
-      const apiLocker = apiLockers.value.find(l => l.id === id)
+      const apiLocker = apiLockers.value.find(l => l.id === id);
       
       return {
-        id: id,
+        id: id, //櫃子編號
         name: `${id}`,
         isBorrowed: apiLocker ? (apiLocker.state === LockerState.BORROWED) : false,
         isReviewed: apiLocker ? (apiLocker.state === LockerState.UNDER_REVIEW) : false,
-        userId: apiLocker ? apiLocker.user_id : null,
+        userId: apiLocker ? apiLocker.user_id : null, //UUID
         state: apiLocker ? apiLocker.state : LockerState.AVAILABLE
       }
     })
@@ -293,7 +306,6 @@
   onMounted(() => {
     loadLockersFromAPI()
   })
-
 </script>
 
 <style scoped>
@@ -338,7 +350,6 @@
     box-sizing: border-box;
     width: 100%; /* 撐滿，元素左對齊 */
     gap: 12px;                 /* 行間隙 */
-
   }
 
   /* 右側狀態標示 */
@@ -431,8 +442,7 @@
     }
   }
 
-    /* 手機版 */
-
+    /* 手機版 */    
   @media (max-width: 767px) {
     .row-space-between {
       flex-direction: column;
@@ -444,14 +454,6 @@
       font-size: 20px;
       white-space: normal;
       margin-right: 0;
-    }
-    /*.view-button {
-      font-size: 14px;
-      padding: 6px 14px;
-    }*/
-    .status-legend {
-      font-size: 16px;
-      margin-left: 20px;
     }
 
      /* 下方一排：狀態標示 */
