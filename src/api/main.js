@@ -125,9 +125,9 @@ class Record {
     }
   };
 
-  static getAll = async (params) => {
+  static getAll = async () => {
     try {
-      const response = await apiMainV1.get("/record/all", { params });
+      const response = await apiMainV1.get("/record/all");
       return response.data.data; // 回傳陣列
     } catch (err) {
       console.error("獲取所有申請紀錄失敗", err);
