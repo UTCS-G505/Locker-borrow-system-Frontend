@@ -6,48 +6,7 @@ import InfoPopup from '@/components/popups/InfoPopup.vue';
 import CheckPopup from "@/components/popups/CheckPopup.vue";
 import { Record } from "@/api/main";
 
-/* 修改模擬資料，加入簽核時間欄位 */
-const record = ref([
-    {
-      id: 1,
-      name: '陳胤華',
-      temporary: false, // 對應 item.temporary ? '臨時' : '學年'
-      start_date: '2024/09/01T00:00:00', // 對應 item.start_date (且配合 formatDate 的 split('T'))
-      end_date: '2025/06/30T00:00:00',   // 對應 item.end_date
-      locker_id: '39',                   // 對應 item.locker_id
-      state: '審核中',                    // 這是你手動覆蓋的狀態，這行可以保留
-
-      // 其他為了 popup 顯示的資料可以保留原樣，或者也改成對應名稱
-      assistantTime: '2025/7/1',
-      directorTime: ''
-    },
-    {
-      id: 2,
-      name: '陳胤華',
-      temporary: false,
-      start_date: '2024/09/01T00:00:00',
-      end_date: '2025/06/30T00:00:00',
-      locker_id: '39',
-      state: '駁回',
-
-      assistantTime: '2025/7/2',
-      directorTime: ''
-    },
-    {
-      id: 3,
-      name: '陳胤華',
-      temporary: true, // 測試一下臨時借用
-      start_date: '2024/09/01T00:00:00',
-      end_date: '2025/06/30T00:00:00',
-      locker_id: '39',
-      state: '借用中',
-
-      assistantTime: '2025/8/1',
-      directorTime: '2025/8/5',
-      returnApplyTime: '2025/6/30',
-      returnApproveTime: null
-    }
-])
+const record = ref([])
 
 const detailModalRef = ref(null);
 const modalData = ref([]);
