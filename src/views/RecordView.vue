@@ -6,6 +6,7 @@ import InfoPopup from '@/components/popups/InfoPopup.vue';
 import CheckPopup from "@/components/popups/CheckPopup.vue";
 import { Record } from "@/api/main";
 import { useAuthStore } from '@/stores/auth';
+import { SsoUser } from "@/api/sso";
 
 const record = ref([])
 
@@ -26,22 +27,29 @@ function handleCancel(id) {
   }
 }
 
+
 async function fetchRecords() {
   try {
     const data = await Record.getList(userId);
 
     if (data) {
       // 1. 先在 Console 印出原始資料，方便除錯
+      let realName = "同學";
       if (data.length > 0) {
         console.log("🔥 RecordView 後端原始資料:", data[0]);
       }
+      const userInfo = await SsoUser.getGet(userId)
+      if (userInfo) {
+          // 嘗試抓取各種可能的姓名欄位
+          realName = userInfo.name || userInfo.cname || userInfo.chinese_name || userInfo.user_name || "同學";
+        }
 
       // 2. 資料轉換 (Mapping)
       record.value = data.map(item => ({
         ...item,
 
         // ▼▼▼▼▼ 修正重點：同時抓多種可能的欄位名稱 ▼▼▼▼▼
-
+        name: realName,
         // 抓取開始時間 (優先抓 start_date, 沒有就抓 startTime...)
         start_date: item.start_date || item.startTime || item.begin_time || "無資料",
 
