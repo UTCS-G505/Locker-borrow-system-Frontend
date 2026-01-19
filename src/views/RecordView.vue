@@ -180,11 +180,12 @@ function handleShowDetails(id) {
   <div class="recordWrapper">
     <h1 class="record">申請紀錄</h1>
     <RecordTable
+      v-if="record.length > 0"
       :records="record"
       @cancel="handleCancel"
       @return="handleReturn"
       @show-details="handleShowDetails"
-    />
+/>
 
     <div v-else class="empty-state">
       <p>目前沒有申請紀錄</p>
