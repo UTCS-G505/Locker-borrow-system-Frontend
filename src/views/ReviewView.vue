@@ -150,7 +150,7 @@ function handleRejectSubmit(reason) {
   });
 
   mobileSelections.value = [];
-  pendingRejectIds.value = [];
+  executeReject(reason);
 }
 
 const selectedType = ref("借用");
@@ -190,7 +190,7 @@ async function getSsoData(uuid) {
 
     if (ssoData) {
       return {
-        studentId: ssoData.account || "未知學號",  
+        studentId: ssoData.account || "未知學號",
         name: ssoData.name || "未知姓名",
         grade: ssoData.position || "未知年級",
         email: ssoData.primary_email || "無信箱",
@@ -415,15 +415,23 @@ function openApproveModal() {
 }
 
 // 真正執行「通過」邏輯的函式
-function executeApprove() {
-  mobileSelections.value.forEach((id) => {
-    const app = applications.value.find((a) => a.id === id);
-    if (app && app.status === "審核中") {
-      app.status = "借用中";
+async function executeApprove() {
+  try {
+    for (const id of mobileSelections.value) {
+      await Record.postReviewBorrow(id, true);
     }
-  });
-  mobileSelections.value = []; // 清空勾選
-  showApproveModal.value = false; // 執行完關閉彈窗
+    mobileSelections.value.forEach((id) => {
+      const app = applications.value.find((a) => a.id === id);
+      if (app && app.status === "審核中") {
+        app.status = "借用中";
+      }
+    });
+  } catch (err) {
+    console.error("審核通過失敗", err);
+  } finally {
+    mobileSelections.value = []; // 清空勾選
+    showApproveModal.value = false; // 執行完關閉彈窗
+  }
 }
 
 //申請「駁回」操作確認
@@ -433,21 +441,30 @@ function openRejectModal() {
     alert("請先勾選學生");
     return;
   }
-  showRejectModal.value = true;
+  //showRejectModal.value = true; 這是操作確認彈窗，用下面的駁回彈窗替換掉
+  pendingRejectIds.value = [...mobileSelections.value];
+  rejectModal.value.open();
 }
 
 // 真正執行「駁回」邏輯的函式
-function executeReject() {
-  mobileSelections.value.forEach((id) => {
-    const app = applications.value.find((a) => a.id === id);
-    if (app && app.status === "審核中") {
-      app.status = "已駁回";
+async function executeReject(rejectReason) {
+  try {
+    for (const id of pendingRejectIds.value) {
+      await Record.postReviewBorrow(id, false, rejectReason);
     }
-  });
-  mobileSelections.value = []; // 清空勾選
-  showRejectModal.value = false; // 執行完關閉彈窗
+    mobileSelections.value.forEach((id) => {
+      const app = applications.value.find((a) => a.id === id);
+      if (app && app.status === "審核中") {
+        app.status = "已駁回";
+      }
+    });
+  } catch (err) {
+    console.error("審核駁回失敗", err);
+  } finally {
+    mobileSelections.value = []; // 清空勾選
+    pendingRejectIds.value = [];
+  }
 }
-
 
 // 處理子組件發出的 "show-details" 事件
 async function handleShowDetails(item) {
@@ -468,7 +485,6 @@ modalData.value = [
     // 合併起訖時間，因為較長建議給整行，或視情況拿掉 isFullRow
     { label: '借用時間起/迄', value: `${item.startTime} ~ ${item.endTime}`, isFullRow: true },
     { label: '借用系櫃編號', value: item.cabinet },
-
     { label: '借用理由', value: item.borrowReason || '無', isFullRow: true, isBox: true },
 
     // 以下補足截圖要求的欄位
