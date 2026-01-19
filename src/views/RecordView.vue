@@ -7,6 +7,7 @@ import CheckPopup from "@/components/popups/CheckPopup.vue";
 import { Record } from "@/api/main";
 import { useAuthStore } from '@/stores/auth';
 import { SsoUser } from "@/api/sso";
+import dateFormatter from '@/utils/dateFormatter';
 
 const record = ref([])
 
@@ -63,7 +64,14 @@ async function fetchRecords() {
         temporary: (item.type === '臨時借用' || item.temporary === true),
 
         reason: item.reason || item.borrow_reason || item.description || "無借用理由",
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+        apply_date: dateFormatter(
+            item.created_at ||
+            item.create_time ||
+            item.apply_time ||
+            item.createdAt ||
+            new Date() // 如果真的抓不到，暫時用現在時間 (或顯示 '無資料')
+        ),
 
         id: item.id
       }));
@@ -138,7 +146,7 @@ function handleShowDetails(id) {
     { label: '借用系櫃編號', value: item.locker_id },
 
     // --- 下面這些如果後端有給對應欄位就不用動，如果沒給可能要調整 ---
-    { label: '申請借用時間', value: '2025/6/30' },
+    { label: '申請借用時間', value: item.apply_date },
     { label: '借用理由', value: item.reason, isFullRow: true, isBox: true },
 
     // 這裡要注意：後端 API 是否真的有回傳 directorTime？如果沒有，這裡會是空的
