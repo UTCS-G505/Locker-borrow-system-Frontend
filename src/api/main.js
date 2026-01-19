@@ -147,7 +147,21 @@ class Record {
 
   static postCancel;
 
-  static postReviewBorrow;
+  static postReviewBorrow = async (record_id, borrow_accepted, reject_reason = null) => {
+    try {
+      const payload = { borrow_accepted };
+      if (reject_reason) payload.reject_reason = reject_reason;
+
+      const response = await apiMainV1.post(
+        `/record/reviewb/${record_id}`,
+        payload
+      );
+      return response.data.data;
+    } catch (err) {
+      console.error("審核申請失敗", err);
+      return null;
+    }
+  };
 
   static postReturn = async (recordId, returnAvailable) => {
     try {
