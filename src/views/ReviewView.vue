@@ -129,7 +129,6 @@ import ReviewList from "../components/ReviewList.vue";
 import InfoPopup from "@/components/popups/InfoPopup.vue";
 import CheckPopup from "../components/popups/CheckPopup.vue";
 import RejectModal from "../components/RejectModal.vue";
-import { Record } from "@/api/main";
 
 
 // 定義駁回選項常數，避免在 template 中出現解析錯誤
@@ -386,36 +385,16 @@ function openReturnModal() {
   showReturnModal.value = true;
 }
 // 真正執行「通過」邏輯的函式
-
-async function executeReturn() {
-  if (returnSelections.value.length === 0) return;
-  try {
-    // 1. 批次發送 API 請求
-    const requests = returnSelections.value.map((id) => {
-      // 呼叫你剛才寫在 api/main.js 的 Record.postReviewReturn
-      return Record.postReviewReturn(id, { return_accepted: true });
-    });
-    const results = await Promise.all(requests);
-    // 2. 根據 API 回傳結果更新 UI
-    results.forEach((res, index) => {
-      // 假設 res.code === 0 代表後端處理成功
-      if (res !== null) {
-        const targetId = returnSelections.value[index];
-        const app = applications.find((a) => a.id === targetId);
-        if (app) {
-          app.status = "已歸還"; // 狀態一變，filteredApplications 會自動過濾掉它
-        }
-      }
-    });
-    alert("歸還審核處理完成");
-  } catch (error) {
-    console.error("歸還 API 執行出錯:", error);
-    alert("系統連線失敗，請稍後再試");
-  } finally {
-    // 3. 無論成功或失敗都清理狀態
-    returnSelections.value = [];
-    showReturnModal.value = false;
-  }
+function executeReturn() {
+  returnSelections.value.forEach((id) => {
+    const app = applications.value.find((a) => a.id === id);
+    // 邏輯:如果是借用中,改成已歸還
+    if (app && app.status === "借用中") {
+      app.status = "已歸還";
+    }
+  });
+  returnSelections.value = []; // 清空勾選
+  showReturnModal.value = false; // 關閉彈窗
 }
 
 // isMobile 判斷
