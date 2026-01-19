@@ -123,7 +123,6 @@
 
 import { ref, computed, watch, nextTick, onMounted } from "vue";
 import { SsoUser } from "@/api/sso";
-import { Record } from "@/api/main";
 // 導入新的子組件
 import ReviewList from "../components/ReviewList.vue";
 import InfoPopup from "@/components/popups/InfoPopup.vue";
@@ -445,18 +444,9 @@ function executeApprove() {
     if (app && app.status === "審核中") {
       app.status = "借用中";
     }
-    mobileSelections.value.forEach((id) => {
-      const app = applications.value.find((a) => a.id === id);
-      if (app && app.status === "審核中") {
-        app.status = "借用中";
-      }
-    });
-  } catch (err) {
-    console.error("審核通過失敗", err);
-  } finally {
-    mobileSelections.value = []; // 清空勾選
-    showApproveModal.value = false; // 執行完關閉彈窗
-  }
+  });
+  mobileSelections.value = []; // 清空勾選
+  showApproveModal.value = false; // 執行完關閉彈窗
 }
 
 //申請「駁回」操作確認
@@ -478,18 +468,9 @@ function executeReject() {
     if (app && app.status === "審核中") {
       app.status = "已駁回";
     }
-    mobileSelections.value.forEach((id) => {
-      const app = applications.value.find((a) => a.id === id);
-      if (app && app.status === "審核中") {
-        app.status = "已駁回";
-      }
-    });
-  } catch (err) {
-    console.error("審核駁回失敗", err);
-  } finally {
-    mobileSelections.value = []; // 清空勾選
-    pendingRejectIds.value = [];
-  }
+  });
+  mobileSelections.value = []; // 清空勾選
+  showRejectModal.value = false; // 執行完關閉彈窗
 }
 
 // 處理子組件發出的 "show-details" 事件
