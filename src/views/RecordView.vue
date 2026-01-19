@@ -14,7 +14,7 @@ const modalData = ref([]);
 const pendingCancelId = ref(null);
 const showCancelCheck = ref(false);
 const authStore = useAuthStore();
- 
+
 const userId = authStore.user.id;
 
 function handleCancel(id) {
@@ -31,19 +31,36 @@ async function fetchRecords() {
     const data = await Record.getList(userId);
 
     if (data) {
-      // ★ 關鍵修正：將後端資料 (backendItem) 轉換成 前端表格需要的格式
+      // 1. 先在 Console 印出原始資料，方便除錯
+      if (data.length > 0) {
+        console.log("🔥 RecordView 後端原始資料:", data[0]);
+      }
+
+      // 2. 資料轉換 (Mapping)
       record.value = data.map(item => ({
         ...item,
-        start_date: item.startTime,
-        end_date: item.endTime,
-        locker_id: item.num,
-        temporary: item.type === '臨時借用',
 
-        // 4. 確保 ID 存在
+        // ▼▼▼▼▼ 修正重點：同時抓多種可能的欄位名稱 ▼▼▼▼▼
+
+        // 抓取開始時間 (優先抓 start_date, 沒有就抓 startTime...)
+        start_date: item.start_date || item.startTime || item.begin_time || "無資料",
+
+        // 抓取結束時間
+        end_date: item.end_date || item.endTime || item.return_time || "無資料",
+
+        // 抓取系櫃編號 (優先抓 locker_id, 沒有就抓 num 或 lockerNo)
+        locker_id: String(item.locker_id || item.num || item.lockerNo || item.cabinet_id || "未分配"),
+
+        // 抓取借用類型 (判斷字串或布林值)
+        temporary: (item.type === '臨時借用' || item.temporary === true),
+
+        reason: item.reason || item.borrow_reason || item.description || "無借用理由",
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
         id: item.id
       }));
 
-      console.log("資料轉換成功:", record.value); // 可以在 F12 檢查轉換後的結果
+      console.log("✅ 資料轉換成功:", record.value);
     }
   } catch (err) {
     console.error("載入紀錄失敗", err);
@@ -114,7 +131,7 @@ function handleShowDetails(id) {
 
     // --- 下面這些如果後端有給對應欄位就不用動，如果沒給可能要調整 ---
     { label: '申請借用時間', value: '2025/6/30' },
-    { label: '借用理由', value: '沒有宿舍QAQ...', isFullRow: true, isBox: true },
+    { label: '借用理由', value: item.reason, isFullRow: true, isBox: true },
 
     // 這裡要注意：後端 API 是否真的有回傳 directorTime？如果沒有，這裡會是空的
     { label: '系辦審核時間', value: item.directorTime || item.assistantTime || '' },
