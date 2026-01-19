@@ -49,7 +49,6 @@ const record = ref([
     }
 ])
 
-// 彈窗相關變數
 const detailModalRef = ref(null);
 const modalData = ref([]);
 const pendingCancelId = ref(null);
@@ -187,6 +186,10 @@ function handleShowDetails(id) {
       @show-details="handleShowDetails"
     />
 
+    <div v-else class="empty-state">
+      <p>目前沒有申請紀錄</p>
+    </div>
+
     <InfoPopup
       ref="detailModalRef"
       title="詳細資訊"
@@ -204,7 +207,7 @@ function handleShowDetails(id) {
 
 <style scoped>
 .recordWrapper {
-  padding-top: 10px; /* 給點空間跟 navbar 分開 */
+  padding-top: 10px;
 }
 
 .record {
@@ -214,15 +217,27 @@ function handleShowDetails(id) {
   margin-bottom: 0;
 }
 
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 18px;
+}
+
 /* 手機版 */
 @media (max-width: 640px) {
   .recordWrapper {
-      padding-top: 30px; /* 給點空間跟導航列分開 */
+      padding-top: 30px; 
   }
 
   .record {
       font-size: 24px;
       margin-left: 12px;
+  }
+
+  .empty-state {
+    padding: 40px 20px;
+    font-size: 16px;
   }
 }
 </style>
