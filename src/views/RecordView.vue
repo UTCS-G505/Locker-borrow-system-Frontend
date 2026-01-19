@@ -1,6 +1,6 @@
 <script setup>
 // 加入 nextTick
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 import RecordTable from '../components/RecordTable.vue';
 import InfoPopup from '@/components/popups/InfoPopup.vue';
 import CheckPopup from "@/components/popups/CheckPopup.vue";
@@ -53,6 +53,7 @@ const detailModalRef = ref(null);
 const modalData = ref([]);
 const pendingCancelId = ref(null);
 const showCancelCheck = ref(false);
+const userId = 1;
 
 function handleCancel(id) {
   const item = record.value.find(r => r.id === id);
@@ -62,6 +63,22 @@ function handleCancel(id) {
     showCancelCheck.value = true;
   }
 }
+
+async function fetchRecords() {
+  try {
+    const data = await Record.getList(userId);
+    if (data) {
+      record.value = data;
+    }
+  } catch (err) {
+    console.error("載入紀錄失敗", err);
+  }
+}
+
+// 畫面載入時抓取資料
+onMounted(() => {
+  fetchRecords();
+});
 
 async function executeCancel() {
   const id = pendingCancelId.value;
