@@ -66,7 +66,16 @@ class Announcement {
 }
 
 class User {
-  static getGet;
+  static getGet = async (userId) => {
+    try {
+      const response = await apiMainV1.get(`/user/get/${userId}`);
+      return response.data.data;
+
+    } catch (err) {
+      console.error("取得使用者資料失敗", err);
+      return null; 
+    }
+  };
 
   static getAll = async () => {
     try {
@@ -116,8 +125,16 @@ class Record {
     }
   };
 
-  static getAll;
-
+  static getAll = async () => {
+    try {
+      const response = await apiMainV1.get("/record/all");
+      return response.data.data; // 回傳陣列
+    } catch (err) {
+      console.error("獲取所有申請紀錄失敗", err);
+      return [];
+    }
+  };
+  
   static postBorrow = async (data) => {
     try{
       const response = await apiMainV1.post('/record/borrow', data);
@@ -130,9 +147,42 @@ class Record {
 
   static postCancel;
 
-  static postReviewBorrow;
+  static postReviewBorrow = async (record_id, borrow_accepted, reject_reason = null) => {
+    try {
+      const payload = { borrow_accepted };
+      if (reject_reason) payload.reject_reason = reject_reason;
 
-  static postReturn;
+      const response = await apiMainV1.post(
+        `/record/reviewb/${record_id}`,
+        payload
+      );
+      return response.data.data;
+    } catch (err) {
+      console.error("審核申請失敗", err);
+      return null;
+    }
+  };
+
+  static postReturn = async (recordId, returnAvailable) => {
+    try {
+      const response = await apiMainV1.post(
+        `/record/return/${recordId}`,
+        null,
+        {
+          params: { return_available: returnAvailable }
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.error("歸還請求失敗", err);
+      console.error("錯誤詳情:", err.response?.data); // 加這行看詳細錯誤
+      return err.response?.data || {
+        code: -1,
+        message: "無法連接伺服器",
+        data: null
+      };
+    }
+  };
 
   static postReviewReturn = async (recordId, params) => {
     try {
