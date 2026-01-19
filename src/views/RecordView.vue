@@ -11,40 +11,41 @@ const record = ref([
     {
       id: 1,
       name: '陳胤華',
-      type: '學年借用',
-      startTime: '2024/9/1',
-      endTime: '2025/6/30',
-      num: '39',
-      state: '審核中',
-      // ★ 模擬情境：助教已經簽了，但主任還沒簽 -> 所以還卡在審核中
+      temporary: false, // 對應 item.temporary ? '臨時' : '學年'
+      start_date: '2024/09/01T00:00:00', // 對應 item.start_date (且配合 formatDate 的 split('T'))
+      end_date: '2025/06/30T00:00:00',   // 對應 item.end_date
+      locker_id: '39',                   // 對應 item.locker_id
+      state: '審核中',                    // 這是你手動覆蓋的狀態，這行可以保留
+
+      // 其他為了 popup 顯示的資料可以保留原樣，或者也改成對應名稱
       assistantTime: '2025/7/1',
       directorTime: ''
     },
     {
       id: 2,
       name: '陳胤華',
-      type: '學年借用',
-      startTime: '2024/9/1',
-      endTime: '2025/6/30',
-      num: '39',
+      temporary: false,
+      start_date: '2024/09/01T00:00:00',
+      end_date: '2025/06/30T00:00:00',
+      locker_id: '39',
       state: '駁回',
-      // ★ 模擬情境：可能助教就直接駁回了
+
       assistantTime: '2025/7/2',
       directorTime: ''
     },
     {
       id: 3,
       name: '陳胤華',
-      type: '臨時借用',
-      startTime: '2024/9/1',
-      endTime: '2025/6/30',
-      num: '39',
+      temporary: true, // 測試一下臨時借用
+      start_date: '2024/09/01T00:00:00',
+      end_date: '2025/06/30T00:00:00',
+      locker_id: '39',
       state: '借用中',
-      // ★ 模擬情境：兩個人都簽了 -> 狀態變借用中
+
       assistantTime: '2025/8/1',
       directorTime: '2025/8/5',
-      returnApplyTime: '2025/6/30', // 模擬申請歸還時間
-      returnApproveTime: null             // 模擬還沒通過 (留白)
+      returnApplyTime: '2025/6/30',
+      returnApproveTime: null
     }
 ])
 
@@ -67,15 +68,27 @@ function handleCancel(id) {
 async function fetchRecords() {
   try {
     const data = await Record.getList(userId);
+
     if (data) {
-      record.value = data;
+      // ★ 關鍵修正：將後端資料 (backendItem) 轉換成 前端表格需要的格式
+      record.value = data.map(item => ({
+        ...item,
+        start_date: item.startTime,
+        end_date: item.endTime,
+        locker_id: item.num,
+        temporary: item.type === '臨時借用',
+
+        // 4. 確保 ID 存在
+        id: item.id
+      }));
+
+      console.log("資料轉換成功:", record.value); // 可以在 F12 檢查轉換後的結果
     }
   } catch (err) {
     console.error("載入紀錄失敗", err);
   }
 }
 
-// 畫面載入時抓取資料
 onMounted(() => {
   fetchRecords();
 });
@@ -108,7 +121,8 @@ async function executeCancel() {
 }
 
 
-/* 按下"歸還"按鈕，狀態要變為"歸還中"；按下"取消歸還"按鈕，狀態要變為"借用中" */
+/* 按下"歸還"按鈕，狀態要變為"歸還中
+"；按下"取消歸還"按鈕，狀態要變為"借用中" */
 function handleReturn(id) {
   const item = record.value.find(r => r.id === id)
   if (item.state === '借用中') {
@@ -125,37 +139,33 @@ function handleShowDetails(id) {
   console.log("查看詳細資訊:", item);
 
   modalData.value = [
-    // --- 第一列 ---
     { label: '姓名', value: item.name },
-    { label: '借用類型', value: item.type },
 
-    // --- 第二列：拆分借用時間 (圖片要求) ---
-    { label: '借用時間(起)', value: item.startTime },
-    { label: '借用時間(迄)', value: item.endTime },
+    // ★ 修改：這裡要依據 temporary (布林值) 來顯示中文
+    { label: '借用類型', value: item.temporary ? '臨時借用' : '學年借用' },
 
-    // --- 第三列：系櫃編號 & 申請時間 (圖片要求排在一起) ---
-    { label: '借用系櫃編號', value: item.num }, // 若你的變數是 cabinet 請改成 item.cabinet
+    // ★ 修改：改成讀取轉換後的 start_date 和 end_date
+    { label: '借用時間(起)', value: item.start_date },
+    { label: '借用時間(迄)', value: item.end_date },
+
+    // ★ 修改：改成讀取轉換後的 locker_id
+    { label: '借用系櫃編號', value: item.locker_id },
+
+    // --- 下面這些如果後端有給對應欄位就不用動，如果沒給可能要調整 ---
     { label: '申請借用時間', value: '2025/6/30' },
+    { label: '借用理由', value: '沒有宿舍QAQ...', isFullRow: true, isBox: true },
 
-    // --- 第四列：借用理由 (長欄位) ---
-    { label: '借用理由', value: '沒有宿舍QAQ沒有宿舍QAQ沒有宿舍QAQ沒有宿舍QAQ沒有宿舍QAQ', isFullRow: true, isBox: true },
+    // 這裡要注意：後端 API 是否真的有回傳 directorTime？如果沒有，這裡會是空的
+    { label: '系辦審核時間', value: item.directorTime || item.assistantTime || '' },
+    { label: '系辦審核結果', value: item.state || '未知' },
 
-    // --- 第五列：審核資訊 ---
-    // 左邊：審核時間
-    { label: '系辦審核時間', value: item.directorTime || item.assistantTime || '2025/8/5' },
-    // 右邊：審核結果
-    { label: '系辦審核結果', value: item.state },
-
-    // --- 駁回原因 (如果有) ---
     ...(item.state === '駁回' ? [
-        { label: '駁回理由', value: '你明明就有！！！！！！！！！！！！！！！！！！！！！！', isFullRow: true, isBox: true }
+        { label: '駁回理由', value: '理由...', isFullRow: true, isBox: true }
     ] : []),
 
-    // --- 歸還資訊 ---
     ...(['歸還中', '已歸還'].includes(item.state) ? [
         { label: '申請歸還時間', value: item.returnApplyTime },
-        { label: '系辦審核時間', value: item.returnApproveTime || '' }, // 歸還的審核時間
-        // 若需要顯示歸還結果，可加在這裡
+        { label: '系辦審核時間', value: item.returnApproveTime || '' },
     ] : [])
   ];
 
