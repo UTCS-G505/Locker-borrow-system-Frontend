@@ -163,7 +163,26 @@ class Record {
     }
   };
 
-  static postReturn;
+  static postReturn = async (recordId, returnAvailable) => {
+    try {
+      const response = await apiMainV1.post(
+        `/record/return/${recordId}`,
+        null,
+        {
+          params: { return_available: returnAvailable }
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.error("歸還請求失敗", err);
+      console.error("錯誤詳情:", err.response?.data); // 加這行看詳細錯誤
+      return err.response?.data || {
+        code: -1,
+        message: "無法連接伺服器",
+        data: null
+      };
+    }
+  };
 
   static postReviewReturn;
 }

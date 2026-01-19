@@ -1,6 +1,5 @@
 <script setup>
-
-import { ref,onMounted,nextTick } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { Record } from '@/api/main';
 import RecordTable from '../components/RecordTable.vue';
 import InfoPopup from '@/components/popups/InfoPopup.vue';
@@ -10,7 +9,6 @@ import { useAuthStore } from '@/stores/auth';
 const authStore = useAuthStore();
 const record = ref([]);
 
-// 彈窗相關變數
 const detailModalRef = ref(null);
 const modalData = ref([]);
 
@@ -47,18 +45,20 @@ function handleCancel(id){
   }
 }
 
-function handleReturn(id) {
-  const item = record.value.find(r => r.id === id)
-
-  if(item.borrow_accepted === true && item.return_accepted !== true){
-    if(item.state === '歸還中'){
-      item.state = '' // 清空手動狀態，讓它變回"借用中"
-    }else{
-      item.state = '歸還中'
+// 處理資料刷新 (當 RecordTable 中的歸還/撤回操作成功後)
+async function handleRefresh() {
+  console.log('收到刷新請求，重新獲取最新資料...')
+  try {
+    const currentUserId = authStore.user?.id;
+    if(currentUserId){
+      const allRecordsResponse = await Record.getList(currentUserId);
+      record.value = allRecordsResponse || [];
+      console.log("重新獲取資料成功", record.value);
     }
+  } catch (err) {
+    console.error("重新獲取申請紀錄失敗", err);
   }
 }
-
 
 const handleShowDetails = async (id) =>{
   const item = record.value.find(r => r.id === id);
@@ -117,18 +117,23 @@ const handleShowDetails = async (id) =>{
     }
   });
 }
-
 </script>
 
 <template>
   <div class="recordWrapper">
     <h1 class="record">申請紀錄</h1>
+
     <RecordTable 
+      v-if="record.length > 0"
       :records="record" 
       @cancel="handleCancel" 
-      @return="handleReturn"
+      @refresh="handleRefresh"
       @show-details="handleShowDetails" 
     />
+
+    <div v-else class="empty-state">
+      <p>目前沒有申請紀錄</p>
+    </div>
 
     <InfoPopup
       ref="detailModalRef"
@@ -140,7 +145,7 @@ const handleShowDetails = async (id) =>{
 
 <style scoped>
 .recordWrapper {
-  padding-top: 10px; /* 給點空間跟 navbar 分開 */
+  padding-top: 10px;
 }
 
 .record {
@@ -150,15 +155,27 @@ const handleShowDetails = async (id) =>{
   margin-bottom: 0;
 }
 
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 18px;
+}
+
 /* 手機版 */
 @media (max-width: 640px) {
   .recordWrapper {
-      padding-top: 30px; /* 給點空間跟導航列分開 */
+      padding-top: 30px; 
   }
 
   .record {
       font-size: 24px;
       margin-left: 12px;
+  }
+
+  .empty-state {
+    padding: 40px 20px;
+    font-size: 16px;
   }
 }
 </style>
