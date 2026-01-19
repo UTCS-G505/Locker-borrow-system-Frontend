@@ -5,6 +5,7 @@ import RecordTable from '../components/RecordTable.vue';
 import InfoPopup from '@/components/popups/InfoPopup.vue';
 import CheckPopup from "@/components/popups/CheckPopup.vue";
 import { Record } from "@/api/main";
+import { useAuthStore } from '@/stores/auth';
 
 const record = ref([])
 
@@ -12,7 +13,9 @@ const detailModalRef = ref(null);
 const modalData = ref([]);
 const pendingCancelId = ref(null);
 const showCancelCheck = ref(false);
-const userId = 1;
+const authStore = useAuthStore();
+ 
+const userId = authStore.user.id;
 
 function handleCancel(id) {
   const item = record.value.find(r => r.id === id);
@@ -187,7 +190,7 @@ function handleShowDetails(id) {
 /* 手機版 */
 @media (max-width: 640px) {
   .recordWrapper {
-      padding-top: 30px; 
+      padding-top: 30px;
   }
 
   .record {
