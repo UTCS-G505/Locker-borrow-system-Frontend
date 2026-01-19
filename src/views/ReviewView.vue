@@ -129,7 +129,6 @@ import ReviewList from "../components/ReviewList.vue";
 import InfoPopup from "@/components/popups/InfoPopup.vue";
 import CheckPopup from "../components/popups/CheckPopup.vue";
 import RejectModal from "../components/RejectModal.vue";
-import { Record } from '@/api/main';
 
 
 // 定義駁回選項常數，避免在 template 中出現解析錯誤
@@ -191,7 +190,7 @@ async function getSsoData(uuid) {
 
     if (ssoData) {
       return {
-        studentId: ssoData.account || "未知學號",  
+        studentId: ssoData.account || "未知學號",
         name: ssoData.name || "未知姓名",
         grade: ssoData.position || "未知年級",
         email: ssoData.primary_email || "無信箱",
