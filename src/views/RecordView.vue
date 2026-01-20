@@ -5,7 +5,7 @@ import RecordTable from '../components/RecordTable.vue';
 import InfoPopup from '@/components/popups/InfoPopup.vue';
 import CheckPopup from "@/components/popups/CheckPopup.vue";
 import { Record } from "@/api/main";
-import { useAuthStore } from '@/stores/auth'; 
+import { useAuthStore } from '@/stores/auth';
 
 const record = ref([])
 
@@ -114,11 +114,9 @@ async function executeCancel() {
 
     // 成功（即使是 null）
     if (res !== false) {
-      // 1. 更新前端狀態（移除 or 改狀態）
-      record.value = record.value.filter(r => r.id !== id);
-      // 或：
-      // const item = record.value.find(r => r.id === id);
-      // if (item) item.state = '已取消';
+      // ★ 修改重點：這裡使用 filter 移除該筆資料
+      // 注意使用 != (寬鬆比對)，避免 ID 型別不同 (String vs Number) 導致刪除失敗
+      record.value = record.value.filter(r => r.id != id);
 
       // 2. 關彈窗
       showCancelCheck.value = false;
@@ -131,7 +129,6 @@ async function executeCancel() {
     alert("系統錯誤");
   }
 }
-
 
 /* 按下"歸還"按鈕，狀態要變為"歸還中
 "；按下"取消歸還"按鈕，狀態要變為"借用中" */
