@@ -5,8 +5,7 @@ import RecordTable from '../components/RecordTable.vue';
 import InfoPopup from '@/components/popups/InfoPopup.vue';
 import CheckPopup from "@/components/popups/CheckPopup.vue";
 import { Record } from "@/api/main";
-import { useAuthStore } from '@/stores/auth';
-import dateFormatter from '@/utils/dateFormatter';
+import { useAuthStore } from '@/stores/auth'; 
 
 const record = ref([])
 
@@ -37,11 +36,9 @@ async function fetchRecords() {
         const rawStart = item.start_date || item.startTime || item.begin_time;
         const rawEnd = item.end_date || item.endTime || item.return_time;
         const rawApplyDate = item.created_at || item.create_time || item.apply_time || item.createdAt || new Date();
-
-        // 抓取各種可能的審核時間欄位
         const rawApproveDate = item.review_date || item.directorTime || item.assistantTime;
 
-        // ★ 強制格式化：YYYY-MM-DD HH:mm:ss (中間用空白，絕對沒有 T)
+        // ★ (既有) 強制格式化：YYYY-MM-DD HH:mm:ss
         const formatDateTime = (val) => {
            if (!val) return "";
            const d = new Date(val);
@@ -54,7 +51,20 @@ async function fetchRecords() {
            const m = String(d.getMinutes()).padStart(2, '0');
            const s = String(d.getSeconds()).padStart(2, '0');
 
-           return `${Y}-${M}-${D} ${h}:${m}:${s}`; // ★ 這裡手動拼接，確保是空白
+           return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+        };
+
+        // ★ (新增) 強制格式化：YYYY-MM-DD
+        const formatDate = (val) => {
+           if (!val) return "";
+           const d = new Date(val);
+           if (isNaN(d.getTime())) return "";
+
+           const Y = d.getFullYear();
+           const M = String(d.getMonth() + 1).padStart(2, '0');
+           const D = String(d.getDate()).padStart(2, '0');
+
+           return `${Y}-${M}-${D}`;
         };
 
         // 狀態判斷
@@ -68,14 +78,14 @@ async function fetchRecords() {
           ...item,
           state: calculatedState,
 
-          // 1. 維持原樣 (只有日期)
-          start_date: rawStart ? dateFormatter(rawStart) : "無資料",
-          end_date: rawEnd ? dateFormatter(rawEnd) : "無資料",
+          // 1. 修改這裡：使用新的 formatDate 確保是 YYYY-MM-DD
+          start_date: rawStart ? formatDate(rawStart) : "無資料",
+          end_date: rawEnd ? formatDate(rawEnd) : "無資料",
 
-          // 2. 申請時間 (去T，有時分秒)
+          // 2. 申請時間
           apply_date: formatDateTime(rawApplyDate),
 
-          // 3. 審核時間 (去T，有時分秒) -> 存成新欄位 formatted_approve_time 供彈窗用
+          // 3. 審核時間
           formatted_approve_time: formatDateTime(rawApproveDate),
 
           locker_id: String(item.locker_id || item.num || item.lockerNo || item.cabinet_id || "未分配"),
