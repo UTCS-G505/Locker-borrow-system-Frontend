@@ -6,7 +6,6 @@ import InfoPopup from '@/components/popups/InfoPopup.vue';
 import CheckPopup from "@/components/popups/CheckPopup.vue";
 import { Record } from "@/api/main";
 import { useAuthStore } from '@/stores/auth';
-import { SsoUser } from "@/api/sso";
 import dateFormatter from '@/utils/dateFormatter';
 
 const record = ref([])
@@ -34,49 +33,58 @@ async function fetchRecords() {
     const data = await Record.getList(userId);
 
     if (data) {
-      // 1. 先在 Console 印出原始資料，方便除錯
-      let realName = "同學";
-      if (data.length > 0) {
-        console.log("🔥 RecordView 後端原始資料:", data[0]);
-      }
-      const userInfo = await SsoUser.getGet(userId)
-      if (userInfo) {
-          // 嘗試抓取各種可能的姓名欄位
-          realName = userInfo.name || userInfo.cname || userInfo.chinese_name || userInfo.user_name || "同學";
-        }
+      record.value = data.map(item => {
+        const rawStart = item.start_date || item.startTime || item.begin_time;
+        const rawEnd = item.end_date || item.endTime || item.return_time;
+        const rawApplyDate = item.created_at || item.create_time || item.apply_time || item.createdAt || new Date();
 
-      // 2. 資料轉換 (Mapping)
-      record.value = data.map(item => ({
-        ...item,
+        // 抓取各種可能的審核時間欄位
+        const rawApproveDate = item.review_date || item.directorTime || item.assistantTime;
 
-        // ▼▼▼▼▼ 修正重點：同時抓多種可能的欄位名稱 ▼▼▼▼▼
-        name: realName,
-        // 抓取開始時間 (優先抓 start_date, 沒有就抓 startTime...)
-        start_date: item.start_date || item.startTime || item.begin_time || "無資料",
+        // ★ 強制格式化：YYYY-MM-DD HH:mm:ss (中間用空白，絕對沒有 T)
+        const formatDateTime = (val) => {
+           if (!val) return "";
+           const d = new Date(val);
+           if (isNaN(d.getTime())) return "";
 
-        // 抓取結束時間
-        end_date: item.end_date || item.endTime || item.return_time || "無資料",
+           const Y = d.getFullYear();
+           const M = String(d.getMonth() + 1).padStart(2, '0');
+           const D = String(d.getDate()).padStart(2, '0');
+           const h = String(d.getHours()).padStart(2, '0');
+           const m = String(d.getMinutes()).padStart(2, '0');
+           const s = String(d.getSeconds()).padStart(2, '0');
 
-        // 抓取系櫃編號 (優先抓 locker_id, 沒有就抓 num 或 lockerNo)
-        locker_id: String(item.locker_id || item.num || item.lockerNo || item.cabinet_id || "未分配"),
+           return `${Y}-${M}-${D} ${h}:${m}:${s}`; // ★ 這裡手動拼接，確保是空白
+        };
 
-        // 抓取借用類型 (判斷字串或布林值)
-        temporary: (item.type === '臨時借用' || item.temporary === true),
+        // 狀態判斷
+        let calculatedState = "審核中";
+        if (item.return_accepted === true) calculatedState = "已歸還";
+        else if (item.return_available === true) calculatedState = "歸還中";
+        else if (item.borrow_accepted === false) calculatedState = "駁回";
+        else if (item.borrow_accepted === true) calculatedState = "借用中";
 
-        reason: item.reason || item.borrow_reason || item.description || "無借用理由",
+        return {
+          ...item,
+          state: calculatedState,
 
-        apply_date: dateFormatter(
-            item.created_at ||
-            item.create_time ||
-            item.apply_time ||
-            item.createdAt ||
-            new Date() // 如果真的抓不到，暫時用現在時間 (或顯示 '無資料')
-        ),
+          // 1. 維持原樣 (只有日期)
+          start_date: rawStart ? dateFormatter(rawStart) : "無資料",
+          end_date: rawEnd ? dateFormatter(rawEnd) : "無資料",
 
-        id: item.id
-      }));
+          // 2. 申請時間 (去T，有時分秒)
+          apply_date: formatDateTime(rawApplyDate),
 
-      console.log("✅ 資料轉換成功:", record.value);
+          // 3. 審核時間 (去T，有時分秒) -> 存成新欄位 formatted_approve_time 供彈窗用
+          formatted_approve_time: formatDateTime(rawApproveDate),
+
+          locker_id: String(item.locker_id || item.num || item.lockerNo || item.cabinet_id || "未分配"),
+          temporary: (item.type === '臨時借用' || item.temporary === true),
+          reason: item.reason || item.borrow_reason || item.description || "無借用理由",
+          reject_reason: item.reject_reason || "無駁回理由",
+          id: item.id
+        };
+      });
     }
   } catch (err) {
     console.error("載入紀錄失敗", err);
@@ -130,31 +138,24 @@ function handleShowDetails(id) {
   const item = record.value.find(r => r.id === id);
   if (!item) return;
 
-  console.log("查看詳細資訊:", item);
-
   modalData.value = [
-    { label: '姓名', value: item.name },
-
-    // ★ 修改：這裡要依據 temporary (布林值) 來顯示中文
     { label: '借用類型', value: item.temporary ? '臨時借用' : '學年借用' },
-
-    // ★ 修改：改成讀取轉換後的 start_date 和 end_date
     { label: '借用時間(起)', value: item.start_date },
     { label: '借用時間(迄)', value: item.end_date },
-
-    // ★ 修改：改成讀取轉換後的 locker_id
     { label: '借用系櫃編號', value: item.locker_id },
 
-    // --- 下面這些如果後端有給對應欄位就不用動，如果沒給可能要調整 ---
+    // 申請時間 (已去T)
     { label: '申請借用時間', value: item.apply_date },
+
     { label: '借用理由', value: item.reason, isFullRow: true, isBox: true },
 
-    // 這裡要注意：後端 API 是否真的有回傳 directorTime？如果沒有，這裡會是空的
-    { label: '系辦審核時間', value: item.directorTime || item.assistantTime || '' },
-    { label: '系辦審核結果', value: item.state || '未知' },
+    // ★ 重點：這裡讀取 formatted_approve_time (已去T)
+    { label: '系辦審核時間', value: item.formatted_approve_time },
 
-    ...(item.state === '駁回' ? [
-        { label: '駁回理由', value: '理由...', isFullRow: true, isBox: true }
+    { label: '系辦審核結果', value: item.state },
+
+    ...(item.state === '駁回' || item.state === '已駁回' ? [
+        { label: '駁回理由', value: item.reject_reason || '未填寫理由', isFullRow: true, isBox: true }
     ] : []),
 
     ...(['歸還中', '已歸還'].includes(item.state) ? [
@@ -169,6 +170,7 @@ function handleShowDetails(id) {
     }
   });
 }
+
 </script>
 
 <template>
