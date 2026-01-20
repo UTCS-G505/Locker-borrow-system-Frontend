@@ -16,11 +16,28 @@ const authStore = useAuthStore();
 
 const userId = authStore.user.id;
 
-function handleCancel(id) {
-  const item = record.value.find(r => r.id === id);
-  if (item && item.state === '審核中') {
+async function handleCancel(id) {
+  const item = record.value.find(r => r.id == id);
+  if (!item) return;
+
+  if (item.state === '審核中') {
     pendingCancelId.value = id;
     showCancelCheck.value = true;
+  }
+  else if (item.state === '歸還中') {
+    if (!confirm("確定要取消歸還申請嗎？")) return;
+    try {
+      const res = await Record.postCancelReturn(id);
+      if (res !== false) {
+        item.state = '借用中';
+        alert("已取消歸還");
+      } else {
+        alert("取消失敗");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("系統錯誤");
+    }
   }
 }
 
@@ -30,15 +47,30 @@ async function fetchRecords() {
 
     if (data) {
       record.value = data.map(item => {
+        // ★★★ 除錯用：請按 F12 看 Console，找找看有沒有類似 return_time 的欄位 ★★★
+        if (item.return_available || item.return_accepted) {
+           console.log('歸還中的資料 (請檢查欄位):', item);
+        }
+
         const rawStart = item.start_date || item.startTime || item.begin_time;
-        const rawEnd = item.end_date || item.endTime || item.return_time;
+        const rawEnd = item.end_date || item.endTime || item.return_time; // 注意：這裡用了 return_time 當作"迄日"
         const rawApplyDate = item.created_at || item.create_time || item.apply_time || item.createdAt || new Date();
         const rawApproveDate = item.review_date || item.directorTime || item.assistantTime;
 
-        // ★★★ 修正點 1：強化的時間格式化 (含時分秒) ★★★
+        // ★★★ 修正點：擴大抓取範圍 ★★★
+        // 我們依序嘗試：return_apply_time, return_date, returnTime, updated_at (更新時間)
+        // 註：有些系統會把歸還時間寫在 updated_at
+        const rawReturnApply = item.return_apply_date ||
+                               item.return_apply_time ||
+                               item.return_date ||
+                               item.returnTime ||
+                               item.actual_return_time ||
+                               item.updated_at; // 最後手段：抓資料更新時間
+
+        const rawReturnApprove = item.return_review_date || item.return_approve_time;
+
         const formatDateTime = (val) => {
            if (!val) return "";
-           // 先嘗試建立，如果失敗或是字串，嘗試把空白換成 T (解決 Safari 問題)
            let d = new Date(val);
            if (isNaN(d.getTime()) && typeof val === 'string') {
               d = new Date(val.replace(' ', 'T'));
@@ -54,14 +86,11 @@ async function fetchRecords() {
            return `${Y}-${M}-${D} ${h}:${m}:${s}`;
         };
 
-        // ★★★ 修正點 2：強化的日期格式化 (避免時區導致減一天) ★★★
         const formatDate = (val) => {
            if (!val) return "";
-           // 如果原本就是 YYYY-MM-DD 格式，直接回傳，不要轉 Date (避免 -1 天)
            if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
              return val;
            }
-
            let d = new Date(val);
            if (isNaN(d.getTime()) && typeof val === 'string') {
               d = new Date(val.replace(' ', 'T'));
@@ -74,7 +103,6 @@ async function fetchRecords() {
            return `${Y}-${M}-${D}`;
         };
 
-        // 狀態判斷
         let calculatedState = "審核中";
         if (item.return_accepted === true) calculatedState = "已歸還";
         else if (item.return_available === true) calculatedState = "歸還中";
@@ -84,12 +112,14 @@ async function fetchRecords() {
         return {
           ...item,
           state: calculatedState,
-          // 使用修正後的 formatDate
           start_date: rawStart ? formatDate(rawStart) : "無資料",
           end_date: rawEnd ? formatDate(rawEnd) : "無資料",
-          // 使用修正後的 formatDateTime
           apply_date: formatDateTime(rawApplyDate),
           formatted_approve_time: formatDateTime(rawApproveDate),
+
+          // 這裡讀取上面擴大抓取後的結果
+          returnApplyTime: formatDateTime(rawReturnApply),
+          returnApproveTime: formatDateTime(rawReturnApprove),
 
           locker_id: String(item.locker_id || item.num || item.lockerNo || item.cabinet_id || "未分配"),
           temporary: (item.type === '臨時借用' || item.temporary === true),
@@ -126,8 +156,6 @@ async function executeCancel() {
   }
 }
 
-// 這裡保留你原本的 handleReturn，雖然子元件可能不呼叫它，
-// 但留著不會報錯，我們主要靠 @refresh 來更新畫面
 async function handleReturn(id) {
   const item = record.value.find(r => r.id == id);
   if (!item) return;
