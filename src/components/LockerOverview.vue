@@ -17,13 +17,14 @@
       </div>
     </div>
     <div class="locker-status">
-      <LockerStatus :lockers="lockers" />
+      <LockerStatus :lockers="lockers" @finish="finished = true" />
     </div>
     <p class="print-date">列印日期: {{ printDate }}</p>
   </div>
 </template>
 
 <script setup>
+import { ref, watch, nextTick } from 'vue'
 import LockerStatus from './LockerStatus.vue'
 import logo from '@/assets/logo.png'
 
@@ -40,6 +41,17 @@ defineProps({
     type: String,
     required: true
   },
+})
+
+const emit = defineEmits(['finish'])
+
+const finished = ref(false)
+
+watch(finished, async (newValue) => {
+  if (newValue) {
+    await nextTick()
+    emit('finish')
+  }
 })
 </script>
 

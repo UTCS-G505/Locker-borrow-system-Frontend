@@ -6,6 +6,7 @@ import LockerOverview from '@/components/LockerOverview.vue';
 const apiLockers = ref([]);
 const lockers = ref([]);
 const printDate = ref('');
+const finishedCount = ref(0);
 
 // 櫃子狀態常數 
 const LockerState = {
@@ -101,6 +102,13 @@ function printOverview() {
   globalThis.print()
 }
 
+function finishedLoading() {
+  finishedCount.value++
+  if (finishedCount.value === 4) {
+    printOverview()
+  }
+}
+
 onMounted(async () => {
   printDate.value = new Date().toLocaleString()
   await loadLockersFromAPI()
@@ -111,8 +119,8 @@ onMounted(async () => {
   <div class="btn-container">
     <button @click="printOverview">列印</button>
   </div>
-  <LockerOverview v-for="(lockers, grade) in lockers" :key="grade" :grade="grade" :lockers="lockers"
-    :printDate="printDate" />
+  <LockerOverview class="locker-overview" v-for="(lockers, grade) in lockers" :key="grade" :grade="grade"
+    :lockers="lockers" :printDate="printDate" @finish="finishedLoading" />
 </template>
 
 <style scoped>

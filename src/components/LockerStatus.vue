@@ -34,7 +34,6 @@
   import { ref, watch } from 'vue'
   import { SsoUser } from '@/api/sso';
   const props = defineProps(['lockers'])
-  defineEmits(['select'])
   const hoverId = ref(null)
 
   // 建立一個本地的 ref 來顯示處理過的櫃子資料
@@ -109,6 +108,7 @@
     gap: 20px;
     overflow-x: auto;
     padding: 5px;
+const emit = defineEmits(['select', 'finish'])
   }
 
   /*單一櫃子*/
@@ -157,6 +157,7 @@
     color: #5a5a5a;
     text-align: center;
   }
+  emit('finish');
 
   /* 狀態樣式 */
   .borrowed {
