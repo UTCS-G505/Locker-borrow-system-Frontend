@@ -1,5 +1,4 @@
 <script setup>
-// 加入 nextTick
 import { ref, nextTick, onMounted } from 'vue'
 import RecordTable from '../components/RecordTable.vue';
 import InfoPopup from '@/components/popups/InfoPopup.vue';
@@ -19,13 +18,11 @@ const userId = authStore.user.id;
 
 function handleCancel(id) {
   const item = record.value.find(r => r.id === id);
-  // 檢查是否為審核中，符合條件才開啟確認彈窗
   if (item && item.state === '審核中') {
     pendingCancelId.value = id;
     showCancelCheck.value = true;
   }
 }
-
 
 async function fetchRecords() {
   try {
@@ -38,10 +35,14 @@ async function fetchRecords() {
         const rawApplyDate = item.created_at || item.create_time || item.apply_time || item.createdAt || new Date();
         const rawApproveDate = item.review_date || item.directorTime || item.assistantTime;
 
-        // ★ (既有) 強制格式化：YYYY-MM-DD HH:mm:ss
+        // ★★★ 修正點 1：強化的時間格式化 (含時分秒) ★★★
         const formatDateTime = (val) => {
            if (!val) return "";
-           const d = new Date(val);
+           // 先嘗試建立，如果失敗或是字串，嘗試把空白換成 T (解決 Safari 問題)
+           let d = new Date(val);
+           if (isNaN(d.getTime()) && typeof val === 'string') {
+              d = new Date(val.replace(' ', 'T'));
+           }
            if (isNaN(d.getTime())) return "";
 
            const Y = d.getFullYear();
@@ -50,20 +51,26 @@ async function fetchRecords() {
            const h = String(d.getHours()).padStart(2, '0');
            const m = String(d.getMinutes()).padStart(2, '0');
            const s = String(d.getSeconds()).padStart(2, '0');
-
            return `${Y}-${M}-${D} ${h}:${m}:${s}`;
         };
 
-        // ★ (新增) 強制格式化：YYYY-MM-DD
+        // ★★★ 修正點 2：強化的日期格式化 (避免時區導致減一天) ★★★
         const formatDate = (val) => {
            if (!val) return "";
-           const d = new Date(val);
+           // 如果原本就是 YYYY-MM-DD 格式，直接回傳，不要轉 Date (避免 -1 天)
+           if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+             return val;
+           }
+
+           let d = new Date(val);
+           if (isNaN(d.getTime()) && typeof val === 'string') {
+              d = new Date(val.replace(' ', 'T'));
+           }
            if (isNaN(d.getTime())) return "";
 
            const Y = d.getFullYear();
            const M = String(d.getMonth() + 1).padStart(2, '0');
            const D = String(d.getDate()).padStart(2, '0');
-
            return `${Y}-${M}-${D}`;
         };
 
@@ -77,15 +84,11 @@ async function fetchRecords() {
         return {
           ...item,
           state: calculatedState,
-
-          // 1. 修改這裡：使用新的 formatDate 確保是 YYYY-MM-DD
+          // 使用修正後的 formatDate
           start_date: rawStart ? formatDate(rawStart) : "無資料",
           end_date: rawEnd ? formatDate(rawEnd) : "無資料",
-
-          // 2. 申請時間
+          // 使用修正後的 formatDateTime
           apply_date: formatDateTime(rawApplyDate),
-
-          // 3. 審核時間
           formatted_approve_time: formatDateTime(rawApproveDate),
 
           locker_id: String(item.locker_id || item.num || item.lockerNo || item.cabinet_id || "未分配"),
@@ -108,17 +111,10 @@ onMounted(() => {
 async function executeCancel() {
   const id = pendingCancelId.value;
   if (!id) return;
-
   try {
     const res = await Record.postCancel(id);
-
-    // 成功（即使是 null）
     if (res !== false) {
-      // ★ 修改重點：這裡使用 filter 移除該筆資料
-      // 注意使用 != (寬鬆比對)，避免 ID 型別不同 (String vs Number) 導致刪除失敗
       record.value = record.value.filter(r => r.id != id);
-
-      // 2. 關彈窗
       showCancelCheck.value = false;
       pendingCancelId.value = null;
     } else {
@@ -130,14 +126,38 @@ async function executeCancel() {
   }
 }
 
-/* 按下"歸還"按鈕，狀態要變為"歸還中
-"；按下"取消歸還"按鈕，狀態要變為"借用中" */
-function handleReturn(id) {
-  const item = record.value.find(r => r.id === id)
+// 這裡保留你原本的 handleReturn，雖然子元件可能不呼叫它，
+// 但留著不會報錯，我們主要靠 @refresh 來更新畫面
+async function handleReturn(id) {
+  const item = record.value.find(r => r.id == id);
+  if (!item) return;
+
   if (item.state === '借用中') {
-    item.state = '歸還中'
+    try {
+      const res = await Record.postReturn(id);
+      if (res !== false) {
+        item.state = '歸還中';
+        alert("歸還成功");
+      } else {
+        alert("歸還失敗");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("系統錯誤");
+    }
   } else if (item.state === '歸還中') {
-    item.state = '借用中'
+    try {
+      const res = await Record.postCancelReturn(id);
+      if (res !== false) {
+        item.state = '借用中';
+        alert("已取消歸還");
+      } else {
+        alert("取消歸還失敗");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("系統錯誤");
+    }
   }
 }
 
@@ -150,21 +170,13 @@ function handleShowDetails(id) {
     { label: '借用時間(起)', value: item.start_date },
     { label: '借用時間(迄)', value: item.end_date },
     { label: '借用系櫃編號', value: item.locker_id },
-
-    // 申請時間 (已去T)
     { label: '申請借用時間', value: item.apply_date },
-
     { label: '借用理由', value: item.reason, isFullRow: true, isBox: true },
-
-    // ★ 重點：這裡讀取 formatted_approve_time (已去T)
     { label: '系辦審核時間', value: item.formatted_approve_time },
-
     { label: '系辦審核結果', value: item.state },
-
     ...(item.state === '駁回' || item.state === '已駁回' ? [
         { label: '駁回理由', value: item.reject_reason || '未填寫理由', isFullRow: true, isBox: true }
     ] : []),
-
     ...(['歸還中', '已歸還'].includes(item.state) ? [
         { label: '申請歸還時間', value: item.returnApplyTime },
         { label: '系辦審核時間', value: item.returnApproveTime || '' },
@@ -177,19 +189,20 @@ function handleShowDetails(id) {
     }
   });
 }
-
 </script>
 
 <template>
   <div class="recordWrapper">
     <h1 class="record">申請紀錄</h1>
+
     <RecordTable
       v-if="record.length > 0"
       :records="record"
       @cancel="handleCancel"
       @return="handleReturn"
+      @refresh="fetchRecords"
       @show-details="handleShowDetails"
-/>
+    />
 
     <div v-else class="empty-state">
       <p>目前沒有申請紀錄</p>
