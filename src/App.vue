@@ -51,9 +51,9 @@ footer {
 
 @media print {
   * {
-    background-color: white;
     margin: 0;
     padding: 0;
+    background-color: white;
   }
 
   header,
@@ -63,6 +63,7 @@ footer {
 
   main {
     padding: 0;
+    background-color: white;
   }
 }
 </style>

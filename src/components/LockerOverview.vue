@@ -1,7 +1,7 @@
 <template>
   <div class="show-container">
     <div class="logo-container">
-      <img class="logo" :src="logo" width="350" alt="UTCS Logo">
+      <img class="logo" :src="logo" width="300" alt="UTCS Logo">
     </div>
     <h1>臺北市立大學資訊科學系 系櫃借用情形一覽表</h1>
     <h1>{{ grade }}</h1>
@@ -68,7 +68,11 @@ h1 {
 }
 
 :deep(.locker-name) {
-  font-size: 20px;
+  font-size: 18px;
+}
+
+:deep(.locker-code) {
+  font-size: 16px;
 }
 
 /* 狀態色塊 */
@@ -100,21 +104,24 @@ h1 {
   text-align: right;
 }
 
-@page {
-  size: A4, landscape;
-}
-
 @media print {
   * {
     margin: 0;
     padding: 0;
+    print-color-adjust: exact !important;
+    background-color: white;
   }
 
   .show-container {
     break-inside: avoid;
     width: 100%;
-    height: 100vh;
+    height: 100%;
     margin: 0 auto;
+    zoom: 90%;
+  }
+
+  .locker-status {
+    break-inside: avoid;
   }
 
   .print-date {

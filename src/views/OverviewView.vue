@@ -123,13 +123,16 @@ onMounted(async () => {
 }
 
 @page {
-  size: A4, landscape;
+  size: A4 landscape;
+  margin: 10mm;
 }
 
 @media print {
   * {
     margin: 0;
     padding: 0;
+    print-color-adjust: exact !important;
+    background-color: white;
   }
 
   .btn-container {
