@@ -26,7 +26,18 @@ const handleBorrowHistory = () => {
 };
 
 const handleBorrowOverview = () => {
-  window.open('/overview', '_blank', 'noopener');
+  const hideFrame = document.createElement('iframe');
+  hideFrame.style.display = 'none';
+  hideFrame.src = '/overview';
+  hideFrame.onload = () => {
+    const closeFrame = () => {
+      hideFrame.contentWindow.close();
+    }
+
+    hideFrame.contentWindow.onbeforeunload = closeFrame;
+    hideFrame.contentWindow.onafterprint = closeFrame;
+  }
+  document.body.appendChild(hideFrame);
 };
 
 const updateSemesterInterval = async () => {
