@@ -73,7 +73,7 @@ class User {
 
     } catch (err) {
       console.error("取得使用者資料失敗", err);
-      return null; 
+      return null;
     }
   };
 
@@ -134,7 +134,7 @@ class Record {
       return [];
     }
   };
-  
+
   static postBorrow = async (data) => {
     try{
       const response = await apiMainV1.post('/record/borrow', data);
@@ -194,7 +194,7 @@ class Record {
       return response.data.data;
     } catch (err) {
       console.error("審核歸還失敗", err);
-      return null;
+      throw err;   
     }
   };
 }
