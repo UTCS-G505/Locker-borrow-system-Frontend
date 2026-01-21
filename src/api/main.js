@@ -73,7 +73,7 @@ class User {
 
     } catch (err) {
       console.error("取得使用者資料失敗", err);
-      return null; 
+      return null;
     }
   };
 
@@ -134,7 +134,7 @@ class Record {
       return [];
     }
   };
-  
+
   static postBorrow = async (data) => {
     try{
       const response = await apiMainV1.post('/record/borrow', data);
@@ -147,11 +147,56 @@ class Record {
 
   static postCancel;
 
-  static postReviewBorrow;
+  static postReviewBorrow = async (record_id, borrow_accepted, reject_reason = null) => {
+    try {
+      const payload = { borrow_accepted };
+      if (reject_reason) payload.reject_reason = reject_reason;
 
-  static postReturn;
+      const response = await apiMainV1.post(
+        `/record/reviewb/${record_id}`,
+        payload
+      );
+      return response.data.data;
+    } catch (err) {
+      console.error("審核申請失敗", err);
+      return null;
+    }
+  };
 
-  static postReviewReturn;
+  static postReturn = async (recordId, returnAvailable) => {
+    try {
+      const response = await apiMainV1.post(
+        `/record/return/${recordId}`,
+        null,
+        {
+          params: { return_available: returnAvailable }
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.error("歸還請求失敗", err);
+      console.error("錯誤詳情:", err.response?.data); // 加這行看詳細錯誤
+      return err.response?.data || {
+        code: -1,
+        message: "無法連接伺服器",
+        data: null
+      };
+    }
+  };
+
+  static postReviewReturn = async (recordId, params) => {
+    try {
+      const response = await apiMainV1.post(
+        `/record/reviewr/${recordId}`,
+        null,
+        { params }  
+      );
+      return response.data.data;
+    } catch (err) {
+      console.error("審核歸還失敗", err);
+      throw err;
+    }
+  };
 }
 
 class Locker {
