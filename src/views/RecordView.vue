@@ -148,12 +148,31 @@ onMounted(() => {
 async function executeCancel() {
   const id = pendingCancelId.value;
   if (!id) return;
+
   try {
+    // 呼叫後端取消 API
     const res = await Record.postCancel(id);
+
     if (res !== false) {
-      record.value = record.value.filter(r => r.id != id);
+      // 1. 先找到該筆資料
+      const item = record.value.find(r => r.id == id);
+
+      if (item) {
+        // 2. 原地更新狀態，不移除資料
+        // 根據你的描述，重整後會變成「駁回」，所以這裡我們直接手動設定為「駁回」
+        // 這樣畫面就會即時反應，不需要重整
+        item.state = '駁回';
+
+        // 為了資料一致性，如果你的列表有用到這些欄位，也可以順便更新
+        item.borrow_accepted = false;
+        item.reject_reason = "使用者自行取消"; // 或是後端有回傳理由也可以填入
+      }
+
+      // 3. 關閉視窗與清空暫存 ID
       showCancelCheck.value = false;
       pendingCancelId.value = null;
+
+      alert("已取消申請");
     } else {
       alert("取消失敗，請稍後再試");
     }
