@@ -197,7 +197,19 @@ class Record {
     }
   };
 
-  static postReviewReturn;
+  static postReviewReturn = async (recordId, params) => {
+    try {
+      const response = await apiMainV1.post(
+        `/record/reviewr/${recordId}`,
+        null,
+        { params }  
+      );
+      return response.data.data;
+    } catch (err) {
+      console.error("審核歸還失敗", err);
+      throw err;
+    }
+  };
 }
 
 class Locker {
