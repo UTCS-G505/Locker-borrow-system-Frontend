@@ -128,9 +128,9 @@ async function fetchRecords() {
           returnApplyTime: formatDateTime(rawReturnApply),
           returnApproveTime: formatDateTime(rawReturnApprove),
 
-          locker_id: String(item.locker_id || item.num || item.lockerNo || item.cabinet_id || "未分配"),
-          temporary: (item.type === '臨時借用' || item.temporary === true),
-          reason: item.reason || item.borrow_reason || item.description || "無借用理由",
+          locker_id: String(item.locker_id || "未分配"),
+          temporary: (item.temporary === true),
+          reason: item.reason,
           reject_reason: item.reject_reason || "無駁回理由",
           id: item.id
         };
