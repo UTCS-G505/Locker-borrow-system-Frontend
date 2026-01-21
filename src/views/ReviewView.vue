@@ -202,11 +202,17 @@ async function loadApplications() {
           id: record.id,
           uuid: record.user_id || "",
           borrowType: convertBorrowType(record.temporary),
-          startTime: formatDate(record.start_date),
-          endTime: formatDate(record.end_date),
+
+          // --- 修正重點：API 回傳的是 start_time，這裡做相容處理 ---
+          startTime: formatDate(record.start_time || record.start_date),
+          endTime: formatDate(record.end_time || record.end_date),
+          // ----------------------------------------------------
+
           cabinet: String(record.locker_id || "未分配"),
           status: convertStatus(record),
           rejectReason: record.reject_reason || "",
+
+          // 將後端日期格式化存入，供詳細視窗使用
           applyTime: formatDate(record.apply_date),
           approveTime: formatDate(record.review_date),
           returnApplyTime: formatDate(record.return_available_date),
@@ -409,25 +415,82 @@ async function handleRejectSubmit(reason) {
 // ==========================================
 // 詳細資訊邏輯
 // ==========================================
+// 詳細資訊邏輯
+// 詳細資訊邏輯
 async function handleShowDetails(item) {
-  const ssoInfo = await getSsoData(item.uuid);
-
-  modalData.value = [
+  // 共用欄位 (上方基本資料)
+  const commonFields = [
     { label: '學號', value: item.studentId, isFullRow: true },
-    { label: '姓名', value: ssoInfo.name },
-    { label: '年級', value: ssoInfo.grade },
-    { label: '電子郵件', value: ssoInfo.email, isFullRow: true },
-    { label: '連絡電話', value: ssoInfo.phone },
+    { label: '姓名', value: item.name },
+    { label: '年級', value: item.grade },
+    { label: '電子郵件', value: item.email, isFullRow: true },
+    { label: '連絡電話', value: item.phone },
     { label: '借用類型', value: item.borrowType },
     { label: '借用期間', value: `${item.startTime} ~ ${item.endTime}`, isFullRow: true },
     { label: '系櫃編號', value: item.cabinet },
     { label: '借用理由', value: item.borrowReason || '無', isFullRow: true, isBox: true },
-    { label: '申請時間', value: item.applyTime },
-    { label: '目前狀態', value: item.status },
   ];
 
-  if (item.status === '已駁回') {
-    modalData.value.push({ label: '駁回理由', value: item.rejectReason || '無', isFullRow: true, isBox: true });
+  if (item.status === '已歸還') {
+    // ==============================================
+    // 情況 A：已歸還 (借用與歸還皆完成)
+    // ==============================================
+    modalData.value = [
+      ...commonFields,
+      // --- 階段一：借用 ---
+      { label: '申請借用時間', value: item.applyTime },
+      { label: '系辦審核時間', value: item.approveTime },
+      { label: '系辦審核結果', value: '已歸還' },
+
+      // --- 階段二：歸還 ---
+      { label: '申請歸還時間', value: item.returnApplyTime },
+      { label: '系辦審核時間', value: item.returnApproveTime },
+      { label: '系辦審核結果', value: '通過' }
+    ];
+
+  } else if (item.status === '歸還中') {
+    // ==============================================
+    // 情況 B：歸還中 (借用完成，等待歸還審核)
+    // ==============================================
+    modalData.value = [
+      ...commonFields,
+      // --- 階段一：借用 ---
+      { label: '申請借用時間', value: item.applyTime },
+      { label: '系辦審核時間', value: item.approveTime },
+      { label: '系辦審核結果', value: '歸還中' },
+
+      // --- 階段二：歸還 (等待審核) ---
+      { label: '申請歸還時間', value: item.returnApplyTime },
+      { label: '系辦審核時間', value: '' },       // 尚未審核，故為空
+      { label: '系辦審核結果', value: '審核中' }
+    ];
+
+  } else {
+    // ==============================================
+    // 情況 C：審核中 / 借用中 / 已駁回
+    // ==============================================
+
+    // 邏輯判斷：
+    // 1. 如果是「審核中」，審核時間應該是空的。
+    // 2. 如果是「借用中」或「已駁回」，因為已經審核過了，所以會有審核時間。
+    const reviewTime = item.status === '審核中' ? '' : item.approveTime;
+
+    modalData.value = [
+      ...commonFields,
+      { label: '申請借用時間', value: item.applyTime },
+      { label: '系辦審核時間', value: reviewTime },
+      { label: '系辦審核結果', value: item.status },
+    ];
+
+    // 如果是「已駁回」，額外顯示駁回理由
+    if (item.status === '已駁回') {
+      modalData.value.push({
+        label: '駁回理由',
+        value: item.rejectReason || '無',
+        isFullRow: true,
+        isBox: true
+      });
+    }
   }
 
   nextTick(() => {
