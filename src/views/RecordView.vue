@@ -165,7 +165,7 @@ async function executeCancel() {
 
         // 為了資料一致性，如果你的列表有用到這些欄位，也可以順便更新
         item.borrow_accepted = false;
-        item.reject_reason = "使用者自行取消"; // 或是後端有回傳理由也可以填入
+        item.reject_reason = "使用者自行取消此申請";
       }
 
       // 3. 關閉視窗與清空暫存 ID
