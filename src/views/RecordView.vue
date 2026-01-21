@@ -46,31 +46,36 @@ async function fetchRecords() {
     const data = await Record.getList(userId);
 
     if (data) {
+      // ★★★ 除錯用：只印出第一筆資料來檢查欄位名稱 ★★★
+      if (data.length > 0) {
+        console.log('【檢查欄位】後端回傳的第一筆資料:', data[0]);
+      }
+
       record.value = data.map(item => {
-        // ★★★ 除錯用：請按 F12 看 Console，找找看有沒有類似 return_time 的欄位 ★★★
-        if (item.return_available || item.return_accepted) {
-           console.log('歸還中的資料 (請檢查欄位):', item);
-        }
-
         const rawStart = item.start_date || item.startTime || item.begin_time;
-        const rawEnd = item.end_date || item.endTime || item.return_time; // 注意：這裡用了 return_time 當作"迄日"
-        const rawApplyDate = item.created_at || item.create_time || item.apply_time || item.createdAt || new Date();
-        const rawApproveDate = item.review_date || item.directorTime || item.assistantTime;
+        const rawEnd = item.end_date || item.endTime || item.return_time;
 
-        // ★★★ 修正點：擴大抓取範圍 ★★★
-        // 我們依序嘗試：return_apply_time, return_date, returnTime, updated_at (更新時間)
-        // 註：有些系統會把歸還時間寫在 updated_at
-        const rawReturnApply = item.return_apply_date ||
-                               item.return_apply_time ||
-                               item.return_date ||
-                               item.returnTime ||
-                               item.actual_return_time ||
-                               item.updated_at; // 最後手段：抓資料更新時間
+        const rawApplyDate = item.apply_date ||
+                              item.application_time ||
+                              item.created_at;
+        const rawApproveDate = item.review_date ||
+                       item.directorTime ||
+                       item.assistantTime;
 
-        const rawReturnApprove = item.return_review_date || item.return_approve_time;
+        // 抓取歸還申請時間
+        const rawReturnApply = item.return_available_date ||
+                       item.return_apply_date ||
+                       item.return_apply_time ||
+                       item.return_date ||
+                       item.returnTime ||
+                       item.actual_return_time ||
+                       item.updated_at;
 
+       const rawReturnApprove = item.return_accepted_date ||
+                         item.return_review_date;
+        // 時間格式化
         const formatDateTime = (val) => {
-           if (!val) return "";
+           if (!val) return ""; // 如果沒值就回傳空，不要亂帶入現在時間
            let d = new Date(val);
            if (isNaN(d.getTime()) && typeof val === 'string') {
               d = new Date(val.replace(' ', 'T'));
@@ -114,10 +119,12 @@ async function fetchRecords() {
           state: calculatedState,
           start_date: rawStart ? formatDate(rawStart) : "無資料",
           end_date: rawEnd ? formatDate(rawEnd) : "無資料",
-          apply_date: formatDateTime(rawApplyDate),
-          formatted_approve_time: formatDateTime(rawApproveDate),
 
-          // 這裡讀取上面擴大抓取後的結果
+          // 如果沒有抓到 rawApplyDate，這裡就會顯示 "無時間資料"
+          // 如果你看到 "無時間資料"，請看 Console 找出正確欄位名稱
+          apply_date: rawApplyDate ? formatDateTime(rawApplyDate) : "無時間資料",
+
+          formatted_approve_time: formatDateTime(rawApproveDate),
           returnApplyTime: formatDateTime(rawReturnApply),
           returnApproveTime: formatDateTime(rawReturnApprove),
 
@@ -157,6 +164,7 @@ async function executeCancel() {
 }
 
 async function handleReturn(id) {
+  // 保持原有邏輯
   const item = record.value.find(r => r.id == id);
   if (!item) return;
 
@@ -198,7 +206,7 @@ function handleShowDetails(id) {
     { label: '借用時間(起)', value: item.start_date },
     { label: '借用時間(迄)', value: item.end_date },
     { label: '借用系櫃編號', value: item.locker_id },
-    { label: '申請借用時間', value: item.apply_date },
+    { label: '申請借用時間', value: item.apply_date }, // 現在這裡可能是 "無時間資料"
     { label: '借用理由', value: item.reason, isFullRow: true, isBox: true },
     { label: '系辦審核時間', value: item.formatted_approve_time },
     { label: '系辦審核結果', value: item.state },
