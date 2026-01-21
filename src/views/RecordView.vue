@@ -52,27 +52,16 @@ async function fetchRecords() {
       }
 
       record.value = data.map(item => {
-        const rawStart = item.start_date || item.startTime || item.begin_time;
-        const rawEnd = item.end_date || item.endTime || item.return_time;
+        const rawStart = item.start_date;
+        const rawEnd = item.end_date;
 
-        const rawApplyDate = item.apply_date ||
-                              item.application_time ||
-                              item.created_at;
-        const rawApproveDate = item.review_date ||
-                       item.directorTime ||
-                       item.assistantTime;
+        const rawApplyDate = item.apply_date;
+        const rawApproveDate = item.review_date;
 
         // 抓取歸還申請時間
-        const rawReturnApply = item.return_available_date ||
-                       item.return_apply_date ||
-                       item.return_apply_time ||
-                       item.return_date ||
-                       item.returnTime ||
-                       item.actual_return_time ||
-                       item.updated_at;
+        const rawReturnApply = item.return_available_date;
 
-       const rawReturnApprove = item.return_accepted_date ||
-                         item.return_review_date;
+       const rawReturnApprove = item.return_accepted_date;
         // 時間格式化
         const formatDateTime = (val) => {
            if (!val) return ""; // 如果沒值就回傳空，不要亂帶入現在時間
