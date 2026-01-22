@@ -10,8 +10,14 @@ const BoardMap = {
   announcement: AnnounceBoard
 };
 
-if(location.hash) {
-  board.value = location.hash.slice(1);
+if (location.hash) {
+  const hash = location.hash.slice(1);
+  if (hash in BoardMap) {
+    board.value = hash;
+  }
+  else {
+    location.hash = '';
+  }
 }
 
 const setHash = () => {
