@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { Announcement } from '@/api/main';
+import PopupExportHistory from '@/components/popups/PopupExportHistory.vue';
 
 defineProps({
   board: {
@@ -17,6 +18,27 @@ const startDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStar
 const endDate = `${today.getFullYear() + 1}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 const initialStartDate = ref(startDate);
 const initialEndDate = ref(endDate);
+
+const showPopupExportHistory = ref(false);
+
+const handleBorrowHistory = () => {
+  showPopupExportHistory.value = true
+};
+
+const handleBorrowOverview = () => {
+  const hideFrame = document.createElement('iframe');
+  hideFrame.style.display = 'none';
+  hideFrame.src = '/overview';
+  hideFrame.onload = () => {
+    const closeFrame = () => {
+      hideFrame.contentWindow.close();
+    }
+
+    hideFrame.contentWindow.onbeforeunload = closeFrame;
+    hideFrame.contentWindow.onafterprint = closeFrame;
+  }
+  document.body.appendChild(hideFrame);
+};
 
 const updateSemesterInterval = async () => {
   const start = initialStartDate.value;
@@ -37,15 +59,6 @@ const updateSemesterInterval = async () => {
   } catch (err) {
     console.error('更新公告失敗', err);
   }
-};
-
-const handleBorrowHistory = () => {
-  console.log('handleBorrowHistory');
-  // window.open('/export/history', '_blank', 'noopener');
-};
-const handleBorrowOverview = () => {
-  console.log('handleBorrowOverview');
-  // window.open('/export/overview', '_blank', 'noopener');
 };
 
 onMounted(async () => {
@@ -82,6 +95,8 @@ onMounted(async () => {
       <button id="borrow-overview" type="button" @click="handleBorrowOverview">借用概況圖</button>
     </div>
   </div>
+
+  <PopupExportHistory v-if="showPopupExportHistory" @close="showPopupExportHistory = false" />
 </template>
 
 <style scoped>
@@ -212,7 +227,6 @@ button {
     flex-direction: row;
     justify-content: space-between;
   }
-
 
   .semester-form {
     margin-right: 4rem;

@@ -5,6 +5,7 @@ import RecordView from '@/views/RecordView.vue'
 import ReviewView from '@/views/ReviewView.vue'
 import SettingView from '@/views/SettingView.vue'
 import NotFoundView from '@/views/http-errors/NotFoundView.vue'
+import OverviewView from '@/views/OverviewView.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
@@ -55,6 +56,16 @@ const router = createRouter({
       component: SettingView,
       meta: {
         title: '系統管理',
+        requiresAuth: true,
+        requiresManager: true
+      }
+    },
+    {
+      path: '/overview',
+      name: 'overview',
+      component: OverviewView,
+      meta: {
+        title: '借用概況圖',
         requiresAuth: true,
         requiresManager: true
       }

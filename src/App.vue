@@ -48,4 +48,22 @@ footer {
     z-index: 100;
   }
 }
+
+@media print {
+  * {
+    margin: 0;
+    padding: 0;
+    background-color: white;
+  }
+
+  header,
+  footer {
+    display: none;
+  }
+
+  main {
+    padding: 0;
+    background-color: white;
+  }
+}
 </style>
