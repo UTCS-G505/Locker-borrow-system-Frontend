@@ -32,3 +32,5 @@ coverage
 .env
 
 .qodo
+.scannerwork
+sonar-project.properties
