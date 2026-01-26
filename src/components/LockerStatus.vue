@@ -2,19 +2,26 @@
 <template>
   <div class="container">
     <div class="locker-grid">
-      <div v-for="(locker, index) in displayLockers" :key="locker?.id || 'empty-' + index" class="locker" :class="{
-        borrowed: locker?.isBorrowed,
-        reviewed: locker?.isReviewed,
-        selectable: locker && !locker.isBorrowed && !locker.isReviewed,
-        hovered: locker && hoverId === locker.id && !locker.isBorrowed && !locker.isReviewed,
-        empty: !locker,
-      }" @mouseenter="locker && (hoverId = locker.id)" @mouseleave="hoverId = null"
-        @click="locker && !locker.isBorrowed && !locker.isReviewed && $emit('select', locker)">
+      <div
+        v-for="(locker, index) in displayLockers"
+        :key="locker?.id || 'empty-' + index"
+        class="locker"
+        :class="{
+          borrowed: locker?.isBorrowed,
+          reviewed: locker?.isReviewed,
+          selectable: locker && !locker?.isBorrowed && !locker?.isReviewed,
+          hovered: locker && hoverId === locker?.id && !locker?.isBorrowed && !locker?.isReviewed,
+          empty: !locker,
+        }"
+        @mouseenter="locker && (hoverId = locker?.id)"
+        @mouseleave="hoverId = null"
+        @click="locker && !locker?.isBorrowed && !locker?.isReviewed && $emit('select', locker)"
+      >
         <div class="locker-content" v-if="locker">
-          <div class="locker-name">{{ locker.name }}</div>
+          <div class="locker-name">{{ locker?.name }}</div>
           <div class="locker-code">
-            <template v-if="locker.isBorrowed || locker.isReviewed">
-              {{ locker.userId || '' }}
+            <template v-if="locker?.isBorrowed || locker?.isReviewed">
+              {{ locker?.userId || '' }}
             </template>
           </div>
         </div>
@@ -49,21 +56,26 @@ let getUserAcc = async (userId) => {
 }
 
 // 處理資料的函式 
-const processLockersData = async () => {
-  // 複製一份 props.lockers，避免直接修改 props
-  if (!props.lockers) return;
+  const processLockersData = async () => {
+    // 複製一份 props.lockers，避免直接修改 props
+    if (!props.lockers) return;
+    console.log(props.lockers)
+    
+    // 深拷貝或是 map 出新陣列
+    const tempLockers = props.lockers.map(locker => {
+      if(locker) return {...locker};
+      return null;
+    });
+    console.log(tempLockers)
 
-  // 深拷貝或是 map 出新陣列
-  const tempLockers = props.lockers.map(locker => ({ ...locker }));
-
-  // 使用 Promise.all 平行處理，速度會比 for loop 快很多
-  await Promise.all(tempLockers.map(async (locker) => {
-    // 如果有 userId (代表借用中或審核中)，就去抓學號
-    if (locker.userId) {
-      const account = await getUserAcc(locker.userId);
-      locker.userId = account; // 將學號存入新的欄位
-    }
-  }));
+    // 使用 Promise.all 平行處理，速度會比 for loop 快很多
+    await Promise.all(tempLockers.map(async (locker) => {
+      // 如果有 userId (代表借用中或審核中)，就去抓學號
+      if (locker?.userId) {
+        const account = await getUserAcc(locker.userId);
+        locker.userId = account; // 將學號存入新的欄位
+      }
+    }));
 
   // 資料都處理完後，更新畫面
   displayLockers.value = tempLockers;
