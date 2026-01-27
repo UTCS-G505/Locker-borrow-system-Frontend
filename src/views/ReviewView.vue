@@ -197,7 +197,9 @@ async function loadApplications() {
     if (!Array.isArray(apiData)) throw new Error("資料格式錯誤");
 
     const processedData = await Promise.all(
-      apiData.map(async (record) => {
+      apiData.sort(
+        (r1, r2) => new Date(r1.apply_date) - new Date(r2.apply_date)
+      ).map(async (record) => {
         const basicData = {
           id: record.id,
           uuid: record.user_id || "",
