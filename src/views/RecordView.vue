@@ -66,10 +66,10 @@ async function fetchRecords() {
         const formatDateTime = (val) => {
            if (!val) return ""; // 如果沒值就回傳空，不要亂帶入現在時間
            let d = new Date(val);
-           if (isNaN(d.getTime()) && typeof val === 'string') {
+           if (Number.isNaN(d.getTime()) && typeof val === 'string') {
               d = new Date(val.replace(' ', 'T'));
            }
-           if (isNaN(d.getTime())) return "";
+           if (Number.isNaN(d.getTime())) return "";
 
            const Y = d.getFullYear();
            const M = String(d.getMonth() + 1).padStart(2, '0');
@@ -86,10 +86,10 @@ async function fetchRecords() {
              return val;
            }
            let d = new Date(val);
-           if (isNaN(d.getTime()) && typeof val === 'string') {
+           if (Number.isNaN(d.getTime()) && typeof val === 'string') {
               d = new Date(val.replace(' ', 'T'));
            }
-           if (isNaN(d.getTime())) return "";
+           if (Number.isNaN(d.getTime())) return "";
 
            const Y = d.getFullYear();
            const M = String(d.getMonth() + 1).padStart(2, '0');
