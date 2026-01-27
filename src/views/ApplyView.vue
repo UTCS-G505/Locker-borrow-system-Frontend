@@ -222,6 +222,8 @@
       // 成功後的處理
       console.log('申請成功')
 
+      await loadLockersFromAPI()
+
       showSuccessModal.value = true // 跳出成功視窗
     } catch (error) {
       // 失敗後的處理
