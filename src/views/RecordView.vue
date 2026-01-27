@@ -51,7 +51,7 @@ async function fetchRecords() {
         console.log('【檢查欄位】後端回傳的第一筆資料:', data[0]);
       }
 
-      record.value = data.map(item => {
+      record.value = data.sort((a, b) => new Date(b.apply_date) - new Date(a.apply_date)).map(item => {
         const rawStart = item.start_date;
         const rawEnd = item.end_date;
 
