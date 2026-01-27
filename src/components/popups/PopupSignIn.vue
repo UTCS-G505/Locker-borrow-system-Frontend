@@ -80,7 +80,7 @@ async function handleSubmit() {
 
         <div class="hint-group">
           <div class="hint-box">
-            請使用 UTSC SSO 帳密登入
+            請使用 UTCS SSO 帳密登入
           </div>
         </div>
       </div>
