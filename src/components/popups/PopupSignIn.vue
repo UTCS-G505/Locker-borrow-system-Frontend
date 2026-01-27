@@ -1,5 +1,5 @@
 <script setup>
-import { defineEmits, ref } from 'vue';
+import { ref } from 'vue';
 import PopupModal from './PopupModal.vue';
 import { useAuthStore } from '@/stores/auth';
 
