@@ -21,7 +21,7 @@
           <div class="locker-name">{{ locker?.name }}</div>
           <div class="locker-code">
             <template v-if="locker?.isBorrowed || locker?.isReviewed">
-              {{ locker?.userId || '' }}
+              {{ locker?.userAcc || '' }}
             </template>
           </div>
         </div>
@@ -32,7 +32,6 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { SsoUser } from '@/api/sso';
 const props = defineProps(['lockers'])
 const emit = defineEmits(['select', 'finish'])
 const hoverId = ref(null)
@@ -40,45 +39,14 @@ const hoverId = ref(null)
 // 建立一個本地的 ref 來顯示處理過的櫃子資料
 const displayLockers = ref([]);
 
-let getUserAcc = async (userId) => {
-  //沒有被借走的話就顯示空字串
-  if (userId === null) {
-    return null;
-  }
-
-  let data = await SsoUser.getGet(userId);
-  let acc = '';
-  console.log(data);
-  if (data !== null) {
-    acc = data.account;
-  }
-  return acc;
-}
-
 // 處理資料的函式 
-  const processLockersData = async () => {
-    // 複製一份 props.lockers，避免直接修改 props
-    if (!props.lockers) return;
-    console.log(props.lockers)
-    
-    // 深拷貝或是 map 出新陣列
-    const tempLockers = props.lockers.map(locker => {
-      if(locker) return {...locker};
-      return null;
-    });
-    console.log(tempLockers)
-
-    // 使用 Promise.all 平行處理，速度會比 for loop 快很多
-    await Promise.all(tempLockers.map(async (locker) => {
-      // 如果有 userId (代表借用中或審核中)，就去抓學號
-      if (locker?.userId) {
-        const account = await getUserAcc(locker.userId);
-        locker.userId = account; // 將學號存入新的欄位
-      }
-    }));
-
-  // 資料都處理完後，更新畫面
-  displayLockers.value = tempLockers;
+const processLockersData = async () => {
+  // 複製一份 props.lockers，避免直接修改 props
+  if (!props.lockers) return;
+  displayLockers.value = props.lockers.map(locker => {
+    if(locker) return {...locker};
+    return null;
+  });;
   emit('finish');
 }
 

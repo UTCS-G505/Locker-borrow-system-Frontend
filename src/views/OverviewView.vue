@@ -68,7 +68,7 @@ function generateLockerRange(startId, count) {
       name: `${id}`,
       isBorrowed: apiLocker ? (apiLocker.state === LockerState.BORROWED) : false,
       isReviewed: apiLocker ? (apiLocker.state === LockerState.UNDER_REVIEW) : false,
-      userId: apiLocker ? apiLocker.user_id : null,
+      userAcc: apiLocker ? apiLocker.user_acc : null,
       state: apiLocker ? apiLocker.state : LockerState.AVAILABLE
     }
   })
